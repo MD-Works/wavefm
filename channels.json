@@ -44,11 +44,6 @@
       "synced": true,
       "videos": [
         {
-          "id": "YkADj0TPrJA",
-          "title": "Foo Fighters – The Pretender",
-          "dur": 269
-        },
-        {
           "id": "1w7OgIMMRc4",
           "title": "Guns N' Roses – Sweet Child O' Mine",
           "dur": 356
@@ -59,19 +54,19 @@
           "dur": 208
         },
         {
-          "id": "ijZRCIrTgQc",
-          "title": "Nirvana – Come As You Are",
-          "dur": 219
-        },
-        {
-          "id": "dQw4w9WgXcQ",
-          "title": "Queen – Bohemian Rhapsody",
-          "dur": 354
-        },
-        {
           "id": "Aae_RHRptRg",
           "title": "Creedence Clearwater Revival - Lookin' Out My Back Door",
           "dur": 240
+        },
+        {
+          "id": "fJ9rUzIMcZQ",
+          "title": "Queen – Bohemian Rhapsody",
+          "dur": 240
+        },
+        {
+          "id": "eBG7P-K-r1Y",
+          "title": "Foo Fighters - Everlong",
+          "dur": 451
         }
       ]
     },
@@ -124,24 +119,14 @@
           "dur": 216
         },
         {
-          "id": "bpOSxM0MsIk",
-          "title": "Vampire Weekend – A-Punk",
-          "dur": 122
-        },
-        {
           "id": "NAEppFUWLfc",
           "title": "Arctic Monkeys – Do I Wanna Know?",
           "dur": 272
         },
         {
-          "id": "Cj7lpKELhTI",
-          "title": "The 1975 – Somebody Else",
-          "dur": 322
-        },
-        {
-          "id": "qt7F0Lz6dpQ",
-          "title": "Jungle – Keep Moving",
-          "dur": 224
+          "id": "gCYcHz2k5x0",
+          "title": "Martin Garrix - Animals",
+          "dur": 211
         }
       ]
     },
