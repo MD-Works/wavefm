@@ -223,6 +223,21 @@
       "desc": "Requested by the WAVEFM community",
       "synced": false,
       "videos": []
+    },
+    {
+      "id": 7,
+      "icon": "🤘",
+      "name": "Rock",
+      "freq": "100",
+      "desc": "Contemporary rock music",
+      "synced": true,
+      "videos": [
+        {
+          "id": "B9FzVhw8_bY",
+          "title": "The Dead South - In Hell I'll Be In Good Company",
+          "dur": 240
+        }
+      ]
     }
   ]
 }
