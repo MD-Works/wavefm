@@ -44,11 +44,6 @@
       "synced": true,
       "videos": [
         {
-          "id": "1w7OgIMMRc4",
-          "title": "Guns N' Roses – Sweet Child O' Mine",
-          "dur": 356
-        },
-        {
           "id": "n_GFN3a0yj0",
           "title": "AC/DC – Highway to Hell",
           "dur": 208
@@ -67,6 +62,26 @@
           "id": "eBG7P-K-r1Y",
           "title": "Foo Fighters - Everlong",
           "dur": 451
+        },
+        {
+          "id": "btPJPFnesV4",
+          "title": "Survivor - Eye Of The Tiger",
+          "dur": 404
+        },
+        {
+          "id": "ZhIsAZO5gl0",
+          "title": "Kiss - I Was Made For Lovin' You",
+          "dur": 358
+        },
+        {
+          "id": "vabnZ9-ex7o",
+          "title": "Nirvana - Come As You Are",
+          "dur": 344
+        },
+        {
+          "id": "YR5ApYxkU-U",
+          "title": "Pink Floyd - Another Brick In The Wall",
+          "dur": 360
         }
       ]
     },
