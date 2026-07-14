@@ -1,0 +1,103 @@
+{
+  "channels": [
+    {
+      "id": 0,
+      "icon": "🔥",
+      "name": "Hot Right Now",
+      "freq": "88.1 FM",
+      "desc": "Today's biggest tracks across all genres",
+      "synced": true,
+      "videos": [
+        { "id": "JGwWNGJdvx8", "title": "Ed Sheeran – Shape of You",       "dur": 234 },
+        { "id": "ktvTqknDobU", "title": "Imagine Dragons – Radioactive",    "dur": 187 },
+        { "id": "RgKAFK5djSk", "title": "Wiz Khalifa – See You Again",      "dur": 229 },
+        { "id": "hT_nvWreIhg", "title": "OneRepublic – Counting Stars",     "dur": 257 },
+        { "id": "OPf0YbXqDm0", "title": "Mark Ronson – Uptown Funk",        "dur": 270 }
+      ]
+    },
+    {
+      "id": 1,
+      "icon": "🎸",
+      "name": "Rock Classics",
+      "freq": "92.3 FM",
+      "desc": "Timeless rock anthems from the legends",
+      "synced": true,
+      "videos": [
+        { "id": "YkADj0TPrJA", "title": "Foo Fighters – The Pretender",           "dur": 269 },
+        { "id": "1w7OgIMMRc4", "title": "Guns N' Roses – Sweet Child O' Mine",    "dur": 356 },
+        { "id": "n_GFN3a0yj0", "title": "AC/DC – Highway to Hell",                "dur": 208 },
+        { "id": "ijZRCIrTgQc", "title": "Nirvana – Come As You Are",              "dur": 219 },
+        { "id": "dQw4w9WgXcQ", "title": "Queen – Bohemian Rhapsody",              "dur": 354 }
+      ]
+    },
+    {
+      "id": 2,
+      "icon": "🌙",
+      "name": "Late Night Vibes",
+      "freq": "95.7 FM",
+      "desc": "Smooth sounds for after dark",
+      "synced": true,
+      "videos": [
+        { "id": "pRpeEdMmmQ0", "title": "Shawn Mendes – Stitches",            "dur": 207 },
+        { "id": "450p7goxZqg", "title": "Adele – All I Ask",                   "dur": 228 },
+        { "id": "Gs069dndIYk", "title": "Billie Eilish – Lovely",              "dur": 200 },
+        { "id": "7NJqUN9TClM", "title": "Lewis Capaldi – Someone You Loved",   "dur": 222 },
+        { "id": "h_D3VFfhvs4", "title": "The Weeknd – Blinding Lights",        "dur": 200 }
+      ]
+    },
+    {
+      "id": 3,
+      "icon": "🎧",
+      "name": "Indie Discover",
+      "freq": "101.1 FM",
+      "desc": "Underground sounds and rising artists",
+      "synced": true,
+      "videos": [
+        { "id": "uelHwf8o7_U", "title": "Tame Impala – The Less I Know The Better", "dur": 216 },
+        { "id": "bpOSxM0MsIk", "title": "Vampire Weekend – A-Punk",                 "dur": 122 },
+        { "id": "NAEppFUWLfc", "title": "Arctic Monkeys – Do I Wanna Know?",        "dur": 272 },
+        { "id": "Cj7lpKELhTI", "title": "The 1975 – Somebody Else",                 "dur": 322 },
+        { "id": "qt7F0Lz6dpQ", "title": "Jungle – Keep Moving",                     "dur": 224 }
+      ]
+    },
+    {
+      "id": 4,
+      "icon": "🌍",
+      "name": "World Music",
+      "freq": "104.5 FM",
+      "desc": "Global rhythms and international hits",
+      "synced": true,
+      "videos": [
+        { "id": "pZ12_E5R3qc", "title": "Burna Boy – Last Last",             "dur": 255 },
+        { "id": "kHSFpGBCF0k", "title": "Bad Bunny – Tití Me Preguntó",      "dur": 302 },
+        { "id": "C3GouGa0noM", "title": "Shakira – Waka Waka",               "dur": 212 },
+        { "id": "GpBFOJ3R0M4", "title": "Wizkid – Essence",                  "dur": 251 },
+        { "id": "RJX4LyBFbUs", "title": "J Balvin – Reggaetón",              "dur": 199 }
+      ]
+    },
+    {
+      "id": 5,
+      "icon": "⚡",
+      "name": "Electronic",
+      "freq": "107.9 FM",
+      "desc": "Beats, synths, and dance floor energy",
+      "synced": true,
+      "videos": [
+        { "id": "gAjR4_CbPpQ", "title": "Daft Punk – Get Lucky",       "dur": 369 },
+        { "id": "Nq3x1AkwgpY", "title": "Calvin Harris – Summer",       "dur": 222 },
+        { "id": "vSfNd5xCFT4", "title": "Kygo – Firestone",             "dur": 247 },
+        { "id": "HMoC9yFmMUs", "title": "Deadmau5 – Ghosts N Stuff",    "dur": 356 },
+        { "id": "yKNxeF4KMsY", "title": "Martin Garrix – Animals",      "dur": 193 }
+      ]
+    },
+    {
+      "id": 6,
+      "icon": "📻",
+      "name": "Listener Picks",
+      "freq": "110.3 FM",
+      "desc": "Requested by the WAVEFM community",
+      "synced": false,
+      "videos": []
+    }
+  ]
+}

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WAVEFM — Free Radio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0A0A0F;
+      --panel:      #111118;
+      --panel2:     #16161F;
+      --border:     #222230;
+      --accent:     #4FC3F7;
+      --amber:      #FFB300;
+      --red:        #FF4D4D;
+      --text:       #E0E0E0;
+      --muted:      #666680;
+      --mono:       'JetBrains Mono', monospace;
+      --sans:       'Space Grotesk', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      display: grid;
+      grid-template-rows: 56px 1fr 120px;
+      grid-template-columns: 220px 1fr 300px;
+      grid-template-areas:
+        "topbar topbar topbar"
+        "sidebar main queue"
+        "nowplaying nowplaying nowplaying";
+      height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      grid-area: topbar;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+    }
+    .logo span { color: var(--amber); }
+    .topbar-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+    .on-air-badge {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--red);
+      font-weight: 500;
+    }
+    .on-air-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+    .listener-count {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: 16px;
+    }
+    .listener-count span { color: var(--text); }
+    .sync-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 3px;
+      margin-left: 12px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .sync-badge.synced { color: #4ADE80; border-color: rgba(74,222,128,0.3); }
+    .sync-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .sidebar-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 20px 18px 10px;
+    }
+    .channel-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 18px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      font-weight: 500;
+      text-align: left;
+      width: 100%;
+      transition: background 0.15s, color 0.15s;
+      border-left: 3px solid transparent;
+      position: relative;
+    }
+    .channel-btn:hover { background: var(--panel2); color: var(--text); }
+    .channel-btn.active {
+      background: var(--panel2);
+      color: var(--text);
+      border-left-color: var(--accent);
+    }
+    .channel-btn.active .ch-icon { color: var(--accent); }
+    .ch-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .ch-name { flex: 1; }
+    .ch-live {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      color: var(--red);
+      background: rgba(255,77,77,0.1);
+      padding: 2px 5px;
+      border-radius: 2px;
+    }
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 18px;
+    }
+
+    /* ── MAIN PLAYER ── */
+    .main {
+      grid-area: main;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .channel-header {
+      padding: 24px 28px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+    }
+    .channel-header-icon { font-size: 2rem; }
+    .channel-header-info {}
+    .channel-header-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+    .channel-header-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .freq-tag {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+    }
+
+    .player-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .player-bg-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(79,195,247,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #yt-player-wrap {
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 60px rgba(79,195,247,0.08), 0 2px 40px rgba(0,0,0,0.6);
+    }
+    #yt-player-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .player-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+    }
+    .player-placeholder-icon { font-size: 3rem; opacity: 0.3; }
+    .player-placeholder-text { font-size: 0.85rem; letter-spacing: 0.05em; }
+
+    /* ── QUEUE / RIGHT PANEL ── */
+    .queue-panel {
+      grid-area: queue;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-tab {
+      flex: 1;
+      padding: 13px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: color 0.15s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .panel-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .panel-tab:hover:not(.active) { color: var(--text); }
+
+    .tab-content { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .tab-content.active { display: flex; }
+
+    /* Queue list */
+    .queue-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+    .queue-list::-webkit-scrollbar { width: 4px; }
+    .queue-list::-webkit-scrollbar-track { background: transparent; }
+    .queue-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+    .queue-item:hover { background: var(--panel2); }
+    .queue-item.playing { background: rgba(79,195,247,0.06); }
+    .queue-num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      width: 18px;
+      flex-shrink: 0;
+    }
+    .queue-item.playing .queue-num { color: var(--accent); }
+    .queue-thumb {
+      width: 44px; height: 30px;
+      border-radius: 2px;
+      background: var(--panel2);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .queue-info { flex: 1; min-width: 0; }
+    .queue-title {
+      font-size: 0.78rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+    .queue-item.playing .queue-title { color: var(--accent); }
+    .queue-channel {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .queue-remove {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .queue-item:hover .queue-remove { opacity: 1; }
+    .queue-remove:hover { color: var(--red); }
+
+    .queue-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .queue-empty-icon { font-size: 1.8rem; opacity: 0.3; }
+
+    /* Request form */
+    .request-form {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 12px;
+      overflow-y: auto;
+    }
+    .form-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--muted); }
+    .form-select {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666680' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .form-select:focus { border-color: var(--accent); }
+    .form-select option { background: var(--panel2); }
+    .form-hint {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      line-height: 1.5;
+    }
+    .submit-btn {
+      background: var(--accent);
+      color: #0A0A0F;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: opacity 0.15s, transform 0.1s;
+      margin-top: 4px;
+    }
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .form-msg {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      padding: 8px 12px;
+      border-radius: 4px;
+      display: none;
+    }
+    .form-msg.success { background: rgba(79,195,247,0.1); color: var(--accent); display: block; }
+    .form-msg.error { background: rgba(255,77,77,0.1); color: var(--red); display: block; }
+
+    /* ── NOW PLAYING BAR ── */
+    .nowplaying {
+      grid-area: nowplaying;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .nowplaying-glow {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.4;
+    }
+    .np-song-info { flex: 1; min-width: 0; }
+    .np-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .np-title {
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .np-channel {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      margin-top: 3px;
+    }
+
+    /* Waveform — signature element */
+    .waveform-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      height: 48px;
+    }
+    .waveform-svg { width: 180px; height: 48px; }
+    .waveform-path {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1.5;
+      opacity: 0.7;
+    }
+
+    .np-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      padding: 8px 14px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ctrl-btn:hover { background: var(--panel2); color: var(--text); border-color: var(--muted); }
+    .ctrl-btn.primary {
+      background: var(--accent);
+      color: #0A0A0F;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+    .ctrl-btn.primary:hover { opacity: 0.85; }
+
+    .volume-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 8px;
+    }
+    .vol-icon { font-size: 0.85rem; color: var(--muted); }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 80px;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    /* ── SCROLLBAR GLOBAL ── */
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 180px 1fr;
+        grid-template-rows: 56px 1fr auto 120px;
+        grid-template-areas:
+          "topbar topbar"
+          "sidebar main"
+          "sidebar queue"
+          "nowplaying nowplaying";
+      }
+      .queue-panel { max-height: 260px; border-left: none; border-top: 1px solid var(--border); }
+    }
+    @media (max-width: 600px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 56px auto auto 120px;
+        grid-template-areas:
+          "topbar"
+          "main"
+          "queue"
+          "nowplaying";
+        overflow-y: auto;
+      }
+      html, body { overflow: auto; }
+      .sidebar { display: none; }
+      .nowplaying { flex-wrap: wrap; gap: 12px; padding: 12px 16px; height: auto; min-height: 120px; }
+      .waveform-wrap { display: none; }
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-size: 0.8rem;
+      font-family: var(--mono);
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, .on-air-dot { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="logo">WAVE<span>FM</span></div>
+    <div class="topbar-tag">FREE RADIO</div>
+    <div class="on-air-badge">
+      <div class="on-air-dot"></div>
+      ON AIR
+    </div>
+    <div class="listener-count">&#128100; <span id="listener-num">142</span> tuned in</div>
+    <div class="sync-badge" id="sync-badge"><div class="sync-dot"></div><span id="sync-label">SYNCING</span></div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Channels</div>
+
+    <button class="channel-btn active" data-channel="0" onclick="switchChannel(0)">
+      <span class="ch-icon">🔥</span>
+      <span class="ch-name">Hot Right Now</span>
+      <span class="ch-live">LIVE</span>
+    </button>
+    <button class="channel-btn" data-channel="1" onclick="switchChannel(1)">
+      <span class="ch-icon">🎸</span>
+      <span class="ch-name">Rock Classics</span>
+    </button>
+    <button class="channel-btn" data-channel="2" onclick="switchChannel(2)">
+      <span class="ch-icon">🌙</span>
+      <span class="ch-name">Late Night Vibes</span>
+    </button>
+    <button class="channel-btn" data-channel="3" onclick="switchChannel(3)">
+      <span class="ch-icon">🎧</span>
+      <span class="ch-name">Indie Discover</span>
+    </button>
+    <button class="channel-btn" data-channel="4" onclick="switchChannel(4)">
+      <span class="ch-icon">🌍</span>
+      <span class="ch-name">World Music</span>
+    </button>
+    <button class="channel-btn" data-channel="5" onclick="switchChannel(5)">
+      <span class="ch-icon">⚡</span>
+      <span class="ch-name">Electronic</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Special</div>
+
+    <button class="channel-btn" data-channel="6" onclick="switchChannel(6)">
+      <span class="ch-icon">📻</span>
+      <span class="ch-name">Listener Picks</span>
+    </button>
+
+  </nav>
+
+  <!-- MAIN PLAYER -->
+  <main class="main">
+    <div class="channel-header">
+      <div class="channel-header-icon" id="ch-icon">🔥</div>
+      <div class="channel-header-info">
+        <div class="channel-header-name" id="ch-name">Hot Right Now</div>
+        <div class="channel-header-desc" id="ch-desc">Today's biggest tracks across all genres</div>
+      </div>
+      <div class="freq-tag" id="ch-freq">88.1 FM</div>
+    </div>
+
+    <div class="player-wrap">
+      <div class="player-bg-glow"></div>
+      <div id="yt-player-wrap">
+        <div class="player-placeholder" id="player-placeholder">
+          <div class="player-placeholder-icon">📡</div>
+          <div class="player-placeholder-text">Tuning in…</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- QUEUE / REQUEST PANEL -->
+  <aside class="queue-panel">
+    <div class="panel-tabs">
+      <button class="panel-tab active" onclick="showTab('queue')">Up Next</button>
+      <button class="panel-tab" onclick="showTab('request')">Request</button>
+    </div>
+
+    <!-- Queue Tab -->
+    <div class="tab-content active" id="tab-queue">
+      <div class="queue-list" id="queue-list">
+        <div class="queue-empty" id="queue-empty">
+          <div class="queue-empty-icon">🎵</div>
+          <div>Queue is loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Tab -->
+    <div class="tab-content" id="tab-request">
+      <div class="request-form">
+        <div>
+          <label class="form-label">Your Name</label>
+          <input class="form-input" id="req-name" type="text" placeholder="e.g. Alex" maxlength="32" />
+        </div>
+        <div>
+          <label class="form-label">YouTube URL or Video ID</label>
+          <input class="form-input" id="req-url" type="text" placeholder="https://youtube.com/watch?v=..." />
+          <div class="form-hint" style="margin-top:6px">Paste any YouTube link or just the video ID.</div>
+        </div>
+        <div>
+          <label class="form-label">Song Title</label>
+          <input class="form-input" id="req-title" type="text" placeholder="Artist – Song name" maxlength="80" />
+        </div>
+        <div>
+          <label class="form-label">Add to Channel</label>
+          <select class="form-select" id="req-channel">
+            <option value="6">📻 Listener Picks</option>
+            <option value="0">🔥 Hot Right Now</option>
+            <option value="1">🎸 Rock Classics</option>
+            <option value="2">🌙 Late Night Vibes</option>
+            <option value="3">🎧 Indie Discover</option>
+            <option value="4">🌍 World Music</option>
+            <option value="5">⚡ Electronic</option>
+          </select>
+        </div>
+        <button class="submit-btn" onclick="submitRequest()">Add to Queue →</button>
+        <div class="form-msg" id="req-msg"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- DJ Shoutout Banner -->
+  <div id="shoutout-bar" style="display:none;grid-area:topbar;align-items:center;padding:0 24px;gap:10px;background:rgba(255,179,0,0.10);border-bottom:1px solid rgba(255,179,0,0.25);font-size:0.78rem;color:var(--amber);font-family:var(--mono);letter-spacing:0.05em;position:fixed;top:56px;left:0;right:0;z-index:20;height:34px;">
+    <span>📣</span><span id="shoutout-text"></span>
+  </div>
+
+  <!-- NOW PLAYING BAR -->
+  <footer class="nowplaying">
+    <div class="nowplaying-glow"></div>
+    <div class="np-song-info">
+      <div class="np-label">Now Playing</div>
+      <div class="np-title" id="np-title">Select a channel to begin</div>
+      <div class="np-channel" id="np-channel">—</div>
+    </div>
+
+    <!-- Signature waveform -->
+    <div class="waveform-wrap">
+      <svg class="waveform-svg" viewBox="0 0 180 48" xmlns="http://www.w3.org/2000/svg">
+        <path class="waveform-path" id="waveform-path" d="M0,24 L180,24"/>
+      </svg>
+    </div>
+
+    <!-- Synced channel controls (mute/unmute only) -->
+    <div class="np-controls" id="controls-synced">
+      <button class="ctrl-btn primary" id="mute-btn" onclick="toggleMute()">🔊 MUTE</button>
+    </div>
+
+    <!-- On-demand channel controls (full player) -->
+    <div class="np-controls" id="controls-ondemand" style="display:none">
+      <button class="ctrl-btn" onclick="prevTrack()" title="Previous">&#9664;&#9664;</button>
+      <button class="ctrl-btn primary" id="play-pause-btn" onclick="togglePlayPause()">&#9646;&#9646; PAUSE</button>
+      <button class="ctrl-btn" onclick="nextTrack()" title="Next">&#9654;&#9654;</button>
+    </div>
+
+    <div class="volume-wrap">
+      <span class="vol-icon">🔊</span>
+      <input type="range" id="volume-slider" min="0" max="100" value="80" oninput="setVolume(this.value)" />
+    </div>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CHANNEL DATA — loaded from channels.json ──────────────────────────────────
+let CHANNELS = [];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentChannelIdx = 0;
+let currentTrackIdx   = 0;
+let ytPlayer          = null;
+let ytReady           = false;
+let isPlaying         = false;
+let isMuted           = false;
+let waveAnimFrame     = null;
+let wavePhase         = 0;
+
+// Merge user requests from localStorage into channel 6
+function loadUserRequests() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('wavefm_requests') || '[]');
+    CHANNELS[6].videos = saved;
+  } catch(e) {}
+}
+
+function saveUserRequests() {
+  try {
+    localStorage.setItem('wavefm_requests', JSON.stringify(CHANNELS[6].videos));
+  } catch(e) {}
+}
+
+loadUserRequests();
+
+// ── SYNC ENGINE ───────────────────────────────────────────────────────────────
+// Uses a shared epoch (Jan 1 2025 00:00:00 UTC) as the clock origin.
+// Every device independently calculates where in the playlist we should be
+// right now, then seeks the YouTube player to that position.
+// No server needed — works because all devices share the same UTC clock.
+
+const SYNC_EPOCH = Date.UTC(2025, 0, 1, 0, 0, 0); // ms since unix epoch
+
+function getSyncPosition(channelIdx) {
+  const ch = CHANNELS[channelIdx];
+  if (!ch.synced || !ch.videos.length) return null;
+
+  // Total cycle duration in seconds
+  const cycleDur = ch.videos.reduce((sum, v) => sum + (v.dur || 240), 0);
+  if (cycleDur === 0) return null;
+
+  // How many seconds have elapsed since the epoch, looped into one cycle
+  const nowSec     = (Date.now() - SYNC_EPOCH) / 1000;
+  const posInCycle = nowSec % cycleDur;
+
+  // Walk through tracks to find which one we're in and the seek offset
+  let elapsed = 0;
+  for (let i = 0; i < ch.videos.length; i++) {
+    const dur = ch.videos[i].dur || 240;
+    if (posInCycle < elapsed + dur) {
+      return { trackIdx: i, seekTo: posInCycle - elapsed };
+    }
+    elapsed += dur;
+  }
+  return { trackIdx: 0, seekTo: 0 };
+}
+
+function applySyncPosition(channelIdx) {
+  const pos = getSyncPosition(channelIdx);
+  if (!pos) return;
+  currentTrackIdx = pos.trackIdx;
+  return pos.seekTo; // return seek offset for player
+}
+
+function setSyncBadge(synced) {
+  const badge = document.getElementById('sync-badge');
+  const label = document.getElementById('sync-label');
+  if (synced) {
+    badge.classList.add('synced');
+    label.textContent = 'SYNCED';
+  } else {
+    badge.classList.remove('synced');
+    label.textContent = synced === null ? 'ON DEMAND' : 'SYNCING';
+  }
+}
+
+// ── YOUTUBE IFrame API ────────────────────────────────────────────────────────
+window.onYouTubeIframeAPIReady = function() {
+  ytReady = true;
+  // Trigger switchChannel so sync runs on first load
+  switchChannel(currentChannelIdx);
+};
+
+let pendingSeek = 0; // seconds to seek to once player is ready
+
+function createPlayer(videoId, seekTo) {
+  pendingSeek = seekTo || 0;
+  const wrap = document.getElementById('yt-player-wrap');
+  wrap.innerHTML = '';
+  if (ytPlayer) {
+    try { ytPlayer.destroy(); } catch(e) {}
+  }
+  ytPlayer = new YT.Player('yt-player-wrap', {
+    height: '100%',
+    width: '100%',
+    videoId: videoId,
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      modestbranding: 1,
+      rel: 0,
+      iv_load_policy: 3,
+      fs: 0,
+      playsinline: 1,
+      start: Math.floor(pendingSeek), // hint to YouTube to start here
+    },
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+    }
+  });
+}
+
+function onPlayerReady(e) {
+  const vol = document.getElementById('volume-slider').value;
+  e.target.setVolume(parseInt(vol));
+  e.target.unMute();
+  // Seek precisely (start param is approximate)
+  if (pendingSeek > 0) {
+    e.target.seekTo(Math.floor(pendingSeek), true);
+  }
+  e.target.playVideo();
+  isPlaying = true;
+  isMuted = false;
+  updatePlayPauseBtn();
+  startWaveform();
+  setSyncBadge(CHANNELS[currentChannelIdx].synced ? true : null);
+}
+
+function onPlayerStateChange(e) {
+  if (e.data === YT.PlayerState.ENDED) {
+    nextTrack();
+  }
+  if (e.data === YT.PlayerState.PLAYING) {
+    isPlaying = true;
+    startWaveform();
+  }
+  if (e.data === YT.PlayerState.PAUSED) {
+    isPlaying = false;
+    updatePlayPauseBtn();
+    stopWaveform();
+  }
+}
+
+// ── TRACK MANAGEMENT ─────────────────────────────────────────────────────────
+function loadTrack(channelIdx, trackIdx, seekTo) {
+  const ch = CHANNELS[channelIdx];
+  if (!ch || !ch.videos.length) return;
+
+  const vid = ch.videos[trackIdx];
+  if (!vid) return;
+
+  // Update UI
+  document.getElementById('np-title').textContent   = vid.title;
+  document.getElementById('np-channel').textContent = ch.icon + ' ' + ch.name;
+  updatePlayPauseBtn(true);
+  renderQueue();
+
+  if (ytReady) {
+    createPlayer(vid.id, seekTo || 0);
+  }
+}
+
+function nextTrack() {
+  const ch = CHANNELS[currentChannelIdx];
+  if (ch.synced) {
+    // Re-calculate from clock in case playback drifted
+    const pos = getSyncPosition(currentChannelIdx);
+    if (pos) {
+      currentTrackIdx = pos.trackIdx;
+      loadTrack(currentChannelIdx, currentTrackIdx, pos.seekTo);
+      return;
+    }
+  }
+  currentTrackIdx = (currentTrackIdx + 1) % ch.videos.length;
+  loadTrack(currentChannelIdx, currentTrackIdx);
+}
+
+function prevTrack() {
+  const ch = CHANNELS[currentChannelIdx];
+  currentTrackIdx = (currentTrackIdx - 1 + ch.videos.length) % ch.videos.length;
+  loadTrack(currentChannelIdx, currentTrackIdx);
+}
+
+function toggleMute() {
+  if (!ytPlayer) return;
+  isMuted = !isMuted;
+  if (isMuted) {
+    ytPlayer.mute();
+    stopWaveform();
+  } else {
+    ytPlayer.unMute();
+    startWaveform();
+  }
+  const btn = document.getElementById('mute-btn');
+  btn.textContent = isMuted ? '🔇 UNMUTE' : '🔊 MUTE';
+  btn.classList.toggle('primary', !isMuted);
+}
+
+function togglePlayPause() {
+  if (!ytPlayer) return;
+  if (isPlaying) {
+    ytPlayer.pauseVideo();
+  } else {
+    ytPlayer.playVideo();
+    startWaveform();
+  }
+  isPlaying = !isPlaying;
+  updatePlayPauseBtn();
+}
+
+function updatePlayPauseBtn(loading) {
+  const btn = document.getElementById('play-pause-btn');
+  if (!btn) return;
+  if (loading) {
+    btn.textContent = '⏳ LOADING';
+  } else if (isPlaying) {
+    btn.innerHTML = '&#9646;&#9646; PAUSE';
+  } else {
+    btn.innerHTML = '&#9654; PLAY';
+  }
+}
+
+function updateControls(synced) {
+  document.getElementById('controls-synced').style.display   = synced ? '' : 'none';
+  document.getElementById('controls-ondemand').style.display = synced ? 'none' : '';
+  // Reset mute state when switching channels
+  isMuted = false;
+  const muteBtn = document.getElementById('mute-btn');
+  if (muteBtn) { muteBtn.textContent = '🔊 MUTE'; muteBtn.classList.add('primary'); }
+}
+
+function setVolume(val) {
+  if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(parseInt(val));
+}
+
+// ── CHANNEL SWITCH ────────────────────────────────────────────────────────────
+function switchChannel(idx) {
+  currentChannelIdx = idx;
+  const ch = CHANNELS[idx];
+
+  // Update sidebar
+  document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-channel="${idx}"]`).classList.add('active');
+
+  // Update header
+  document.getElementById('ch-icon').textContent  = ch.icon;
+  document.getElementById('ch-name').textContent  = ch.name;
+  document.getElementById('ch-desc').textContent  = ch.desc;
+  document.getElementById('ch-freq').textContent  = ch.freq;
+
+  // Swap control set based on whether channel is synced
+  updateControls(ch.synced);
+
+  if (ch.videos.length === 0) {
+    document.getElementById('np-title').textContent   = 'No tracks yet';
+    document.getElementById('np-channel').textContent = ch.icon + ' ' + ch.name;
+    document.getElementById('yt-player-wrap').innerHTML = `
+      <div class="player-placeholder">
+        <div class="player-placeholder-icon">📡</div>
+        <div class="player-placeholder-text">Submit a request to fill this channel!</div>
+      </div>`;
+    renderQueue();
+    setSyncBadge(null);
+    showToast('No tracks yet — request some! →');
+    return;
+  }
+
+  // Calculate sync position for curated channels
+  let seekTo = 0;
+  if (ch.synced) {
+    setSyncBadge(false); // show "SYNCING" while player loads
+    const pos = getSyncPosition(idx);
+    if (pos) {
+      currentTrackIdx = pos.trackIdx;
+      seekTo = pos.seekTo;
+    }
+  } else {
+    currentTrackIdx = 0;
+    setSyncBadge(null); // on-demand label
+  }
+
+  loadTrack(idx, currentTrackIdx, seekTo);
+}
+
+// ── QUEUE RENDER ─────────────────────────────────────────────────────────────
+function renderQueue() {
+  const ch   = CHANNELS[currentChannelIdx];
+  const list = document.getElementById('queue-list');
+  const empty = document.getElementById('queue-empty');
+
+  if (!ch.videos.length) {
+    list.innerHTML = '';
+    const e = document.createElement('div');
+    e.className = 'queue-empty';
+    e.innerHTML = '<div class="queue-empty-icon">🎵</div><div>No tracks yet on this channel</div>';
+    list.appendChild(e);
+    return;
+  }
+
+  list.innerHTML = ch.videos.map((v, i) => `
+    <div class="queue-item ${i === currentTrackIdx ? 'playing' : ''}" onclick="jumpTo(${i})">
+      <div class="queue-num">${i === currentTrackIdx ? '▶' : (i + 1)}</div>
+      <img class="queue-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
+      <div class="queue-info">
+        <div class="queue-title">${escHtml(v.title)}</div>
+        <div class="queue-channel">${ch.name}</div>
+      </div>
+      ${currentChannelIdx === 6 ? `<button class="queue-remove" onclick="removeRequest(event,${i})" title="Remove">✕</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function jumpTo(idx) {
+  currentTrackIdx = idx;
+  loadTrack(currentChannelIdx, idx);
+}
+
+function removeRequest(e, idx) {
+  e.stopPropagation();
+  CHANNELS[6].videos.splice(idx, 1);
+  saveUserRequests();
+  if (currentChannelIdx === 6) {
+    if (currentTrackIdx >= CHANNELS[6].videos.length) currentTrackIdx = 0;
+    renderQueue();
+    if (CHANNELS[6].videos.length && currentTrackIdx === idx) loadTrack(6, 0);
+  }
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── REQUEST FORM ──────────────────────────────────────────────────────────────
+function extractVideoId(input) {
+  input = input.trim();
+  // Already an ID (11 chars, alphanumeric + _ + -)
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  // youtu.be/ID
+  let m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  // v=ID
+  m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  // embed/ID
+  m = input.match(/embed\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  return null;
+}
+
+function submitRequest() {
+  const name  = document.getElementById('req-name').value.trim();
+  const url   = document.getElementById('req-url').value.trim();
+  const title = document.getElementById('req-title').value.trim();
+  const chIdx = parseInt(document.getElementById('req-channel').value);
+  const msg   = document.getElementById('req-msg');
+
+  msg.className = 'form-msg';
+
+  if (!url) { showMsg('error', 'Please enter a YouTube URL or video ID.'); return; }
+  const vid = extractVideoId(url);
+  if (!vid) { showMsg('error', 'Could not find a valid YouTube video ID.'); return; }
+  if (!title) { showMsg('error', 'Please enter a song title.'); return; }
+
+  const entry = {
+    id: vid,
+    title: title,
+    requestedBy: name || 'Anonymous'
+  };
+
+  if (chIdx === 6) {
+    // Listener picks — stored locally
+    const exists = CHANNELS[6].videos.find(v => v.id === vid);
+    if (exists) { showMsg('error', 'This video is already in the queue.'); return; }
+    CHANNELS[6].videos.push(entry);
+    saveUserRequests();
+    showMsg('success', `Added to Listener Picks! Switch to 📻 to hear it.`);
+  } else {
+    // For curated channels, just add locally for this session
+    const ch = CHANNELS[chIdx];
+    const exists = ch.videos.find(v => v.id === vid);
+    if (exists) { showMsg('error', 'Already in that channel\'s queue.'); return; }
+    ch.videos.push(entry);
+    showMsg('success', `Added to ${ch.icon} ${ch.name}!`);
+  }
+
+  if (currentChannelIdx === chIdx) renderQueue();
+
+  // Reset
+  document.getElementById('req-url').value   = '';
+  document.getElementById('req-title').value = '';
+}
+
+function showMsg(type, text) {
+  const el = document.getElementById('req-msg');
+  el.className = 'form-msg ' + type;
+  el.textContent = text;
+  setTimeout(() => el.className = 'form-msg', 4000);
+}
+
+// ── WAVEFORM ANIMATION (signature element) ────────────────────────────────────
+function startWaveform() {
+  if (waveAnimFrame) cancelAnimationFrame(waveAnimFrame);
+  animateWave();
+}
+
+function stopWaveform() {
+  if (waveAnimFrame) cancelAnimationFrame(waveAnimFrame);
+  waveAnimFrame = null;
+  document.getElementById('waveform-path').setAttribute('d', 'M0,24 L180,24');
+}
+
+function animateWave() {
+  wavePhase += 0.04;
+  const pts = [];
+  const W = 180, H = 48, mid = H / 2;
+  const steps = 60;
+  for (let i = 0; i <= steps; i++) {
+    const x = (i / steps) * W;
+    const t = (i / steps) * Math.PI * 4 + wavePhase;
+    const amp = 10 * Math.sin(wavePhase * 0.5 + i * 0.2) * 0.5 + 10;
+    const y = mid + Math.sin(t) * amp + Math.sin(t * 2.3 + 1) * (amp * 0.3);
+    pts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
+  }
+  document.getElementById('waveform-path').setAttribute('d', pts.join(' '));
+  waveAnimFrame = requestAnimationFrame(animateWave);
+}
+
+// ── FAKE LISTENER COUNT ───────────────────────────────────────────────────────
+function jitterListeners() {
+  const el = document.getElementById('listener-num');
+  let n = parseInt(el.textContent);
+  n += Math.floor(Math.random() * 7) - 3;
+  n = Math.max(80, Math.min(250, n));
+  el.textContent = n;
+}
+setInterval(jitterListeners, 4000);
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function boot() {
+  try {
+    // 1. Load channel data
+    const res = await fetch('channels.json?v=' + Date.now());
+    const data = await res.json();
+    CHANNELS = data.channels;
+
+    // Merge saved listener requests into Listener Picks channel
+    loadUserRequests();
+
+    // 2. Build sidebar dynamically from channels.json
+    buildSidebar();
+
+    // 3. Load YouTube API then auto-switch to channel 0
+    loadYouTubeAPI();
+
+    // 4. Pre-render queue
+    renderQueue();
+
+    // 5. Poll for DJ shoutout every 30s (reads from localStorage for now;
+    //    replace with KV Worker fetch once backend is set up)
+    pollShoutout();
+    setInterval(pollShoutout, 30000);
+
+  } catch(e) {
+    console.error('Failed to load channels.json', e);
+    document.getElementById('np-title').textContent = 'Failed to load channels — check channels.json';
+  }
+}
+
+function loadYouTubeAPI() {
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+
+function buildSidebar() {
+  const nav = document.querySelector('.sidebar');
+  nav.innerHTML = '<div class="sidebar-label">Channels</div>';
+
+  CHANNELS.forEach((ch, idx) => {
+    const isLast = ch.synced === false; // Listener Picks gets a divider before it
+    if (isLast && idx > 0) {
+      nav.innerHTML += '<div class="sidebar-divider"></div><div class="sidebar-label">Special</div>';
+    }
+    nav.innerHTML += `
+      <button class="channel-btn ${idx === 0 ? 'active' : ''}" data-channel="${idx}" onclick="switchChannel(${idx})">
+        <span class="ch-icon">${ch.icon}</span>
+        <span class="ch-name">${escHtml(ch.name)}</span>
+        ${ch.synced ? '<span class="ch-live">LIVE</span>' : ''}
+      </button>`;
+  });
+}
+
+// Shoutout: reads from localStorage key 'wavefm_shoutout'.
+// When Cloudflare KV Worker is set up, replace this fetch with:
+//   const r = await fetch('/api/shoutout'); const d = await r.json();
+function pollShoutout() {
+  try {
+    const raw = localStorage.getItem('wavefm_shoutout');
+    if (!raw) { hideShoutout(); return; }
+    const d = JSON.parse(raw);
+    // Expire after 30 minutes
+    if (!d.text || Date.now() - d.ts > 30 * 60 * 1000) { hideShoutout(); return; }
+    showShoutout(d.text);
+  } catch(e) { hideShoutout(); }
+}
+
+function showShoutout(text) {
+  const bar = document.getElementById('shoutout-bar');
+  document.getElementById('shoutout-text').textContent = text;
+  bar.style.display = 'flex';
+}
+
+function hideShoutout() {
+  document.getElementById('shoutout-bar').style.display = 'none';
+}
+
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WAVEFM — DJ Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #0A0A0F;
+      --panel:  #111118;
+      --panel2: #16161F;
+      --border: #222230;
+      --accent: #4FC3F7;
+      --amber:  #FFB300;
+      --red:    #FF4D4D;
+      --green:  #4ADE80;
+      --text:   #E0E0E0;
+      --muted:  #666680;
+      --mono:   'JetBrains Mono', monospace;
+      --sans:   'Space Grotesk', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── LOCK SCREEN ── */
+    #lock-screen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px; z-index: 100;
+    }
+    .lock-logo { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); letter-spacing: 0.15em; }
+    .lock-logo span { color: var(--amber); }
+    .lock-title { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--mono); }
+    .lock-input {
+      background: var(--panel2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 12px 18px;
+      color: var(--text); font-family: var(--mono); font-size: 1rem;
+      outline: none; width: 280px; text-align: center; letter-spacing: 0.2em;
+      transition: border-color 0.15s;
+    }
+    .lock-input:focus { border-color: var(--accent); }
+    .lock-btn {
+      background: var(--accent); color: #0A0A0F;
+      border: none; border-radius: 6px; padding: 12px 32px;
+      font-family: var(--sans); font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; letter-spacing: 0.05em; width: 280px;
+      transition: opacity 0.15s;
+    }
+    .lock-btn:hover { opacity: 0.88; }
+    .lock-error { color: var(--red); font-family: var(--mono); font-size: 0.75rem; display: none; }
+
+    /* ── ADMIN LAYOUT ── */
+    #admin { display: none; }
+    .admin-topbar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 28px; height: 56px;
+      background: var(--panel); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .admin-logo { font-family: var(--mono); font-size: 1rem; color: var(--accent); letter-spacing: 0.15em; }
+    .admin-logo span { color: var(--amber); }
+    .admin-badge {
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em;
+      color: var(--amber); border: 1px solid rgba(255,179,0,0.3);
+      padding: 3px 8px; border-radius: 3px;
+    }
+    .admin-nav { margin-left: auto; display: flex; gap: 4px; }
+    .nav-btn {
+      background: transparent; border: 1px solid transparent;
+      border-radius: 4px; padding: 6px 14px;
+      color: var(--muted); font-family: var(--sans); font-size: 0.8rem;
+      font-weight: 500; cursor: pointer; transition: all 0.15s;
+    }
+    .nav-btn:hover { color: var(--text); border-color: var(--border); }
+    .nav-btn.active { color: var(--accent); border-color: rgba(79,195,247,0.3); background: rgba(79,195,247,0.05); }
+    .logout-btn {
+      margin-left: 12px; background: transparent; border: 1px solid var(--border);
+      border-radius: 4px; padding: 6px 12px; color: var(--muted);
+      font-family: var(--mono); font-size: 0.7rem; cursor: pointer;
+      transition: color 0.15s;
+    }
+    .logout-btn:hover { color: var(--red); border-color: var(--red); }
+
+    .admin-body { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── SECTION TABS ── */
+    .section { display: none; }
+    .section.active { display: block; }
+    .section-title {
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 0.8rem; color: var(--muted); margin-bottom: 24px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; padding: 20px; margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.08em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 5px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; background: var(--panel2);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 9px 12px; color: var(--text);
+      font-family: var(--mono); font-size: 0.78rem; outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .field select { appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666680' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    .field select option { background: var(--panel2); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field-row-3 { display: grid; grid-template-columns: 2fr 1fr 80px; gap: 12px; }
+    .hint { font-size: 0.67rem; color: var(--muted); font-family: var(--mono); margin-top: 4px; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; }
+    .checkbox-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+    .checkbox-row label { font-size: 0.82rem; color: var(--text); font-family: var(--sans); text-transform: none; letter-spacing: 0; margin-bottom: 0; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      border: none; border-radius: 4px; padding: 9px 18px;
+      font-family: var(--sans); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+      letter-spacing: 0.03em;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #0A0A0F; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-success { background: var(--green); color: #0A0A0F; }
+    .btn-success:hover { opacity: 0.88; }
+    .btn-danger { background: transparent; border: 1px solid var(--red); color: var(--red); }
+    .btn-danger:hover { background: rgba(255,77,77,0.08); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+    .btn-amber { background: var(--amber); color: #0A0A0F; }
+    .btn-amber:hover { opacity: 0.88; }
+    .btn-sm { padding: 5px 10px; font-size: 0.72rem; }
+    .btn-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    /* ── STATUS MESSAGE ── */
+    .status-msg {
+      font-family: var(--mono); font-size: 0.72rem;
+      padding: 8px 12px; border-radius: 4px; display: none;
+    }
+    .status-msg.ok  { background: rgba(74,222,128,0.1); color: var(--green); display: block; }
+    .status-msg.err { background: rgba(255,77,77,0.1);  color: var(--red);   display: block; }
+
+    /* ── CHANNEL LIST ── */
+    .channel-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; margin-bottom: 12px; overflow: hidden;
+    }
+    .channel-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px; cursor: pointer;
+      transition: background 0.12s;
+    }
+    .channel-card-header:hover { background: var(--panel2); }
+    .ch-icon-lg { font-size: 1.3rem; }
+    .ch-meta { flex: 1; }
+    .ch-meta-name { font-weight: 600; font-size: 0.95rem; }
+    .ch-meta-detail { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .ch-badge {
+      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em;
+      padding: 3px 7px; border-radius: 3px;
+    }
+    .ch-badge.synced { color: var(--accent); background: rgba(79,195,247,0.1); }
+    .ch-badge.ondemand { color: var(--muted); background: var(--panel2); }
+    .ch-track-count { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    .ch-actions { display: flex; gap: 6px; }
+    .channel-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px; }
+    .channel-body.open { display: block; }
+
+    /* Track list inside channel */
+    .track-list { margin-bottom: 14px; }
+    .track-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 4px;
+      transition: background 0.1s;
+    }
+    .track-item:hover { background: var(--panel2); }
+    .track-num { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); width: 20px; flex-shrink: 0; }
+    .track-thumb { width: 42px; height: 28px; border-radius: 2px; background: var(--panel2); object-fit: cover; flex-shrink: 0; }
+    .track-info { flex: 1; min-width: 0; }
+    .track-title { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .track-id { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+    .track-dur { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); width: 40px; text-align: right; flex-shrink: 0; }
+    .track-actions { display: flex; gap: 4px; }
+    .icon-btn {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--muted); font-size: 0.8rem; padding: 4px 6px;
+      border-radius: 3px; transition: color 0.12s, background 0.12s;
+    }
+    .icon-btn:hover { color: var(--text); background: var(--border); }
+    .icon-btn.del:hover { color: var(--red); }
+
+    /* Add track form inside channel */
+    .add-track-form {
+      background: var(--panel2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 14px; margin-top: 4px;
+    }
+    .add-track-form .field { margin-bottom: 10px; }
+    .add-track-form .field:last-of-type { margin-bottom: 0; }
+
+    /* ── REQUESTS ── */
+    .req-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+    }
+    .req-item:last-child { border-bottom: none; }
+    .req-thumb { width: 50px; height: 34px; border-radius: 3px; background: var(--panel2); object-fit: cover; flex-shrink: 0; }
+    .req-info { flex: 1; min-width: 0; }
+    .req-title { font-size: 0.82rem; font-weight: 500; }
+    .req-by { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .req-id { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+    .req-actions { display: flex; gap: 6px; }
+
+    /* ── SHOUTOUT ── */
+    .shoutout-preview {
+      background: rgba(255,179,0,0.08); border: 1px solid rgba(255,179,0,0.2);
+      border-radius: 6px; padding: 12px 16px;
+      font-family: var(--mono); font-size: 0.8rem; color: var(--amber);
+      margin-top: 12px; display: none;
+    }
+
+    /* ── EXPORT AREA ── */
+    .export-area {
+      background: var(--panel2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 14px;
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      white-space: pre; overflow-x: auto; max-height: 300px; overflow-y: auto;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media (max-width: 600px) {
+      .field-row, .field-row-3 { grid-template-columns: 1fr; }
+      .admin-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOCK SCREEN ── -->
+<div id="lock-screen">
+  <div class="lock-logo">WAVE<span>FM</span></div>
+  <div class="lock-title">DJ Admin Access</div>
+  <input class="lock-input" id="passphrase" type="password" placeholder="Enter passphrase" onkeydown="if(event.key==='Enter')unlock()" />
+  <button class="lock-btn" onclick="unlock()">Enter Studio →</button>
+  <div class="lock-error" id="lock-error">Incorrect passphrase. Try again.</div>
+</div>
+
+<!-- ── ADMIN PANEL ── -->
+<div id="admin">
+
+  <div class="admin-topbar">
+    <div class="admin-logo">WAVE<span>FM</span></div>
+    <div class="admin-badge">DJ ADMIN</div>
+    <nav class="admin-nav">
+      <button class="nav-btn active" onclick="showSection('channels')">Channels</button>
+      <button class="nav-btn" onclick="showSection('requests')">Requests</button>
+      <button class="nav-btn" onclick="showSection('shoutout')">Shoutout</button>
+      <button class="nav-btn" onclick="showSection('export')">Export</button>
+    </nav>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- ── CHANNELS SECTION ── -->
+    <div class="section active" id="section-channels">
+      <div class="section-title">Channels & Tracks</div>
+      <div class="section-sub">Add, edit, or remove channels and their tracks. Click a channel to expand it.</div>
+
+      <div class="btn-row" style="margin-bottom:18px">
+        <button class="btn btn-primary" onclick="openAddChannel()">+ Add Channel</button>
+      </div>
+
+      <!-- Add channel form -->
+      <div class="card" id="add-channel-form" style="display:none">
+        <div class="card-title">New Channel</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Channel Name</label>
+            <input id="nc-name" type="text" placeholder="e.g. Afrobeats" />
+          </div>
+          <div class="field">
+            <label>Icon (emoji)</label>
+            <input id="nc-icon" type="text" placeholder="🎵" maxlength="2" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Frequency</label>
+            <input id="nc-freq" type="text" placeholder="e.g. 93.5 FM" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <input id="nc-desc" type="text" placeholder="Short channel description" />
+          </div>
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="nc-synced" checked />
+            <label for="nc-synced">Synced channel (all listeners hear the same position)</label>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success" onclick="addChannel()">Add Channel</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('add-channel-form').style.display='none'">Cancel</button>
+        </div>
+        <div class="status-msg" id="nc-msg" style="margin-top:10px"></div>
+      </div>
+
+      <div id="channel-list"></div>
+    </div>
+
+    <!-- ── REQUESTS SECTION ── -->
+    <div class="section" id="section-requests">
+      <div class="section-title">Listener Requests</div>
+      <div class="section-sub">Approve requests to add them to Listener Picks, or reject to remove them.</div>
+      <div class="card" id="requests-card">
+        <div id="requests-list"><div style="color:var(--muted);font-size:0.82rem">No pending requests.</div></div>
+      </div>
+    </div>
+
+    <!-- ── SHOUTOUT SECTION ── -->
+    <div class="section" id="section-shoutout">
+      <div class="section-title">DJ Shoutout</div>
+      <div class="section-sub">Post a message that appears as a banner on all listener devices. Expires after 30 minutes.</div>
+      <div class="card">
+        <div class="field">
+          <label>Shoutout Message</label>
+          <textarea id="shoutout-text" placeholder="e.g. 🎉 Welcome to Friday Night Vibes! Requests open now — drop your links in the Request tab." oninput="previewShoutout()"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-amber" onclick="postShoutout()">📣 Post Shoutout</button>
+          <button class="btn btn-ghost" onclick="clearShoutout()">Clear Current</button>
+        </div>
+        <div class="shoutout-preview" id="shoutout-preview"></div>
+        <div class="status-msg" id="shoutout-msg" style="margin-top:10px"></div>
+      </div>
+      <div class="card" style="background:rgba(79,195,247,0.03)">
+        <div class="card-title">⚡ Upgrade to Live Shoutouts</div>
+        <p style="font-size:0.8rem;color:var(--muted);line-height:1.6">
+          Currently shoutouts only appear on <em>your</em> device (stored in localStorage).<br>
+          To push shoutouts to all listeners in real time, set up a Cloudflare KV Worker and replace the <code style="color:var(--accent)">pollShoutout()</code> function in <code style="color:var(--accent)">index.html</code> with a fetch to <code style="color:var(--accent)">/api/shoutout</code>.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── EXPORT SECTION ── -->
+    <div class="section" id="section-export">
+      <div class="section-title">Export channels.json</div>
+      <div class="section-sub">Copy this JSON and replace your <code style="color:var(--accent)">channels.json</code> file in GitHub to publish your changes to all listeners.</div>
+      <div class="btn-row" style="margin-bottom:14px">
+        <button class="btn btn-primary" onclick="generateExport()">Generate JSON</button>
+        <button class="btn btn-ghost" onclick="copyExport()">Copy to Clipboard</button>
+      </div>
+      <div class="export-area" id="export-area">Click "Generate JSON" to preview your channels.json output.</div>
+      <div class="status-msg" id="export-msg" style="margin-top:10px"></div>
+      <div class="card" style="margin-top:16px;background:rgba(255,179,0,0.03)">
+        <div class="card-title">How to publish</div>
+        <ol style="font-size:0.8rem;color:var(--muted);line-height:2;padding-left:18px">
+          <li>Click <strong style="color:var(--text)">Generate JSON</strong> then <strong style="color:var(--text)">Copy to Clipboard</strong></li>
+          <li>Go to your GitHub repo → open <code style="color:var(--accent)">channels.json</code></li>
+          <li>Click the ✏️ pencil edit icon</li>
+          <li>Select all and paste your new JSON</li>
+          <li>Click <strong style="color:var(--text)">Commit changes</strong></li>
+          <li>Cloudflare auto-deploys in ~30 seconds ✅</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /admin-body -->
+</div><!-- /admin -->
+
+<script>
+// ── CONFIG — change this passphrase before deploying ─────────────────────────
+const ADMIN_PASSPHRASE = 'wavefm2025';
+
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+function unlock() {
+  const val = document.getElementById('passphrase').value;
+  if (val === ADMIN_PASSPHRASE) {
+    sessionStorage.setItem('wavefm_admin', '1');
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('admin').style.display = 'block';
+    init();
+  } else {
+    document.getElementById('lock-error').style.display = 'block';
+    document.getElementById('passphrase').value = '';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('wavefm_admin');
+  location.reload();
+}
+
+// Auto-unlock if session active
+if (sessionStorage.getItem('wavefm_admin') === '1') {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('admin').style.display = 'block';
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let CHANNELS = [];
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch('channels.json?v=' + Date.now());
+    const data = await res.json();
+    CHANNELS = JSON.parse(JSON.stringify(data.channels)); // deep copy
+    renderChannelList();
+    renderRequests();
+  } catch(e) {
+    alert('Could not load channels.json. Make sure it exists in your repo.');
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'export') generateExport();
+  if (name === 'requests') renderRequests();
+}
+
+// ── CHANNEL LIST ──────────────────────────────────────────────────────────────
+function renderChannelList() {
+  const el = document.getElementById('channel-list');
+  if (!CHANNELS.length) { el.innerHTML = '<p style="color:var(--muted);font-size:0.82rem">No channels yet.</p>'; return; }
+
+  el.innerHTML = CHANNELS.map((ch, ci) => `
+    <div class="channel-card" id="chcard-${ci}">
+      <div class="channel-card-header" onclick="toggleChannel(${ci})">
+        <div class="ch-icon-lg">${escHtml(ch.icon)}</div>
+        <div class="ch-meta">
+          <div class="ch-meta-name">${escHtml(ch.name)}</div>
+          <div class="ch-meta-detail">${escHtml(ch.freq)} · ${escHtml(ch.desc)}</div>
+        </div>
+        <span class="ch-badge ${ch.synced ? 'synced' : 'ondemand'}">${ch.synced ? 'SYNCED' : 'ON DEMAND'}</span>
+        <div class="ch-track-count">${ch.videos.length} track${ch.videos.length !== 1 ? 's' : ''}</div>
+        <div class="ch-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-ghost btn-sm" onclick="openEditChannel(${ci})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteChannel(${ci})">Delete</button>
+        </div>
+      </div>
+      <div class="channel-body" id="chbody-${ci}">
+
+        <!-- Edit channel info (hidden by default) -->
+        <div id="edit-ch-${ci}" style="display:none;margin-bottom:16px">
+          <div class="card" style="margin-bottom:0">
+            <div class="card-title">Edit Channel</div>
+            <div class="field-row">
+              <div class="field"><label>Name</label><input id="ech-name-${ci}" value="${escHtml(ch.name)}" /></div>
+              <div class="field"><label>Icon</label><input id="ech-icon-${ci}" value="${escHtml(ch.icon)}" maxlength="2" /></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Frequency</label><input id="ech-freq-${ci}" value="${escHtml(ch.freq)}" /></div>
+              <div class="field"><label>Description</label><input id="ech-desc-${ci}" value="${escHtml(ch.desc)}" /></div>
+            </div>
+            <div class="field">
+              <div class="checkbox-row">
+                <input type="checkbox" id="ech-synced-${ci}" ${ch.synced ? 'checked' : ''} />
+                <label for="ech-synced-${ci}">Synced channel</label>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-success btn-sm" onclick="saveChannelEdit(${ci})">Save</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('edit-ch-${ci}').style.display='none'">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Track list -->
+        <div class="track-list" id="tracklist-${ci}">
+          ${renderTracks(ci)}
+        </div>
+
+        <!-- Add track form -->
+        <div class="add-track-form">
+          <div class="card-title" style="margin-bottom:10px">Add Track</div>
+          <div class="field-row-3">
+            <div class="field" style="margin-bottom:0">
+              <label>Song Title</label>
+              <input id="at-title-${ci}" placeholder="Artist – Song name" />
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>YouTube ID or URL</label>
+              <input id="at-id-${ci}" placeholder="dQw4w9WgXcQ" />
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Duration (s)</label>
+              <input id="at-dur-${ci}" type="number" placeholder="240" min="1" />
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn btn-primary btn-sm" onclick="addTrack(${ci})">+ Add Track</button>
+          </div>
+          <div class="status-msg" id="at-msg-${ci}" style="margin-top:8px"></div>
+        </div>
+
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTracks(ci) {
+  const ch = CHANNELS[ci];
+  if (!ch.videos.length) return '<p style="color:var(--muted);font-size:0.78rem;padding:4px 0 12px">No tracks yet — add one below.</p>';
+  return ch.videos.map((v, ti) => `
+    <div class="track-item" id="track-${ci}-${ti}">
+      <div class="track-num">${ti + 1}</div>
+      <img class="track-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
+      <div class="track-info">
+        <div class="track-title">${escHtml(v.title)}</div>
+        <div class="track-id">${v.id}</div>
+      </div>
+      <div class="track-dur">${formatDur(v.dur)}</div>
+      <div class="track-actions">
+        ${ti > 0 ? `<button class="icon-btn" title="Move up" onclick="moveTrack(${ci},${ti},-1)">↑</button>` : '<span style="width:28px"></span>'}
+        ${ti < ch.videos.length - 1 ? `<button class="icon-btn" title="Move down" onclick="moveTrack(${ci},${ti},1)">↓</button>` : '<span style="width:28px"></span>'}
+        <button class="icon-btn del" title="Remove" onclick="removeTrack(${ci},${ti})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleChannel(ci) {
+  const body = document.getElementById('chbody-' + ci);
+  body.classList.toggle('open');
+}
+
+function openEditChannel(ci) {
+  const body = document.getElementById('chbody-' + ci);
+  body.classList.add('open');
+  document.getElementById('edit-ch-' + ci).style.display = 'block';
+}
+
+function saveChannelEdit(ci) {
+  const ch = CHANNELS[ci];
+  ch.name   = document.getElementById(`ech-name-${ci}`).value.trim()   || ch.name;
+  ch.icon   = document.getElementById(`ech-icon-${ci}`).value.trim()   || ch.icon;
+  ch.freq   = document.getElementById(`ech-freq-${ci}`).value.trim()   || ch.freq;
+  ch.desc   = document.getElementById(`ech-desc-${ci}`).value.trim()   || ch.desc;
+  ch.synced = document.getElementById(`ech-synced-${ci}`).checked;
+  renderChannelList();
+}
+
+function deleteChannel(ci) {
+  if (!confirm(`Delete "${CHANNELS[ci].name}" and all its tracks?`)) return;
+  CHANNELS.splice(ci, 1);
+  // Re-assign sequential IDs
+  CHANNELS.forEach((c, i) => c.id = i);
+  renderChannelList();
+}
+
+function openAddChannel() {
+  const f = document.getElementById('add-channel-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+function addChannel() {
+  const name   = document.getElementById('nc-name').value.trim();
+  const icon   = document.getElementById('nc-icon').value.trim() || '🎵';
+  const freq   = document.getElementById('nc-freq').value.trim() || `${(88 + CHANNELS.length).toFixed(1)} FM`;
+  const desc   = document.getElementById('nc-desc').value.trim() || '';
+  const synced = document.getElementById('nc-synced').checked;
+  const msg    = document.getElementById('nc-msg');
+
+  if (!name) { showMsg(msg, 'err', 'Channel name is required.'); return; }
+
+  CHANNELS.push({ id: CHANNELS.length, icon, name, freq, desc, synced, videos: [] });
+  document.getElementById('nc-name').value = '';
+  document.getElementById('nc-icon').value = '';
+  document.getElementById('nc-freq').value = '';
+  document.getElementById('nc-desc').value = '';
+  document.getElementById('add-channel-form').style.display = 'none';
+  renderChannelList();
+}
+
+// ── TRACK MANAGEMENT ─────────────────────────────────────────────────────────
+function addTrack(ci) {
+  const titleEl = document.getElementById(`at-title-${ci}`);
+  const idEl    = document.getElementById(`at-id-${ci}`);
+  const durEl   = document.getElementById(`at-dur-${ci}`);
+  const msg     = document.getElementById(`at-msg-${ci}`);
+
+  const title = titleEl.value.trim();
+  const raw   = idEl.value.trim();
+  const dur   = parseInt(durEl.value) || 240;
+  const vidId = extractVideoId(raw);
+
+  if (!title) { showMsg(msg, 'err', 'Title is required.'); return; }
+  if (!vidId) { showMsg(msg, 'err', 'Invalid YouTube URL or ID.'); return; }
+
+  const exists = CHANNELS[ci].videos.find(v => v.id === vidId);
+  if (exists) { showMsg(msg, 'err', 'This video is already in the channel.'); return; }
+
+  CHANNELS[ci].videos.push({ id: vidId, title, dur });
+  titleEl.value = ''; idEl.value = ''; durEl.value = '';
+  document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
+  // Update track count in header
+  renderChannelList();
+  // Re-open the expanded body
+  setTimeout(() => {
+    document.getElementById('chbody-' + ci).classList.add('open');
+  }, 0);
+  showMsg(msg, 'ok', `"${title}" added.`);
+}
+
+function removeTrack(ci, ti) {
+  CHANNELS[ci].videos.splice(ti, 1);
+  document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
+  renderChannelList();
+  setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
+}
+
+function moveTrack(ci, ti, dir) {
+  const vids = CHANNELS[ci].videos;
+  const ni = ti + dir;
+  if (ni < 0 || ni >= vids.length) return;
+  [vids[ti], vids[ni]] = [vids[ni], vids[ti]];
+  document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
+  renderChannelList();
+  setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
+}
+
+// ── REQUESTS ─────────────────────────────────────────────────────────────────
+function renderRequests() {
+  const el = document.getElementById('requests-list');
+  let reqs = [];
+  try { reqs = JSON.parse(localStorage.getItem('wavefm_requests') || '[]'); } catch(e) {}
+
+  if (!reqs.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:8px 0">No pending requests.</div>';
+    return;
+  }
+
+  el.innerHTML = reqs.map((r, i) => `
+    <div class="req-item">
+      <img class="req-thumb" src="https://img.youtube.com/vi/${r.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
+      <div class="req-info">
+        <div class="req-title">${escHtml(r.title)}</div>
+        <div class="req-by">Requested by ${escHtml(r.requestedBy || 'Anonymous')}</div>
+        <div class="req-id">ID: ${r.id}</div>
+      </div>
+      <div class="req-actions">
+        <button class="btn btn-success btn-sm" onclick="approveRequest(${i})">✓ Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectRequest(${i})">✕ Reject</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function approveRequest(i) {
+  let reqs = [];
+  try { reqs = JSON.parse(localStorage.getItem('wavefm_requests') || '[]'); } catch(e) {}
+  const req = reqs[i];
+  if (!req) return;
+
+  // Find Listener Picks channel (synced: false)
+  const listenerCh = CHANNELS.find(c => !c.synced);
+  if (listenerCh) {
+    listenerCh.videos.push({ id: req.id, title: req.title, dur: 240 });
+  }
+
+  // Remove from requests
+  reqs.splice(i, 1);
+  localStorage.setItem('wavefm_requests', JSON.stringify(reqs));
+  renderRequests();
+  renderChannelList();
+  showToastAdmin('Request approved and added to Listener Picks.');
+}
+
+function rejectRequest(i) {
+  let reqs = [];
+  try { reqs = JSON.parse(localStorage.getItem('wavefm_requests') || '[]'); } catch(e) {}
+  reqs.splice(i, 1);
+  localStorage.setItem('wavefm_requests', JSON.stringify(reqs));
+  renderRequests();
+  showToastAdmin('Request rejected.');
+}
+
+// ── SHOUTOUT ─────────────────────────────────────────────────────────────────
+function previewShoutout() {
+  const text = document.getElementById('shoutout-text').value.trim();
+  const prev = document.getElementById('shoutout-preview');
+  if (text) { prev.textContent = '📣 ' + text; prev.style.display = 'block'; }
+  else prev.style.display = 'none';
+}
+
+function postShoutout() {
+  const text = document.getElementById('shoutout-text').value.trim();
+  const msg  = document.getElementById('shoutout-msg');
+  if (!text) { showMsg(msg, 'err', 'Enter a message first.'); return; }
+  localStorage.setItem('wavefm_shoutout', JSON.stringify({ text, ts: Date.now() }));
+  showMsg(msg, 'ok', 'Shoutout posted! Visible on this device. Set up KV Worker for all listeners.');
+}
+
+function clearShoutout() {
+  localStorage.removeItem('wavefm_shoutout');
+  document.getElementById('shoutout-text').value = '';
+  document.getElementById('shoutout-preview').style.display = 'none';
+  const msg = document.getElementById('shoutout-msg');
+  showMsg(msg, 'ok', 'Shoutout cleared.');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function generateExport() {
+  const out = { channels: CHANNELS };
+  document.getElementById('export-area').textContent = JSON.stringify(out, null, 2);
+}
+
+function copyExport() {
+  const text = document.getElementById('export-area').textContent;
+  if (!text || text.startsWith('Click')) {
+    generateExport();
+  }
+  navigator.clipboard.writeText(document.getElementById('export-area').textContent).then(() => {
+    showMsg(document.getElementById('export-msg'), 'ok', 'Copied to clipboard! Paste into channels.json on GitHub.');
+  }).catch(() => {
+    showMsg(document.getElementById('export-msg'), 'err', 'Copy failed — select the text manually.');
+  });
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function extractVideoId(input) {
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  let m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  m = input.match(/embed\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  return null;
+}
+
+function formatDur(s) {
+  if (!s) return '—';
+  const m = Math.floor(s / 60), sec = s % 60;
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showMsg(el, type, text) {
+  el.className = 'status-msg ' + type;
+  el.textContent = text;
+  setTimeout(() => el.className = 'status-msg', 4000);
+}
+
+function showToastAdmin(msg) {
+  // Simple inline toast
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#16161F;border:1px solid #222230;border-radius:6px;padding:10px 18px;font-family:var(--mono);font-size:0.78rem;color:#E0E0E0;z-index:999;white-space:nowrap';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// Auto-init if already authenticated
+if (sessionStorage.getItem('wavefm_admin') === '1') init();
+</script>
+</body>
+</html>
