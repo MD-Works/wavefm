@@ -62,6 +62,59 @@
       color: var(--accent);
     }
     .logo span { color: var(--amber); }
+
+    /* Hamburger — only shown on mobile (see media query below) */
+    .hamburger-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      width: 36px; height: 36px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .hamburger-btn span {
+      display: block;
+      width: 16px; height: 2px;
+      background: var(--text);
+      border-radius: 1px;
+    }
+
+    /* Backdrop behind the sidebar drawer — only active on mobile */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .sidebar-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 18px 10px;
+    }
+    .sidebar-close-btn {
+      display: none;
+      width: 28px; height: 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
     .topbar-tag {
       font-family: var(--mono);
       font-size: 0.65rem;
@@ -496,6 +549,14 @@
       color: var(--accent);
       margin-top: 3px;
     }
+    .np-dedication {
+      font-size: 0.72rem;
+      color: var(--amber, #FFB300);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     /* Waveform — signature element */
     .waveform-wrap {
@@ -585,7 +646,7 @@
     @media (max-width: 600px) {
       .app {
         grid-template-columns: 1fr;
-        grid-template-rows: 56px auto auto 120px;
+        grid-template-rows: 56px auto auto auto;
         grid-template-areas:
           "topbar"
           "main"
@@ -594,9 +655,59 @@
         overflow-y: auto;
       }
       html, body { overflow: auto; }
-      .sidebar { display: none; }
-      .nowplaying { flex-wrap: wrap; gap: 12px; padding: 12px 16px; height: auto; min-height: 120px; }
+
+      /* Topbar: show hamburger, trim non-essential labels to fit */
+      .topbar { padding: 0 12px; gap: 10px; }
+      .hamburger-btn { display: flex; }
+      .topbar-tag { display: none; }
+      .on-air-badge { margin-left: 0; }
+      .listener-count { margin-left: auto; }
+      .sync-badge span { display: none; } /* keep the dot, drop the "SYNCING" label */
+      .sync-badge { padding: 5px; margin-left: 6px; }
+
+      /* Sidebar becomes a slide-in drawer */
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: 82vw;
+        max-width: 300px;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-close-btn { display: flex; }
+      .sidebar-backdrop { display: block; }
+      .channel-btn { padding: 13px 18px; font-size: 0.92rem; } /* bigger touch target */
+
+      /* Queue panel gets more room now the sidebar isn't competing for width */
+      .queue-panel { max-height: 340px; border-left: none; border-top: 1px solid var(--border); }
+      .panel-tab { padding: 15px 8px; } /* ≥44px touch target */
+
+      /* Prevent iOS auto-zoom on input focus (needs ≥16px) */
+      .form-input, .form-select { font-size: 16px; padding: 11px 12px; }
+      .submit-btn { padding: 13px 16px; font-size: 0.88rem; }
+
+      /* Now playing bar: stack song info above controls, bigger tap targets */
+      .nowplaying {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 16px;
+        height: auto;
+      }
+      .np-song-info { text-align: center; }
+      .np-title, .np-channel, .np-dedication { white-space: normal; }
       .waveform-wrap { display: none; }
+      .np-controls { justify-content: center; }
+      .ctrl-btn { padding: 11px 18px; font-size: 0.78rem; }
+      .volume-wrap { justify-content: center; }
+
+      .channel-header { padding: 16px 16px 12px; }
+      .channel-header-name { font-size: 1.15rem; }
+      .channel-header-desc { display: none; } /* keep the header compact on phones */
+      .freq-tag { margin-left: 8px; }
     }
 
     /* ── TOAST ── */
@@ -631,6 +742,9 @@
 
   <!-- TOP BAR -->
   <header class="topbar">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Open channel menu" aria-expanded="false" aria-controls="sidebar">
+      <span></span><span></span><span></span>
+    </button>
     <div class="logo">WAVE<span>FM</span></div>
     <div class="topbar-tag">FREE RADIO</div>
     <div class="on-air-badge">
@@ -641,9 +755,15 @@
     <div class="sync-badge" id="sync-badge"><div class="sync-dot"></div><span id="sync-label">SYNCING</span></div>
   </header>
 
+  <!-- Backdrop shown behind the sidebar drawer on mobile -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
   <!-- SIDEBAR -->
-  <nav class="sidebar">
-    <div class="sidebar-label">Channels</div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-top-row">
+      <div class="sidebar-label" style="padding:0">Channels</div>
+      <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close channel menu">✕</button>
+    </div>
 
     <button class="channel-btn active" data-channel="0" onclick="switchChannel(0)">
       <span class="ch-icon">🔥</span>
@@ -728,13 +848,17 @@
           <input class="form-input" id="req-name" type="text" placeholder="e.g. Alex" maxlength="32" />
         </div>
         <div>
-          <label class="form-label">YouTube URL or Video ID</label>
-          <input class="form-input" id="req-url" type="text" placeholder="https://youtube.com/watch?v=..." />
-          <div class="form-hint" style="margin-top:6px">Paste any YouTube link or just the video ID.</div>
+          <label class="form-label">Song Title</label>
+          <input class="form-input" id="req-title" type="text" placeholder="e.g. Blinding Lights" maxlength="80" />
         </div>
         <div>
-          <label class="form-label">Song Title</label>
-          <input class="form-input" id="req-title" type="text" placeholder="Artist – Song name" maxlength="80" />
+          <label class="form-label">Artist</label>
+          <input class="form-input" id="req-artist" type="text" placeholder="e.g. The Weeknd" maxlength="80" />
+        </div>
+        <div>
+          <label class="form-label">Dedication <span style="opacity:0.6">(optional)</span></label>
+          <input class="form-input" id="req-dedication" type="text" placeholder="e.g. Happy Birthday Sarah! 🎉" maxlength="120" />
+          <div class="form-hint" style="margin-top:6px">Shown on air if the DJ plays it.</div>
         </div>
         <div>
           <label class="form-label">Add to Channel</label>
@@ -748,7 +872,7 @@
             <option value="5">⚡ Electronic</option>
           </select>
         </div>
-        <button class="submit-btn" onclick="submitRequest()">Add to Queue →</button>
+        <button class="submit-btn" id="req-submit" onclick="submitRequest()">Send Request →</button>
         <div class="form-msg" id="req-msg"></div>
       </div>
     </div>
@@ -766,6 +890,7 @@
       <div class="np-label">Now Playing</div>
       <div class="np-title" id="np-title">Select a channel to begin</div>
       <div class="np-channel" id="np-channel">—</div>
+      <div class="np-dedication" id="np-dedication" style="display:none"></div>
     </div>
 
     <!-- Signature waveform -->
@@ -798,7 +923,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CHANNEL DATA — loaded from channels.json ──────────────────────────────────
+// ── CHANNEL DATA — loaded from the backend (falls back to channels.json) ──────
 let CHANNELS = [];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -811,21 +936,15 @@ let isMuted           = false;
 let waveAnimFrame     = null;
 let wavePhase         = 0;
 
-// Merge user requests from localStorage into channel 6
-function loadUserRequests() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('wavefm_requests') || '[]');
-    CHANNELS[6].videos = saved;
-  } catch(e) {}
+// Persistent per-browser client id, used for the live listener count
+function getClientId() {
+  let id = localStorage.getItem('wavefm_client_id');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)));
+    localStorage.setItem('wavefm_client_id', id);
+  }
+  return id;
 }
-
-function saveUserRequests() {
-  try {
-    localStorage.setItem('wavefm_requests', JSON.stringify(CHANNELS[6].videos));
-  } catch(e) {}
-}
-
-loadUserRequests();
 
 // ── SYNC ENGINE ───────────────────────────────────────────────────────────────
 // Uses a shared epoch (Jan 1 2025 00:00:00 UTC) as the clock origin.
@@ -957,6 +1076,13 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
   // Update UI
   document.getElementById('np-title').textContent   = vid.title;
   document.getElementById('np-channel').textContent = ch.icon + ' ' + ch.name;
+  const dedEl = document.getElementById('np-dedication');
+  if (vid.dedication) {
+    dedEl.textContent = '💌 ' + vid.dedication + (vid.requestedBy ? ' — ' + vid.requestedBy : '');
+    dedEl.style.display = 'block';
+  } else {
+    dedEl.style.display = 'none';
+  }
   updatePlayPauseBtn(true);
   renderQueue();
 
@@ -1046,6 +1172,7 @@ function switchChannel(idx) {
   // Update sidebar
   document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-channel="${idx}"]`).classList.add('active');
+  closeSidebar(); // no-op on desktop, closes the drawer on mobile
 
   // Update header
   document.getElementById('ch-icon').textContent  = ch.icon;
@@ -1108,9 +1235,8 @@ function renderQueue() {
       <img class="queue-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
       <div class="queue-info">
         <div class="queue-title">${escHtml(v.title)}</div>
-        <div class="queue-channel">${ch.name}</div>
+        <div class="queue-channel">${ch.name}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
       </div>
-      ${currentChannelIdx === 6 ? `<button class="queue-remove" onclick="removeRequest(event,${i})" title="Remove">✕</button>` : ''}
     </div>
   `).join('');
 }
@@ -1118,17 +1244,6 @@ function renderQueue() {
 function jumpTo(idx) {
   currentTrackIdx = idx;
   loadTrack(currentChannelIdx, idx);
-}
-
-function removeRequest(e, idx) {
-  e.stopPropagation();
-  CHANNELS[6].videos.splice(idx, 1);
-  saveUserRequests();
-  if (currentChannelIdx === 6) {
-    if (currentTrackIdx >= CHANNELS[6].videos.length) currentTrackIdx = 0;
-    renderQueue();
-    if (CHANNELS[6].videos.length && currentTrackIdx === idx) loadTrack(6, 0);
-  }
 }
 
 // ── TABS ─────────────────────────────────────────────────────────────────────
@@ -1140,63 +1255,43 @@ function showTab(name) {
 }
 
 // ── REQUEST FORM ──────────────────────────────────────────────────────────────
-function extractVideoId(input) {
-  input = input.trim();
-  // Already an ID (11 chars, alphanumeric + _ + -)
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-  // youtu.be/ID
-  let m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  // v=ID
-  m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  // embed/ID
-  m = input.match(/embed\/([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  return null;
-}
+async function submitRequest() {
+  const name       = document.getElementById('req-name').value.trim();
+  const title      = document.getElementById('req-title').value.trim();
+  const artist     = document.getElementById('req-artist').value.trim();
+  const dedication = document.getElementById('req-dedication').value.trim();
+  const chIdx      = parseInt(document.getElementById('req-channel').value);
+  const btn        = document.getElementById('req-submit');
 
-function submitRequest() {
-  const name  = document.getElementById('req-name').value.trim();
-  const url   = document.getElementById('req-url').value.trim();
-  const title = document.getElementById('req-title').value.trim();
-  const chIdx = parseInt(document.getElementById('req-channel').value);
-  const msg   = document.getElementById('req-msg');
-
-  msg.className = 'form-msg';
-
-  if (!url) { showMsg('error', 'Please enter a YouTube URL or video ID.'); return; }
-  const vid = extractVideoId(url);
-  if (!vid) { showMsg('error', 'Could not find a valid YouTube video ID.'); return; }
   if (!title) { showMsg('error', 'Please enter a song title.'); return; }
 
-  const entry = {
-    id: vid,
-    title: title,
-    requestedBy: name || 'Anonymous'
-  };
-
-  if (chIdx === 6) {
-    // Listener picks — stored locally
-    const exists = CHANNELS[6].videos.find(v => v.id === vid);
-    if (exists) { showMsg('error', 'This video is already in the queue.'); return; }
-    CHANNELS[6].videos.push(entry);
-    saveUserRequests();
-    showMsg('success', `Added to Listener Picks! Switch to 📻 to hear it.`);
-  } else {
-    // For curated channels, just add locally for this session
-    const ch = CHANNELS[chIdx];
-    const exists = ch.videos.find(v => v.id === vid);
-    if (exists) { showMsg('error', 'Already in that channel\'s queue.'); return; }
-    ch.videos.push(entry);
-    showMsg('success', `Added to ${ch.icon} ${ch.name}!`);
+  if (btn) btn.disabled = true;
+  try {
+    const res = await fetch('/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        songTitle: title,
+        artist: artist,
+        dedication: dedication,
+        requestedBy: name || 'Anonymous',
+        channelIdx: chIdx
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showMsg('error', data.error || 'Could not submit your request.');
+      return;
+    }
+    showMsg('success', 'Sent to the DJ for review — thanks!');
+    document.getElementById('req-title').value      = '';
+    document.getElementById('req-artist').value      = '';
+    document.getElementById('req-dedication').value = '';
+  } catch (e) {
+    showMsg('error', 'Could not reach the request server. Try again in a moment.');
+  } finally {
+    if (btn) btn.disabled = false;
   }
-
-  if (currentChannelIdx === chIdx) renderQueue();
-
-  // Reset
-  document.getElementById('req-url').value   = '';
-  document.getElementById('req-title').value = '';
 }
 
 function showMsg(type, text) {
@@ -1234,15 +1329,34 @@ function animateWave() {
   waveAnimFrame = requestAnimationFrame(animateWave);
 }
 
-// ── FAKE LISTENER COUNT ───────────────────────────────────────────────────────
-function jitterListeners() {
-  const el = document.getElementById('listener-num');
-  let n = parseInt(el.textContent);
-  n += Math.floor(Math.random() * 7) - 3;
-  n = Math.max(80, Math.min(250, n));
-  el.textContent = n;
+// ── LIVE LISTENER COUNT ───────────────────────────────────────────────────────
+// Each open tab "checks in" every 20s; the count is however many check-ins
+// are still fresh (see /functions/api/heartbeat.js and /functions/api/listeners.js).
+async function sendHeartbeat() {
+  try {
+    await fetch('/api/heartbeat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: getClientId() })
+    });
+  } catch (e) { /* backend not deployed yet — ignore */ }
 }
-setInterval(jitterListeners, 4000);
+
+async function refreshListenerCount() {
+  try {
+    const res = await fetch('/api/listeners');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (typeof data.count === 'number') {
+      document.getElementById('listener-num').textContent = data.count;
+    }
+  } catch (e) { /* backend not deployed yet — leave last known value */ }
+}
+
+sendHeartbeat();
+refreshListenerCount();
+setInterval(sendHeartbeat, 20000);
+setInterval(refreshListenerCount, 15000);
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg) {
@@ -1260,15 +1374,12 @@ function escHtml(s) {
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function boot() {
   try {
-    // 1. Load channel data
-    const res = await fetch('channels.json?v=' + Date.now());
-    const data = await res.json();
-    CHANNELS = data.channels;
+    // 1. Load channel data — the backend (Cloudflare Pages Function + KV) is the
+    //    live, shared source of truth. If it hasn't been set up/deployed yet,
+    //    fall back to the static channels.json bundled with the site.
+    CHANNELS = await loadChannels();
 
-    // Merge saved listener requests into Listener Picks channel
-    loadUserRequests();
-
-    // 2. Build sidebar dynamically from channels.json
+    // 2. Build sidebar dynamically from channel data
     buildSidebar();
 
     // 3. Load YouTube API then auto-switch to channel 0
@@ -1277,15 +1388,28 @@ async function boot() {
     // 4. Pre-render queue
     renderQueue();
 
-    // 5. Poll for DJ shoutout every 30s (reads from localStorage for now;
-    //    replace with KV Worker fetch once backend is set up)
+    // 5. Poll for DJ shoutout every 30s
     pollShoutout();
     setInterval(pollShoutout, 30000);
 
   } catch(e) {
-    console.error('Failed to load channels.json', e);
+    console.error('Failed to load channels', e);
     document.getElementById('np-title').textContent = 'Failed to load channels — check channels.json';
   }
+}
+
+async function loadChannels() {
+  try {
+    const res = await fetch('/api/channels');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.channels) return data.channels;
+    }
+  } catch (e) { /* backend not deployed yet — fall through to static file */ }
+
+  const res = await fetch('channels.json?v=' + Date.now());
+  const data = await res.json();
+  return data.channels;
 }
 
 function loadYouTubeAPI() {
@@ -1294,9 +1418,36 @@ function loadYouTubeAPI() {
   document.head.appendChild(tag);
 }
 
+// ── MOBILE SIDEBAR DRAWER ──────────────────────────────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-backdrop').classList.add('open');
+  document.getElementById('hamburger-btn').setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('open');
+  document.getElementById('hamburger-btn').setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.contains('open') ? closeSidebar() : openSidebar();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeSidebar();
+});
+
 function buildSidebar() {
   const nav = document.querySelector('.sidebar');
-  nav.innerHTML = '<div class="sidebar-label">Channels</div>';
+  nav.innerHTML = `
+    <div class="sidebar-top-row">
+      <div class="sidebar-label" style="padding:0">Channels</div>
+      <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close channel menu">✕</button>
+    </div>`;
 
   CHANNELS.forEach((ch, idx) => {
     const isLast = ch.synced === false; // Listener Picks gets a divider before it
@@ -1312,18 +1463,14 @@ function buildSidebar() {
   });
 }
 
-// Shoutout: reads from localStorage key 'wavefm_shoutout'.
-// When Cloudflare KV Worker is set up, replace this fetch with:
-//   const r = await fetch('/api/shoutout'); const d = await r.json();
-function pollShoutout() {
+async function pollShoutout() {
   try {
-    const raw = localStorage.getItem('wavefm_shoutout');
-    if (!raw) { hideShoutout(); return; }
-    const d = JSON.parse(raw);
-    // Expire after 30 minutes
-    if (!d.text || Date.now() - d.ts > 30 * 60 * 1000) { hideShoutout(); return; }
-    showShoutout(d.text);
-  } catch(e) { hideShoutout(); }
+    const res = await fetch('/api/shoutout');
+    if (!res.ok) { hideShoutout(); return; }
+    const data = await res.json();
+    if (!data.shoutout || !data.shoutout.text) { hideShoutout(); return; }
+    showShoutout(data.shoutout.text);
+  } catch (e) { hideShoutout(); }
 }
 
 function showShoutout(text) {
