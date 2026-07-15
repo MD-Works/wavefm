@@ -230,16 +230,23 @@
 
     /* ── REQUESTS ── */
     .req-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      padding: 14px; border-bottom: 1px solid var(--border);
     }
     .req-item:last-child { border-bottom: none; }
-    .req-thumb { width: 50px; height: 34px; border-radius: 3px; background: var(--panel2); object-fit: cover; flex-shrink: 0; }
-    .req-info { flex: 1; min-width: 0; }
-    .req-title { font-size: 0.82rem; font-weight: 500; }
-    .req-by { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
-    .req-id { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
-    .req-actions { display: flex; gap: 6px; }
+    .req-info { min-width: 0; }
+    .req-title { font-size: 0.85rem; font-weight: 600; }
+    .req-artist { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .req-dedication { font-size: 0.78rem; color: var(--amber); margin-top: 6px; }
+    .req-by { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-top: 6px; }
+    .req-channel-tag { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); margin-top: 2px; }
+    .req-actions { display: flex; gap: 6px; margin-top: 12px; }
+    .req-approve-form {
+      display: none; margin-top: 12px; padding: 12px;
+      background: var(--panel2); border: 1px solid var(--border); border-radius: 6px;
+    }
+    .req-approve-form.open { display: block; }
+    .req-approve-form .field { margin-bottom: 10px; }
+    .req-approve-form .field:last-of-type { margin-bottom: 0; }
 
     /* ── SHOUTOUT ── */
     .shoutout-preview {
@@ -348,7 +355,7 @@
     <!-- ── REQUESTS SECTION ── -->
     <div class="section" id="section-requests">
       <div class="section-title">Listener Requests</div>
-      <div class="section-sub">Approve requests to add them to Listener Picks, or reject to remove them.</div>
+      <div class="section-sub">Listeners describe a song and (optionally) a dedication. Find the track on YouTube and add it, or reject the request.</div>
       <div class="card" id="requests-card">
         <div id="requests-list"><div style="color:var(--muted);font-size:0.82rem">No pending requests.</div></div>
       </div>
@@ -650,7 +657,7 @@ function renderTracks(ci) {
       <img class="track-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
       <div class="track-info">
         <div class="track-title">${escHtml(v.title)}</div>
-        <div class="track-id">${v.id}</div>
+        <div class="track-id">${v.id}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
       </div>
       <div class="track-dur">${formatDur(v.dur)}</div>
       <div class="track-actions">
@@ -784,7 +791,9 @@ async function moveTrack(ci, ti, dir) {
 
 // ── REQUESTS ─────────────────────────────────────────────────────────────────
 // Requests are submitted by listeners (index.html → POST /api/requests) and
-// live in the backend so every admin session sees the same queue.
+// live in the backend so every admin session sees the same queue. Listeners
+// only describe the song — the DJ finds it on YouTube and attaches the
+// actual video (+ length) here before it's added to a channel.
 async function renderRequests() {
   const el = document.getElementById('requests-list');
   el.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:8px 0">Loading…</div>';
@@ -806,33 +815,88 @@ async function renderRequests() {
     return;
   }
 
-  el.innerHTML = reqs.map(r => `
+  const channelOptions = (selectedIdx) => CHANNELS.map((c, i) =>
+    `<option value="${i}" ${i === selectedIdx ? 'selected' : ''}>${escHtml(c.icon)} ${escHtml(c.name)}</option>`
+  ).join('');
+
+  el.innerHTML = reqs.map(r => {
+    const suggestedTitle = [r.songTitle, r.artist].filter(Boolean).join(' — ');
+    const chLabel = (Number.isInteger(r.channelIdx) && CHANNELS[r.channelIdx])
+      ? `${CHANNELS[r.channelIdx].icon} ${CHANNELS[r.channelIdx].name}`
+      : 'DJ\u2019s choice';
+    return `
     <div class="req-item">
-      <img class="req-thumb" src="https://img.youtube.com/vi/${r.videoId}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
       <div class="req-info">
-        <div class="req-title">${escHtml(r.title)}</div>
+        <div class="req-title">${escHtml(r.songTitle)}</div>
+        ${r.artist ? `<div class="req-artist">${escHtml(r.artist)}</div>` : ''}
+        ${r.dedication ? `<div class="req-dedication">💌 ${escHtml(r.dedication)}</div>` : ''}
         <div class="req-by">Requested by ${escHtml(r.requestedBy || 'Anonymous')}</div>
-        <div class="req-id">ID: ${r.videoId}</div>
+        <div class="req-channel-tag">Wants: ${escHtml(chLabel)}</div>
       </div>
       <div class="req-actions">
-        <button class="btn btn-success btn-sm" onclick="approveRequest('${r.id}')">✓ Approve</button>
+        <button class="btn btn-success btn-sm" onclick="toggleApproveForm('${r.id}')">🔍 Find & Add</button>
         <button class="btn btn-danger btn-sm" onclick="rejectRequest('${r.id}')">✕ Reject</button>
       </div>
+      <div class="req-approve-form" id="apf-${r.id}">
+        <div class="field">
+          <label>YouTube URL or ID</label>
+          <input id="apf-id-${r.id}" placeholder="dQw4w9WgXcQ" />
+        </div>
+        <div class="field">
+          <label>Track Title</label>
+          <input id="apf-title-${r.id}" value="${escHtml(suggestedTitle)}" />
+        </div>
+        <div class="field">
+          <label>Length (m:ss)</label>
+          <input id="apf-dur-${r.id}" type="text" placeholder="4:30" />
+        </div>
+        <div class="field">
+          <label>Add to Channel</label>
+          <select id="apf-ch-${r.id}">${channelOptions(r.channelIdx)}</select>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success btn-sm" onclick="approveRequest('${r.id}')">✓ Confirm & Add</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleApproveForm('${r.id}')">Cancel</button>
+        </div>
+        <div class="status-msg" id="apf-msg-${r.id}" style="margin-top:8px"></div>
+      </div>
     </div>
-  `).join('');
+  `; }).join('');
+}
+
+function toggleApproveForm(id) {
+  document.getElementById('apf-' + id).classList.toggle('open');
 }
 
 async function approveRequest(id) {
+  const idEl    = document.getElementById(`apf-id-${id}`);
+  const titleEl = document.getElementById(`apf-title-${id}`);
+  const durEl   = document.getElementById(`apf-dur-${id}`);
+  const chEl    = document.getElementById(`apf-ch-${id}`);
+  const msg     = document.getElementById(`apf-msg-${id}`);
+
+  const vidId = extractVideoId(idEl.value.trim());
+  if (!vidId) { showMsg(msg, 'err', 'Invalid YouTube URL or ID.'); return; }
+  const title = titleEl.value.trim();
+  if (!title) { showMsg(msg, 'err', 'Track title is required.'); return; }
+  const durRaw = durEl.value.trim();
+  const dur = durRaw ? parseDuration(durRaw) : 240;
+  if (durRaw && dur === null) { showMsg(msg, 'err', 'Invalid length — use m:ss, e.g. 4:30.'); return; }
+
   try {
-    const res = await fetch(`/api/requests/${id}/approve`, { method: 'POST', headers: adminHeaders() });
+    const res = await fetch(`/api/requests/${id}/approve`, {
+      method: 'POST',
+      headers: adminHeaders(),
+      body: JSON.stringify({ videoId: vidId, title, dur, channelIdx: parseInt(chEl.value) })
+    });
     if (handleAuthFailure(res)) return;
     const data = await res.json();
-    if (!res.ok) { alert(data.error || 'Could not approve request.'); return; }
+    if (!res.ok) { showMsg(msg, 'err', data.error || 'Could not approve request.'); return; }
     if (data.channels) { CHANNELS = data.channels; CHANNELS_VERSION = data.version; renderChannelList(); }
     renderRequests();
-    showToastAdmin('Request approved and added to the channel.');
+    showToastAdmin('Added to the channel.');
   } catch (e) {
-    alert('Could not reach the backend.');
+    showMsg(msg, 'err', 'Could not reach the backend.');
   }
 }
 

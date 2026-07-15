@@ -496,6 +496,14 @@
       color: var(--accent);
       margin-top: 3px;
     }
+    .np-dedication {
+      font-size: 0.72rem;
+      color: var(--amber, #FFB300);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     /* Waveform — signature element */
     .waveform-wrap {
@@ -728,13 +736,17 @@
           <input class="form-input" id="req-name" type="text" placeholder="e.g. Alex" maxlength="32" />
         </div>
         <div>
-          <label class="form-label">YouTube URL or Video ID</label>
-          <input class="form-input" id="req-url" type="text" placeholder="https://youtube.com/watch?v=..." />
-          <div class="form-hint" style="margin-top:6px">Paste any YouTube link or just the video ID.</div>
+          <label class="form-label">Song Title</label>
+          <input class="form-input" id="req-title" type="text" placeholder="e.g. Blinding Lights" maxlength="80" />
         </div>
         <div>
-          <label class="form-label">Song Title</label>
-          <input class="form-input" id="req-title" type="text" placeholder="Artist – Song name" maxlength="80" />
+          <label class="form-label">Artist</label>
+          <input class="form-input" id="req-artist" type="text" placeholder="e.g. The Weeknd" maxlength="80" />
+        </div>
+        <div>
+          <label class="form-label">Dedication <span style="opacity:0.6">(optional)</span></label>
+          <input class="form-input" id="req-dedication" type="text" placeholder="e.g. Happy Birthday Sarah! 🎉" maxlength="120" />
+          <div class="form-hint" style="margin-top:6px">Shown on air if the DJ plays it.</div>
         </div>
         <div>
           <label class="form-label">Add to Channel</label>
@@ -766,6 +778,7 @@
       <div class="np-label">Now Playing</div>
       <div class="np-title" id="np-title">Select a channel to begin</div>
       <div class="np-channel" id="np-channel">—</div>
+      <div class="np-dedication" id="np-dedication" style="display:none"></div>
     </div>
 
     <!-- Signature waveform -->
@@ -951,6 +964,13 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
   // Update UI
   document.getElementById('np-title').textContent   = vid.title;
   document.getElementById('np-channel').textContent = ch.icon + ' ' + ch.name;
+  const dedEl = document.getElementById('np-dedication');
+  if (vid.dedication) {
+    dedEl.textContent = '💌 ' + vid.dedication + (vid.requestedBy ? ' — ' + vid.requestedBy : '');
+    dedEl.style.display = 'block';
+  } else {
+    dedEl.style.display = 'none';
+  }
   updatePlayPauseBtn(true);
   renderQueue();
 
@@ -1102,7 +1122,7 @@ function renderQueue() {
       <img class="queue-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
       <div class="queue-info">
         <div class="queue-title">${escHtml(v.title)}</div>
-        <div class="queue-channel">${ch.name}</div>
+        <div class="queue-channel">${ch.name}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
       </div>
     </div>
   `).join('');
@@ -1122,32 +1142,14 @@ function showTab(name) {
 }
 
 // ── REQUEST FORM ──────────────────────────────────────────────────────────────
-function extractVideoId(input) {
-  input = input.trim();
-  // Already an ID (11 chars, alphanumeric + _ + -)
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-  // youtu.be/ID
-  let m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  // v=ID
-  m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  // embed/ID
-  m = input.match(/embed\/([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  return null;
-}
-
 async function submitRequest() {
-  const name  = document.getElementById('req-name').value.trim();
-  const url   = document.getElementById('req-url').value.trim();
-  const title = document.getElementById('req-title').value.trim();
-  const chIdx = parseInt(document.getElementById('req-channel').value);
-  const btn   = document.getElementById('req-submit');
+  const name       = document.getElementById('req-name').value.trim();
+  const title      = document.getElementById('req-title').value.trim();
+  const artist     = document.getElementById('req-artist').value.trim();
+  const dedication = document.getElementById('req-dedication').value.trim();
+  const chIdx      = parseInt(document.getElementById('req-channel').value);
+  const btn        = document.getElementById('req-submit');
 
-  if (!url) { showMsg('error', 'Please enter a YouTube URL or video ID.'); return; }
-  const vid = extractVideoId(url);
-  if (!vid) { showMsg('error', 'Could not find a valid YouTube video ID.'); return; }
   if (!title) { showMsg('error', 'Please enter a song title.'); return; }
 
   if (btn) btn.disabled = true;
@@ -1156,8 +1158,9 @@ async function submitRequest() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        videoId: vid,
-        title: title,
+        songTitle: title,
+        artist: artist,
+        dedication: dedication,
         requestedBy: name || 'Anonymous',
         channelIdx: chIdx
       })
@@ -1168,8 +1171,9 @@ async function submitRequest() {
       return;
     }
     showMsg('success', 'Sent to the DJ for review — thanks!');
-    document.getElementById('req-url').value   = '';
-    document.getElementById('req-title').value = '';
+    document.getElementById('req-title').value      = '';
+    document.getElementById('req-artist').value      = '';
+    document.getElementById('req-dedication').value = '';
   } catch (e) {
     showMsg('error', 'Could not reach the request server. Try again in a moment.');
   } finally {

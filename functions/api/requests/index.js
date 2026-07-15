@@ -20,26 +20,28 @@ export async function onRequestGet({ request, env }) {
 }
 
 // POST /api/requests — public, called from index.html's request form.
-// Body: { videoId, title, requestedBy, channelIdx }
+// Listeners describe the song (title/artist) and an optional dedication —
+// they don't provide a YouTube link. The DJ finds the actual video and
+// attaches it when approving (see requests/[id]/approve.js).
+// Body: { songTitle, artist, dedication, requestedBy, channelIdx }
 export async function onRequestPost({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return errorResponse('Invalid JSON body.'); }
-  const { videoId, title, requestedBy, channelIdx } = body || {};
+  const { songTitle, artist, dedication, requestedBy, channelIdx } = body || {};
 
-  if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-    return errorResponse('Invalid YouTube video ID.');
-  }
-  if (!title || !title.trim()) return errorResponse('Title is required.');
+  if (!songTitle || !songTitle.trim()) return errorResponse('Song title is required.');
 
   const list = await loadRequests(env);
-  if (list.some(r => r.videoId === videoId)) {
-    return errorResponse('This video is already pending review.', 409);
-  }
+
+  const norm = s => (s || '').trim().toLowerCase();
+  const dupe = list.some(r => norm(r.songTitle) === norm(songTitle) && norm(r.artist) === norm(artist));
+  if (dupe) return errorResponse('A very similar request is already pending review.', 409);
 
   const entry = {
     id: crypto.randomUUID(),
-    videoId,
-    title: title.trim().slice(0, 200),
+    songTitle: songTitle.trim().slice(0, 120),
+    artist: (artist || '').toString().trim().slice(0, 120),
+    dedication: (dedication || '').toString().trim().slice(0, 200),
     requestedBy: (requestedBy || 'Anonymous').toString().trim().slice(0, 60) || 'Anonymous',
     channelIdx: Number.isInteger(channelIdx) ? channelIdx : null,
     ts: Date.now()

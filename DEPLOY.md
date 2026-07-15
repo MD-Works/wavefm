@@ -35,6 +35,14 @@ channels.json         (unchanged — used as a one-time seed + offline fallback)
 Cloudflare Pages auto-detects the `functions/` folder and deploys each file
 as an endpoint under `/api/*`. No config file is required for this.
 
+> **Update:** the request flow changed — listeners no longer paste a
+> YouTube URL. They type a song title, artist, and an optional dedication
+> (e.g. "Happy Birthday Sarah!"). The DJ finds the actual video on YouTube
+> and attaches it (with length, and optionally overriding the title/target
+> channel) from the Requests tab's **Find & Add** form. The dedication
+> carries through to the track and is shown to listeners under the track
+> in the queue and now-playing bar.
+
 ## 2. Create a KV namespace and bind it
 
 In the Cloudflare dashboard:
@@ -87,9 +95,10 @@ deployment in the dashboard.
 - Open `index.html` in two tabs — the listener count should reflect both.
 - Post a shoutout from `admin.html`, then check it shows up in `index.html`
   within ~30 seconds, in a different browser/device.
-- Submit a song request from `index.html`, approve it from `admin.html` →
-  Requests tab, and confirm it appears in the target channel for all
-  listeners (not just your browser).
+- Submit a song request from `index.html` (song title, artist, dedication —
+  no URL needed), then from `admin.html` → Requests tab click **Find & Add**,
+  paste the YouTube video you found, confirm the title/length/channel, and
+  submit. Confirm the track (with dedication) appears for all listeners.
 
 ## What changed vs. before
 
