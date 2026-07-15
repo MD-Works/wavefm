@@ -83,6 +83,13 @@
       transition: color 0.15s;
     }
     .logout-btn:hover { color: var(--red); border-color: var(--red); }
+    .save-status {
+      margin-left: 12px; font-family: var(--mono); font-size: 0.7rem;
+      color: var(--muted); min-width: 90px;
+    }
+    .save-status.saving { color: var(--muted); }
+    .save-status.ok  { color: var(--green); }
+    .save-status.err { color: var(--red); }
 
     .admin-body { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
 
@@ -282,8 +289,9 @@
       <button class="nav-btn active" onclick="showSection('channels')">Channels</button>
       <button class="nav-btn" onclick="showSection('requests')">Requests</button>
       <button class="nav-btn" onclick="showSection('shoutout')">Shoutout</button>
-      <button class="nav-btn" onclick="showSection('export')">Export</button>
+      <button class="nav-btn" onclick="showSection('export')">Backup</button>
     </nav>
+    <span class="save-status" id="save-status"></span>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 
@@ -363,82 +371,183 @@
         <div class="status-msg" id="shoutout-msg" style="margin-top:10px"></div>
       </div>
       <div class="card" style="background:rgba(79,195,247,0.03)">
-        <div class="card-title">⚡ Upgrade to Live Shoutouts</div>
+        <div class="card-title">📡 Live for everyone</div>
         <p style="font-size:0.8rem;color:var(--muted);line-height:1.6">
-          Currently shoutouts only appear on <em>your</em> device (stored in localStorage).<br>
-          To push shoutouts to all listeners in real time, set up a Cloudflare KV Worker and replace the <code style="color:var(--accent)">pollShoutout()</code> function in <code style="color:var(--accent)">index.html</code> with a fetch to <code style="color:var(--accent)">/api/shoutout</code>.
+          Shoutouts are posted to the backend (Cloudflare KV) and picked up by every listener within 30 seconds. If posting fails, the backend Function + KV binding likely isn't deployed yet — see <code style="color:var(--accent)">DEPLOY.md</code>.
         </p>
       </div>
     </div>
 
-    <!-- ── EXPORT SECTION ── -->
+    <!-- ── BACKUP SECTION ── -->
     <div class="section" id="section-export">
-      <div class="section-title">Export channels.json</div>
-      <div class="section-sub">Copy this JSON and replace your <code style="color:var(--accent)">channels.json</code> file in GitHub to publish your changes to all listeners.</div>
+      <div class="section-title">Backup channels.json</div>
+      <div class="section-sub">Channel and track changes now save automatically to the backend as you make them. This tab is just for taking a local backup copy.</div>
       <div class="btn-row" style="margin-bottom:14px">
-        <button class="btn btn-primary" onclick="generateExport()">Generate JSON</button>
+        <button class="btn btn-primary" onclick="generateExport()">Preview Current JSON</button>
         <button class="btn btn-ghost" onclick="copyExport()">Copy to Clipboard</button>
+        <button class="btn btn-ghost" onclick="downloadExport()">Download File</button>
       </div>
-      <div class="export-area" id="export-area">Click "Generate JSON" to preview your channels.json output.</div>
+      <div class="export-area" id="export-area">Click "Preview Current JSON" to see the live channel data.</div>
       <div class="status-msg" id="export-msg" style="margin-top:10px"></div>
-      <div class="card" style="margin-top:16px;background:rgba(255,179,0,0.03)">
-        <div class="card-title">How to publish</div>
-        <ol style="font-size:0.8rem;color:var(--muted);line-height:2;padding-left:18px">
-          <li>Click <strong style="color:var(--text)">Generate JSON</strong> then <strong style="color:var(--text)">Copy to Clipboard</strong></li>
-          <li>Go to your GitHub repo → open <code style="color:var(--accent)">channels.json</code></li>
-          <li>Click the ✏️ pencil edit icon</li>
-          <li>Select all and paste your new JSON</li>
-          <li>Click <strong style="color:var(--text)">Commit changes</strong></li>
-          <li>Cloudflare auto-deploys in ~30 seconds ✅</li>
-        </ol>
-      </div>
     </div>
 
   </div><!-- /admin-body -->
 </div><!-- /admin -->
 
 <script>
-// ── CONFIG — change this passphrase before deploying ─────────────────────────
-const ADMIN_PASSPHRASE = 'wavefm2025';
-
 // ── AUTH ─────────────────────────────────────────────────────────────────────
-function unlock() {
+// The passphrase itself is validated server-side on every write (see
+// /functions/api/_lib/auth.js) against the ADMIN_PASSPHRASE environment
+// variable — it is never hard-coded here. We keep it in sessionStorage only
+// so we can attach it as the X-Admin-Key header on write requests.
+async function unlock() {
   const val = document.getElementById('passphrase').value;
-  if (val === ADMIN_PASSPHRASE) {
-    sessionStorage.setItem('wavefm_admin', '1');
+  const btn = document.querySelector('.lock-btn');
+  const err = document.getElementById('lock-error');
+  err.style.display = 'none';
+  if (btn) btn.disabled = true;
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ passphrase: val })
+    });
+    if (!res.ok) {
+      err.textContent = res.status === 500
+        ? 'Backend not set up yet — see DEPLOY.md (ADMIN_PASSPHRASE missing).'
+        : 'Incorrect passphrase. Try again.';
+      err.style.display = 'block';
+      document.getElementById('passphrase').value = '';
+      return;
+    }
+    sessionStorage.setItem('wavefm_admin_key', val);
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('admin').style.display = 'block';
     init();
-  } else {
-    document.getElementById('lock-error').style.display = 'block';
-    document.getElementById('passphrase').value = '';
+  } catch (e) {
+    err.textContent = 'Could not reach the server. Try again in a moment.';
+    err.style.display = 'block';
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
 function logout() {
-  sessionStorage.removeItem('wavefm_admin');
+  sessionStorage.removeItem('wavefm_admin_key');
   location.reload();
 }
 
+// Headers to attach to any write request (POST/PUT/DELETE to /api/*)
+function adminHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'X-Admin-Key': sessionStorage.getItem('wavefm_admin_key') || ''
+  };
+}
+
+// If a write request comes back 401, the session key is stale/wrong — log out.
+function handleAuthFailure(res) {
+  if (res.status === 401) {
+    alert('Your session expired or the passphrase changed. Please log in again.');
+    logout();
+    return true;
+  }
+  return false;
+}
+
 // Auto-unlock if session active
-if (sessionStorage.getItem('wavefm_admin') === '1') {
+if (sessionStorage.getItem('wavefm_admin_key')) {
   document.getElementById('lock-screen').style.display = 'none';
   document.getElementById('admin').style.display = 'block';
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let CHANNELS = [];
+let CHANNELS_VERSION = 0;
+let CHANNELS_SEEDED = true;
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
   try {
-    const res = await fetch('channels.json?v=' + Date.now());
+    const res = await fetch('/api/channels');
+    if (!res.ok) throw new Error('bad status ' + res.status);
     const data = await res.json();
-    CHANNELS = JSON.parse(JSON.stringify(data.channels)); // deep copy
+    CHANNELS_VERSION = data.version || 0;
+    CHANNELS_SEEDED  = !!data.seeded;
+
+    if (!data.seeded) {
+      // Backend has no data yet — bootstrap it from the bundled channels.json.
+      const seedRes = await fetch('channels.json?v=' + Date.now());
+      const seedData = await seedRes.json();
+      CHANNELS = JSON.parse(JSON.stringify(seedData.channels));
+      showToastAdmin('Backend is empty — any edit here will seed it automatically.');
+    } else {
+      CHANNELS = JSON.parse(JSON.stringify(data.channels));
+    }
+
     renderChannelList();
     renderRequests();
-  } catch(e) {
-    alert('Could not load channels.json. Make sure it exists in your repo.');
+  } catch (e) {
+    alert('Could not reach the backend (/api/channels). Falling back to the local channels.json — see DEPLOY.md to set up the Cloudflare Pages Function + KV backend.');
+    try {
+      const res = await fetch('channels.json?v=' + Date.now());
+      const data = await res.json();
+      CHANNELS = JSON.parse(JSON.stringify(data.channels));
+      CHANNELS_VERSION = 0;
+      CHANNELS_SEEDED = false;
+      renderChannelList();
+      renderRequests();
+    } catch (e2) {
+      alert('Could not load channels.json either. Make sure it exists in your repo.');
+    }
+  }
+}
+
+// ── PERSIST TO BACKEND ──────────────────────────────────────────────────────
+// Called after every channel/track mutation so changes are saved immediately —
+// no more manual export/copy-paste, and no more stale overwrites between
+// concurrent admin sessions (the server rejects a save if the version it
+// receives is out of date).
+async function persistChannels() {
+  const bar = document.getElementById('save-status');
+  if (bar) { bar.textContent = 'Saving…'; bar.className = 'save-status saving'; }
+  try {
+    const res = await fetch('/api/channels', {
+      method: 'PUT',
+      headers: adminHeaders(),
+      body: JSON.stringify({ channels: CHANNELS, version: CHANNELS_VERSION })
+    });
+    const data = await res.json();
+
+    if (res.status === 409) {
+      if (bar) { bar.textContent = 'Sync conflict'; bar.className = 'save-status err'; }
+      const reload = confirm(
+        'Someone else (or another tab) saved changes since you loaded this page, ' +
+        'so this save was NOT applied to avoid overwriting their edits.\n\n' +
+        'Click OK to reload the latest data (your last change here will be lost — reapply it after reloading).'
+      );
+      if (reload) await init();
+      return false;
+    }
+    if (handleAuthFailure(res)) return false;
+    if (!res.ok) {
+      if (bar) { bar.textContent = 'Save failed'; bar.className = 'save-status err'; }
+      alert(data.error || 'Could not save changes.');
+      return false;
+    }
+
+    CHANNELS_VERSION = data.version;
+    CHANNELS_SEEDED = true;
+    if (bar) {
+      bar.textContent = 'Saved ✓';
+      bar.className = 'save-status ok';
+      setTimeout(() => { bar.textContent = ''; bar.className = 'save-status'; }, 2000);
+    }
+    return true;
+  } catch (e) {
+    if (bar) { bar.textContent = 'Offline — not saved'; bar.className = 'save-status err'; }
+    alert('Could not reach the backend, so this change was not saved. It will only persist in this browser tab until you retry.');
+    return false;
   }
 }
 
@@ -517,8 +626,8 @@ function renderChannelList() {
               <input id="at-id-${ci}" placeholder="dQw4w9WgXcQ" />
             </div>
             <div class="field" style="margin-bottom:0">
-              <label>Duration (s)</label>
-              <input id="at-dur-${ci}" type="number" placeholder="240" min="1" />
+              <label>Length (m:ss)</label>
+              <input id="at-dur-${ci}" type="text" placeholder="4:30" />
             </div>
           </div>
           <div class="btn-row" style="margin-top:10px">
@@ -564,7 +673,7 @@ function openEditChannel(ci) {
   document.getElementById('edit-ch-' + ci).style.display = 'block';
 }
 
-function saveChannelEdit(ci) {
+async function saveChannelEdit(ci) {
   const ch = CHANNELS[ci];
   ch.name   = document.getElementById(`ech-name-${ci}`).value.trim()   || ch.name;
   ch.icon   = document.getElementById(`ech-icon-${ci}`).value.trim()   || ch.icon;
@@ -572,14 +681,16 @@ function saveChannelEdit(ci) {
   ch.desc   = document.getElementById(`ech-desc-${ci}`).value.trim()   || ch.desc;
   ch.synced = document.getElementById(`ech-synced-${ci}`).checked;
   renderChannelList();
+  await persistChannels();
 }
 
-function deleteChannel(ci) {
+async function deleteChannel(ci) {
   if (!confirm(`Delete "${CHANNELS[ci].name}" and all its tracks?`)) return;
   CHANNELS.splice(ci, 1);
   // Re-assign sequential IDs
   CHANNELS.forEach((c, i) => c.id = i);
   renderChannelList();
+  await persistChannels();
 }
 
 function openAddChannel() {
@@ -587,7 +698,7 @@ function openAddChannel() {
   f.style.display = f.style.display === 'none' ? 'block' : 'none';
 }
 
-function addChannel() {
+async function addChannel() {
   const name   = document.getElementById('nc-name').value.trim();
   const icon   = document.getElementById('nc-icon').value.trim() || '🎵';
   const freq   = document.getElementById('nc-freq').value.trim() || `${(88 + CHANNELS.length).toFixed(1)} FM`;
@@ -604,22 +715,39 @@ function addChannel() {
   document.getElementById('nc-desc').value = '';
   document.getElementById('add-channel-form').style.display = 'none';
   renderChannelList();
+  await persistChannels();
 }
 
 // ── TRACK MANAGEMENT ─────────────────────────────────────────────────────────
-function addTrack(ci) {
+// Accepts "4:30", "04:30", "1:04:30" (h:mm:ss), or a bare number of seconds
+// for backward compatibility. Returns null if the input isn't parseable.
+function parseDuration(input) {
+  input = String(input || '').trim();
+  if (!input) return null;
+  if (/^\d+$/.test(input)) return parseInt(input, 10); // bare seconds
+  const parts = input.split(':').map(p => p.trim());
+  if (parts.length < 2 || parts.length > 3) return null;
+  if (!parts.every(p => /^\d{1,2}$/.test(p))) return null;
+  let secs = 0;
+  for (const p of parts) secs = secs * 60 + parseInt(p, 10);
+  return secs > 0 ? secs : null;
+}
+
+async function addTrack(ci) {
   const titleEl = document.getElementById(`at-title-${ci}`);
   const idEl    = document.getElementById(`at-id-${ci}`);
   const durEl   = document.getElementById(`at-dur-${ci}`);
   const msg     = document.getElementById(`at-msg-${ci}`);
 
-  const title = titleEl.value.trim();
-  const raw   = idEl.value.trim();
-  const dur   = parseInt(durEl.value) || 240;
-  const vidId = extractVideoId(raw);
+  const title  = titleEl.value.trim();
+  const raw    = idEl.value.trim();
+  const durRaw = durEl.value.trim();
+  const dur    = durRaw ? parseDuration(durRaw) : 240;
+  const vidId  = extractVideoId(raw);
 
   if (!title) { showMsg(msg, 'err', 'Title is required.'); return; }
   if (!vidId) { showMsg(msg, 'err', 'Invalid YouTube URL or ID.'); return; }
+  if (durRaw && dur === null) { showMsg(msg, 'err', 'Invalid length — use m:ss, e.g. 4:30 (or h:mm:ss for longer tracks).'); return; }
 
   const exists = CHANNELS[ci].videos.find(v => v.id === vidId);
   if (exists) { showMsg(msg, 'err', 'This video is already in the channel.'); return; }
@@ -627,23 +755,23 @@ function addTrack(ci) {
   CHANNELS[ci].videos.push({ id: vidId, title, dur });
   titleEl.value = ''; idEl.value = ''; durEl.value = '';
   document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
-  // Update track count in header
   renderChannelList();
-  // Re-open the expanded body
   setTimeout(() => {
     document.getElementById('chbody-' + ci).classList.add('open');
   }, 0);
   showMsg(msg, 'ok', `"${title}" added.`);
+  await persistChannels();
 }
 
-function removeTrack(ci, ti) {
+async function removeTrack(ci, ti) {
   CHANNELS[ci].videos.splice(ti, 1);
   document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
   renderChannelList();
   setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
+  await persistChannels();
 }
 
-function moveTrack(ci, ti, dir) {
+async function moveTrack(ci, ti, dir) {
   const vids = CHANNELS[ci].videos;
   const ni = ti + dir;
   if (ni < 0 || ni >= vids.length) return;
@@ -651,62 +779,73 @@ function moveTrack(ci, ti, dir) {
   document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
   renderChannelList();
   setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
+  await persistChannels();
 }
 
 // ── REQUESTS ─────────────────────────────────────────────────────────────────
-function renderRequests() {
+// Requests are submitted by listeners (index.html → POST /api/requests) and
+// live in the backend so every admin session sees the same queue.
+async function renderRequests() {
   const el = document.getElementById('requests-list');
+  el.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:8px 0">Loading…</div>';
+
   let reqs = [];
-  try { reqs = JSON.parse(localStorage.getItem('wavefm_requests') || '[]'); } catch(e) {}
+  try {
+    const res = await fetch('/api/requests', { headers: adminHeaders() });
+    if (handleAuthFailure(res)) return;
+    if (!res.ok) throw new Error('bad status ' + res.status);
+    const data = await res.json();
+    reqs = data.requests || [];
+  } catch (e) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:8px 0">Could not load requests — is the backend deployed? See DEPLOY.md.</div>';
+    return;
+  }
 
   if (!reqs.length) {
     el.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:8px 0">No pending requests.</div>';
     return;
   }
 
-  el.innerHTML = reqs.map((r, i) => `
+  el.innerHTML = reqs.map(r => `
     <div class="req-item">
-      <img class="req-thumb" src="https://img.youtube.com/vi/${r.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
+      <img class="req-thumb" src="https://img.youtube.com/vi/${r.videoId}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
       <div class="req-info">
         <div class="req-title">${escHtml(r.title)}</div>
         <div class="req-by">Requested by ${escHtml(r.requestedBy || 'Anonymous')}</div>
-        <div class="req-id">ID: ${r.id}</div>
+        <div class="req-id">ID: ${r.videoId}</div>
       </div>
       <div class="req-actions">
-        <button class="btn btn-success btn-sm" onclick="approveRequest(${i})">✓ Approve</button>
-        <button class="btn btn-danger btn-sm" onclick="rejectRequest(${i})">✕ Reject</button>
+        <button class="btn btn-success btn-sm" onclick="approveRequest('${r.id}')">✓ Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectRequest('${r.id}')">✕ Reject</button>
       </div>
     </div>
   `).join('');
 }
 
-function approveRequest(i) {
-  let reqs = [];
-  try { reqs = JSON.parse(localStorage.getItem('wavefm_requests') || '[]'); } catch(e) {}
-  const req = reqs[i];
-  if (!req) return;
-
-  // Find Listener Picks channel (synced: false)
-  const listenerCh = CHANNELS.find(c => !c.synced);
-  if (listenerCh) {
-    listenerCh.videos.push({ id: req.id, title: req.title, dur: 240 });
+async function approveRequest(id) {
+  try {
+    const res = await fetch(`/api/requests/${id}/approve`, { method: 'POST', headers: adminHeaders() });
+    if (handleAuthFailure(res)) return;
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Could not approve request.'); return; }
+    if (data.channels) { CHANNELS = data.channels; CHANNELS_VERSION = data.version; renderChannelList(); }
+    renderRequests();
+    showToastAdmin('Request approved and added to the channel.');
+  } catch (e) {
+    alert('Could not reach the backend.');
   }
-
-  // Remove from requests
-  reqs.splice(i, 1);
-  localStorage.setItem('wavefm_requests', JSON.stringify(reqs));
-  renderRequests();
-  renderChannelList();
-  showToastAdmin('Request approved and added to Listener Picks.');
 }
 
-function rejectRequest(i) {
-  let reqs = [];
-  try { reqs = JSON.parse(localStorage.getItem('wavefm_requests') || '[]'); } catch(e) {}
-  reqs.splice(i, 1);
-  localStorage.setItem('wavefm_requests', JSON.stringify(reqs));
-  renderRequests();
-  showToastAdmin('Request rejected.');
+async function rejectRequest(id) {
+  try {
+    const res = await fetch(`/api/requests/${id}`, { method: 'DELETE', headers: adminHeaders() });
+    if (handleAuthFailure(res)) return;
+    if (!res.ok) { const data = await res.json(); alert(data.error || 'Could not reject request.'); return; }
+    renderRequests();
+    showToastAdmin('Request rejected.');
+  } catch (e) {
+    alert('Could not reach the backend.');
+  }
 }
 
 // ── SHOUTOUT ─────────────────────────────────────────────────────────────────
@@ -717,20 +856,32 @@ function previewShoutout() {
   else prev.style.display = 'none';
 }
 
-function postShoutout() {
+async function postShoutout() {
   const text = document.getElementById('shoutout-text').value.trim();
   const msg  = document.getElementById('shoutout-msg');
   if (!text) { showMsg(msg, 'err', 'Enter a message first.'); return; }
-  localStorage.setItem('wavefm_shoutout', JSON.stringify({ text, ts: Date.now() }));
-  showMsg(msg, 'ok', 'Shoutout posted! Visible on this device. Set up KV Worker for all listeners.');
+  try {
+    const res = await fetch('/api/shoutout', { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ text }) });
+    if (handleAuthFailure(res)) return;
+    const data = await res.json();
+    if (!res.ok) { showMsg(msg, 'err', data.error || 'Could not post shoutout.'); return; }
+    showMsg(msg, 'ok', 'Shoutout posted! Live for all listeners for 30 minutes.');
+  } catch (e) {
+    showMsg(msg, 'err', 'Could not reach the backend.');
+  }
 }
 
-function clearShoutout() {
-  localStorage.removeItem('wavefm_shoutout');
-  document.getElementById('shoutout-text').value = '';
-  document.getElementById('shoutout-preview').style.display = 'none';
+async function clearShoutout() {
   const msg = document.getElementById('shoutout-msg');
-  showMsg(msg, 'ok', 'Shoutout cleared.');
+  try {
+    const res = await fetch('/api/shoutout', { method: 'DELETE', headers: adminHeaders() });
+    if (handleAuthFailure(res)) return;
+    document.getElementById('shoutout-text').value = '';
+    document.getElementById('shoutout-preview').style.display = 'none';
+    showMsg(msg, 'ok', 'Shoutout cleared.');
+  } catch (e) {
+    showMsg(msg, 'err', 'Could not reach the backend.');
+  }
 }
 
 // ── EXPORT ────────────────────────────────────────────────────────────────────
@@ -745,10 +896,25 @@ function copyExport() {
     generateExport();
   }
   navigator.clipboard.writeText(document.getElementById('export-area').textContent).then(() => {
-    showMsg(document.getElementById('export-msg'), 'ok', 'Copied to clipboard! Paste into channels.json on GitHub.');
+    showMsg(document.getElementById('export-msg'), 'ok', 'Copied to clipboard.');
   }).catch(() => {
     showMsg(document.getElementById('export-msg'), 'err', 'Copy failed — select the text manually.');
   });
+}
+
+function downloadExport() {
+  generateExport();
+  const text = document.getElementById('export-area').textContent;
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `channels-backup-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showMsg(document.getElementById('export-msg'), 'ok', 'Backup downloaded.');
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
@@ -789,7 +955,7 @@ function showToastAdmin(msg) {
 }
 
 // Auto-init if already authenticated
-if (sessionStorage.getItem('wavefm_admin') === '1') init();
+if (sessionStorage.getItem('wavefm_admin_key')) init();
 </script>
 </body>
 </html>
