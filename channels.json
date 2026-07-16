@@ -8,11 +8,31 @@
       "desc": "Today's biggest tracks across all genres",
       "synced": true,
       "videos": [
-        { "id": "JGwWNGJdvx8", "title": "Ed Sheeran – Shape of You",       "dur": 234 },
-        { "id": "ktvTqknDobU", "title": "Imagine Dragons – Radioactive",    "dur": 187 },
-        { "id": "RgKAFK5djSk", "title": "Wiz Khalifa – See You Again",      "dur": 229 },
-        { "id": "hT_nvWreIhg", "title": "OneRepublic – Counting Stars",     "dur": 257 },
-        { "id": "OPf0YbXqDm0", "title": "Mark Ronson – Uptown Funk",        "dur": 270 }
+        {
+          "id": "JGwWNGJdvx8",
+          "title": "Ed Sheeran – Shape of You",
+          "dur": 234
+        },
+        {
+          "id": "ktvTqknDobU",
+          "title": "Imagine Dragons – Radioactive",
+          "dur": 187
+        },
+        {
+          "id": "RgKAFK5djSk",
+          "title": "Wiz Khalifa – See You Again",
+          "dur": 229
+        },
+        {
+          "id": "hT_nvWreIhg",
+          "title": "OneRepublic – Counting Stars",
+          "dur": 257
+        },
+        {
+          "id": "OPf0YbXqDm0",
+          "title": "Mark Ronson – Uptown Funk",
+          "dur": 270
+        }
       ]
     },
     {
@@ -23,11 +43,56 @@
       "desc": "Timeless rock anthems from the legends",
       "synced": true,
       "videos": [
-        { "id": "YkADj0TPrJA", "title": "Foo Fighters – The Pretender",           "dur": 269 },
-        { "id": "1w7OgIMMRc4", "title": "Guns N' Roses – Sweet Child O' Mine",    "dur": 356 },
-        { "id": "n_GFN3a0yj0", "title": "AC/DC – Highway to Hell",                "dur": 208 },
-        { "id": "ijZRCIrTgQc", "title": "Nirvana – Come As You Are",              "dur": 219 },
-        { "id": "dQw4w9WgXcQ", "title": "Queen – Bohemian Rhapsody",              "dur": 354 }
+        {
+          "id": "n_GFN3a0yj0",
+          "title": "AC/DC – Highway to Hell",
+          "dur": 208
+        },
+        {
+          "id": "1w7OgIMMRc4",
+          "title": "Guns N' Roses – Sweet Child O' Mine",
+          "dur": 356
+        },
+        {
+          "id": "84Tq-eAJIk4",
+          "title": "Pink Floyd - Wish You Were Here",
+          "dur": 368
+        },
+        {
+          "id": "-tJYN-eG1zk",
+          "title": "Queen - We Will Rock You",
+          "dur": 134
+        },
+        {
+          "id": "9kZCWlnO-bQ",
+          "title": "People Are Strange (2012 Botnick Mix) · The Doors",
+          "dur": 240
+        },
+        {
+          "id": "G5yi14m9MBk",
+          "title": "AC/DC - For those about to Rock",
+          "dur": 343
+        },
+        {
+          "id": "khjaSIz5tQo",
+          "title": "Mississippi Queen · Mountain",
+          "dur": 149
+        },
+        {
+          "id": "_FrOQC-zEog",
+          "title": "Pink Floyd - Comfortably numb",
+          "dur": 414
+        },
+        {
+          "id": "2ZBtPf7FOoM",
+          "title": "Queen - Killer Queen",
+          "dur": 191
+        },
+        {
+          "id": "pAgnJDJN4VA",
+          "title": "AC/DC - Back In Black",
+          "dur": 253
+        }
       ]
     },
     {
@@ -38,66 +103,627 @@
       "desc": "Smooth sounds for after dark",
       "synced": true,
       "videos": [
-        { "id": "pRpeEdMmmQ0", "title": "Shawn Mendes – Stitches",            "dur": 207 },
-        { "id": "450p7goxZqg", "title": "Adele – All I Ask",                   "dur": 228 },
-        { "id": "Gs069dndIYk", "title": "Billie Eilish – Lovely",              "dur": 200 },
-        { "id": "7NJqUN9TClM", "title": "Lewis Capaldi – Someone You Loved",   "dur": 222 },
-        { "id": "h_D3VFfhvs4", "title": "The Weeknd – Blinding Lights",        "dur": 200 }
+        {
+          "id": "DLOth-BuCNY",
+          "title": "Pink Floyd - Dark Side Of The Moon",
+          "dur": 446
+        }
       ]
     },
     {
       "id": 3,
-      "icon": "🎧",
-      "name": "Indie Discover",
-      "freq": "101.1 FM",
-      "desc": "Underground sounds and rising artists",
-      "synced": true,
-      "videos": [
-        { "id": "uelHwf8o7_U", "title": "Tame Impala – The Less I Know The Better", "dur": 216 },
-        { "id": "bpOSxM0MsIk", "title": "Vampire Weekend – A-Punk",                 "dur": 122 },
-        { "id": "NAEppFUWLfc", "title": "Arctic Monkeys – Do I Wanna Know?",        "dur": 272 },
-        { "id": "Cj7lpKELhTI", "title": "The 1975 – Somebody Else",                 "dur": 322 },
-        { "id": "qt7F0Lz6dpQ", "title": "Jungle – Keep Moving",                     "dur": 224 }
-      ]
-    },
-    {
-      "id": 4,
-      "icon": "🌍",
-      "name": "World Music",
-      "freq": "104.5 FM",
-      "desc": "Global rhythms and international hits",
-      "synced": true,
-      "videos": [
-        { "id": "pZ12_E5R3qc", "title": "Burna Boy – Last Last",             "dur": 255 },
-        { "id": "kHSFpGBCF0k", "title": "Bad Bunny – Tití Me Preguntó",      "dur": 302 },
-        { "id": "C3GouGa0noM", "title": "Shakira – Waka Waka",               "dur": 212 },
-        { "id": "GpBFOJ3R0M4", "title": "Wizkid – Essence",                  "dur": 251 },
-        { "id": "RJX4LyBFbUs", "title": "J Balvin – Reggaetón",              "dur": 199 }
-      ]
-    },
-    {
-      "id": 5,
       "icon": "⚡",
       "name": "Electronic",
       "freq": "107.9 FM",
       "desc": "Beats, synths, and dance floor energy",
       "synced": true,
       "videos": [
-        { "id": "gAjR4_CbPpQ", "title": "Daft Punk – Get Lucky",       "dur": 369 },
-        { "id": "Nq3x1AkwgpY", "title": "Calvin Harris – Summer",       "dur": 222 },
-        { "id": "vSfNd5xCFT4", "title": "Kygo – Firestone",             "dur": 247 },
-        { "id": "HMoC9yFmMUs", "title": "Deadmau5 – Ghosts N Stuff",    "dur": 356 },
-        { "id": "yKNxeF4KMsY", "title": "Martin Garrix – Animals",      "dur": 193 }
+        {
+          "id": "gAjR4_CbPpQ",
+          "title": "Daft Punk – Get Lucky",
+          "dur": 369
+        }
       ]
     },
     {
-      "id": 6,
+      "id": 4,
       "icon": "📻",
       "name": "Listener Picks",
       "freq": "110.3 FM",
       "desc": "Requested by the WAVEFM community",
       "synced": false,
-      "videos": []
+      "videos": [
+        {
+          "id": "Jh20cMEgvqc",
+          "title": "Welcome to the machine — pink floyd",
+          "dur": 443,
+          "dedication": "testing dedications",
+          "requestedBy": "Morney"
+        },
+        {
+          "id": "SQTHB4jM-KQ",
+          "title": "The Rolling Stones - Wild Horses",
+          "dur": 348,
+          "requestedBy": "Anonymous"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "icon": "🕯",
+      "name": "Oldies",
+      "freq": "196.5",
+      "desc": "Songs from yesteryear",
+      "synced": true,
+      "videos": [
+        {
+          "id": "fUis9yny_lI",
+          "title": "Berlin - Take My Breathe Away",
+          "dur": 253
+        },
+        {
+          "id": "NMNgbISmF4I",
+          "title": "Aerosmith - Crazy",
+          "dur": 373
+        },
+        {
+          "id": "OMOGaugKpzs",
+          "title": "The Police - Every Breath You Take",
+          "dur": 228
+        },
+        {
+          "id": "wd1-HM234DE",
+          "title": "James Brown-This is a mans world",
+          "dur": 171
+        },
+        {
+          "id": "T9Jcs45GhxU",
+          "title": "Chris de Burgh - Lady In Red",
+          "dur": 245
+        },
+        {
+          "id": "FT_Jp5hN16Y",
+          "title": "Angela Winters - Under the Moonlight",
+          "dur": 212
+        },
+        {
+          "id": "ETxmCCsMoD0",
+          "title": "ABBA - Money, Money, Money",
+          "dur": 186
+        },
+        {
+          "id": "n4RjJKxsamQ",
+          "title": "Scorpions - Wind Of Change",
+          "dur": 282
+        },
+        {
+          "id": "XpqqjU7u5Yc",
+          "title": "Bee Gees - How Deep Is Your Love",
+          "dur": 239
+        },
+        {
+          "id": "zrK5u5W8afc",
+          "title": "Righteous Brothers - Unchained Melody",
+          "dur": 208
+        },
+        {
+          "id": "xFrGuyw1V8s",
+          "title": "ABBA - Dancing Queen",
+          "dur": 232
+        },
+        {
+          "id": "tpzV_0l5ILI",
+          "title": "Elvis Presley Jailhouse Rock",
+          "dur": 182
+        },
+        {
+          "id": "zPwMdZOlPo8",
+          "title": "The Police - Walking On The Moon",
+          "dur": 283
+        },
+        {
+          "id": "S81TU2EQnTk",
+          "title": "Baccara - The Devil Sent You To Laredo",
+          "dur": 192
+        },
+        {
+          "id": "V4yCCr_CpwE",
+          "title": "Bob Marley - Could You Be Loved",
+          "dur": 230
+        },
+        {
+          "id": "NU3KELkd-zY",
+          "title": "Animals - house of the rising sun",
+          "dur": 265
+        },
+        {
+          "id": "bfHnL_FSa3Y",
+          "title": "James Brown - Try Me",
+          "dur": 152
+        },
+        {
+          "id": "32wDFCM7iSI",
+          "title": "Baccara - Yes Sir, I Can Boogie",
+          "dur": 293
+        },
+        {
+          "id": "bEOl38y8Nj8",
+          "title": "Bonnie Tyler - It's A Heartache",
+          "dur": 204
+        },
+        {
+          "id": "WGU_4-5RaxU",
+          "title": "Blondie - Heart Of Glass",
+          "dur": 222
+        },
+        {
+          "id": "Z6qnRS36EgE",
+          "title": "Smokie - Living Next Door to Alice",
+          "dur": 206
+        },
+        {
+          "id": "PvwN2bnu-S8",
+          "title": "Pussycat - Mississippi",
+          "dur": 273
+        },
+        {
+          "id": "dQsjAbZDx-4",
+          "title": "ABBA - Fernando",
+          "dur": 253
+        },
+        {
+          "id": "16y1AkoZkmQ",
+          "title": "Boney M. - Rasputin",
+          "dur": 269
+        },
+        {
+          "id": "QqJvqMeaDtU",
+          "title": "El Condor Pasa - Paul Simon & Garfunkel",
+          "dur": 260
+        },
+        {
+          "id": "_FoVCBMkUw0",
+          "title": "Boney M. - El Lute",
+          "dur": 284
+        },
+        {
+          "id": "ULqxiUK6kOs",
+          "title": "Goombay Dance Band - Seven Tears",
+          "dur": 238
+        },
+        {
+          "id": "AB0ogv_DM9g",
+          "title": "California Blue · Roy Orbison",
+          "dur": 236
+        },
+        {
+          "id": "lcOxhH8N3Bo",
+          "title": "Bonnie Tyler - Total Eclipse of the Heart",
+          "dur": 333
+        },
+        {
+          "id": "HSNSTerj2Kc",
+          "title": "Middle of the Road - Chirpy Chirpy Cheep Cheep",
+          "dur": 165
+        },
+        {
+          "id": "GUpGRXT18R8",
+          "title": "Johnny Wakelin - In Zaire",
+          "dur": 195
+        },
+        {
+          "id": "I_izvAbhExY",
+          "title": "Bee Gees - Stayin' Alive",
+          "dur": 249
+        },
+        {
+          "id": "6dYWe1c3OyU",
+          "title": "Gloria Gaynor - I Will Survive",
+          "dur": 194
+        },
+        {
+          "id": "XEjLoHdbVeE",
+          "title": "ABBA - Gimme! Gimme! Gimme!",
+          "dur": 196
+        },
+        {
+          "id": "BshxCIjNEjY",
+          "title": "ABBA - Super Trouper",
+          "dur": 250
+        },
+        {
+          "id": "XKuJUxGntRI",
+          "title": "Amii Stewart - Knock On Wood",
+          "dur": 209
+        },
+        {
+          "id": "sW8574GA06A",
+          "title": "Middle Of The Road - Sacramento",
+          "dur": 156
+        },
+        {
+          "id": "CS9OO0S5w2k",
+          "title": "Village People - YMCA",
+          "dur": 241
+        },
+        {
+          "id": "lvR1YgT7QYs",
+          "title": "Roy Orbison - You Got It",
+          "dur": 215
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "icon": "🛹",
+      "name": "80's",
+      "freq": "80.89",
+      "desc": "Music from the 1980's",
+      "synced": true,
+      "videos": [
+        {
+          "id": "RP0_8J7uxhs",
+          "title": "Laura Branigan - Self Control",
+          "dur": 307
+        },
+        {
+          "id": "aGSKrC7dGcY",
+          "title": "Depeche Mode - Enjoy the Silence",
+          "dur": 280
+        },
+        {
+          "id": "Up4WjdabA2c",
+          "title": "Electric Light Orchestra - Last Train to London",
+          "dur": 277
+        },
+        {
+          "id": "qeMFqkcPYcg",
+          "title": "Eurythmics, Annie Lennox, Dave Stewart - Sweet Dreams (Are Made Of This)",
+          "dur": 214
+        },
+        {
+          "id": "88sARuFu-tc",
+          "title": "Bronski Beat - Smalltown Boy",
+          "dur": 303
+        },
+        {
+          "id": "3wxyN3z9PL4",
+          "title": "Starship - Nothing's Gonna Stop Us Now",
+          "dur": 267
+        },
+        {
+          "id": "djV11Xbc914",
+          "title": "a-ha - Take On Me",
+          "dur": 243
+        },
+        {
+          "id": "aGCdLKXNF3w",
+          "title": "Tears For Fears - Everybody Wants To Rule The World",
+          "dur": 290
+        },
+        {
+          "id": "52iW3lcpK5M",
+          "title": "Madonna - Into The Groove",
+          "dur": 231
+        },
+        {
+          "id": "eH3giaIzONA",
+          "title": "Whitney Houston - I Wanna Dance With Somebody",
+          "dur": 314
+        },
+        {
+          "id": "oGpFcHTxjZs",
+          "title": "Tina Turner - What's Love Got To Do With It",
+          "dur": 226
+        },
+        {
+          "id": "pIgZ7gMze7A",
+          "title": "Wham! - Wake Me Up Before You Go-Go",
+          "dur": 233
+        },
+        {
+          "id": "PIb6AZdTr-A",
+          "title": "Cyndi Lauper - Girls Just Want To Have Fun",
+          "dur": 266
+        },
+        {
+          "id": "79fzeNUqQbQ",
+          "title": "Madonna - Like A Prayer",
+          "dur": 337
+        },
+        {
+          "id": "r3Pr1_v7hsw",
+          "title": "Foreigner - I Want To Know What Love Is",
+          "dur": 300
+        },
+        {
+          "id": "f4Mc-NYPHaQ",
+          "title": "Queen - I Want To Break Free",
+          "dur": 271
+        },
+        {
+          "id": "Zi_XLOBDo_Y",
+          "title": "Michael Jackson - Billie Jean",
+          "dur": 295
+        },
+        {
+          "id": "YkADj0TPrJA",
+          "title": "Phil Collins - In The Air Tonight",
+          "dur": 293
+        },
+        {
+          "id": "FTQbiNvZqaY",
+          "title": "Toto - Africa",
+          "dur": 271
+        },
+        {
+          "id": "oRdxUFDoQe0",
+          "title": "Michael Jackson - Beat It",
+          "dur": 298
+        },
+        {
+          "id": "uPudE8nDog0",
+          "title": "The Human League - Don't You Want Me",
+          "dur": 206
+        },
+        {
+          "id": "6p-lDYPR2P8",
+          "title": "Madonna - Material Girl",
+          "dur": 285
+        },
+        {
+          "id": "OMOGaugKpzs",
+          "title": "The Police - Every Breath You Take",
+          "dur": 228
+        },
+        {
+          "id": "TvnYmWpD_T8",
+          "title": "Prince - Purple Rain",
+          "dur": 477
+        },
+        {
+          "id": "r0qBaBb1Y-U",
+          "title": "Phil Collins - Sussudio",
+          "dur": 317
+        },
+        {
+          "id": "oJL-lCzEXgI",
+          "title": "Duran Duran - Hungry like the Wolf",
+          "dur": 222
+        },
+        {
+          "id": "VbD_kBJc_gI",
+          "title": "David Bowie - Let's Dance",
+          "dur": 247
+        },
+        {
+          "id": "a01QQZyl-_I",
+          "title": "Queen and David Bowie - Under Pressure",
+          "dur": 253
+        },
+        {
+          "id": "UG3VcCAlUgE",
+          "title": "Prince and the Revolution - When Doves Cry",
+          "dur": 224
+        },
+        {
+          "id": "opRRax4ph3E",
+          "title": "David Bowie & Mick Jagger - Dancing In The Street",
+          "dur": 180
+        },
+        {
+          "id": "UbxUSsFXYo4",
+          "title": "Dolly Parton - 9 To 5",
+          "dur": 153
+        },
+        {
+          "id": "wp43OdtAAkM",
+          "title": "Kate Bush - Running Up That Hill",
+          "dur": 295
+        },
+        {
+          "id": "yQHhqDRn4_c",
+          "title": "peter cetera - glory of love",
+          "dur": 255
+        },
+        {
+          "id": "WGU_4-5RaxU",
+          "title": "Blondie - Heart Of Glass",
+          "dur": 222
+        },
+        {
+          "id": "_6FBfAQ-NDE",
+          "title": "Depeche Mode - Just Can't Get Enough",
+          "dur": 218
+        },
+        {
+          "id": "YF1R0hc5Q2I",
+          "title": "Fleetwood Mac - Everywhere",
+          "dur": 222
+        },
+        {
+          "id": "AIBv2GEnXlc",
+          "title": "INXS - Never Tear Us Apart",
+          "dur": 231
+        },
+        {
+          "id": "H9tEvfIsDyo",
+          "title": "Prince and the Revolution - Kiss",
+          "dur": 235
+        },
+        {
+          "id": "gwS9BIqbffU",
+          "title": "Stevie Nicks - Stand Back",
+          "dur": 271
+        },
+        {
+          "id": "5IsSpAOD6K8",
+          "title": "Talking Heads - Once in a Lifetime",
+          "dur": 224
+        },
+        {
+          "id": "rkpG4XApJ28",
+          "title": "Kajagoogoo - Too Shy",
+          "dur": 280
+        },
+        {
+          "id": "p3j2NYZ8FKs",
+          "title": "Pet Shop Boys - West End Girls",
+          "dur": 234
+        },
+        {
+          "id": "kd9TlGDZGkI",
+          "title": "Dire Straits - Walk Of Life",
+          "dur": 236
+        },
+        {
+          "id": "uq-gYOrU8bA",
+          "title": "Paul Simon - You Can Call Me Al",
+          "dur": 275
+        },
+        {
+          "id": "SECVGN4Bsgg",
+          "title": "Men At Work - Who Can It Be Now?",
+          "dur": 207
+        },
+        {
+          "id": "uxX2gA18grk",
+          "title": "Billy Ocean - Caribbean Queen",
+          "dur": 220
+        },
+        {
+          "id": "OJWJE0x7T4Q",
+          "title": "Peter Gabriel - Sledgehammer",
+          "dur": 345
+        },
+        {
+          "id": "129kuDCQtHs",
+          "title": "Bruce Springsteen - Dancing In the Dark",
+          "dur": 238
+        },
+        {
+          "id": "EPOIS5taqA8",
+          "title": "Kim Carnes - Bette Davis Eyes",
+          "dur": 213
+        },
+        {
+          "id": "7wRHBLwpASw",
+          "title": "ZZ Top - Sharp Dressed Man",
+          "dur": 253
+        },
+        {
+          "id": "aENX1Sf3fgQ",
+          "title": "The Police - Every Little Thing She Does Is Magic",
+          "dur": 260
+        },
+        {
+          "id": "l7vRSu_wsNc",
+          "title": "Prince and the Revolution - Raspberry Beret",
+          "dur": 260
+        },
+        {
+          "id": "JIrm0dHbCDU",
+          "title": "Depeche Mode - Strangelove",
+          "dur": 227
+        },
+        {
+          "id": "rY0WxgSXdEE",
+          "title": "Queen - Another One Bites the Dust",
+          "dur": 222
+        },
+        {
+          "id": "eBShN8qT4lk",
+          "title": "Beastie Boys - (You Gotta) Fight For Your Right (To Party)",
+          "dur": 240
+        },
+        {
+          "id": "s__rX_WL100",
+          "title": "Madonna - Like A Virgin",
+          "dur": 229
+        },
+        {
+          "id": "uCGD9dT12C0",
+          "title": "Fleetwood Mac - Little Lies",
+          "dur": 218
+        },
+        {
+          "id": "snILjFUkk_A",
+          "title": "Depeche Mode - Never Let Me Down Again",
+          "dur": 265
+        },
+        {
+          "id": "XfR9iY5y94s",
+          "title": "Men At Work - Down Under",
+          "dur": 220
+        },
+        {
+          "id": "e-cAc1AwfAw",
+          "title": "Rich Folks Hoax — Rodriguez",
+          "dur": 185,
+          "dedication": "test dedication",
+          "requestedBy": "morney"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "icon": "💡",
+      "name": "ELO",
+      "freq": "2000",
+      "desc": "A channel dedicated to Electric Light Orchestra",
+      "synced": true,
+      "videos": [
+        {
+          "id": "ND1byD6pTtY",
+          "title": "ELO- Mr. Blue Sky",
+          "dur": 310
+        },
+        {
+          "id": "V-jYd9M3IzM",
+          "title": "ELO- Don't Bring Me Down",
+          "dur": 250
+        },
+        {
+          "id": "bFs7OrHSulQ",
+          "title": "ELO- Shine A Little Love",
+          "dur": 260
+        },
+        {
+          "id": "5AM8rZOnZWY",
+          "title": "ELO- Confusion",
+          "dur": 230
+        },
+        {
+          "id": "eFb97w5eB5k",
+          "title": "ELO- Turn To Stone",
+          "dur": 230
+        },
+        {
+          "id": "2B7q1lJpCNQ",
+          "title": "ELO- Hold On Tight",
+          "dur": 190
+        },
+        {
+          "id": "prG8Tjm0DrE",
+          "title": "ELO- Livin' Thing",
+          "dur": 220
+        },
+        {
+          "id": "5XtK5dCFqyE",
+          "title": "ELO- All Over The World",
+          "dur": 250
+        },
+        {
+          "id": "TqRQf-NVVJU",
+          "title": "ELO- Strange Magic",
+          "dur": 260
+        },
+        {
+          "id": "lA_FEC8mCNk",
+          "title": "ELO- Rock & Roll Is King",
+          "dur": 190
+        }
+      ]
     }
   ]
 }
