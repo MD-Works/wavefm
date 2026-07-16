@@ -62,6 +62,59 @@
       color: var(--accent);
     }
     .logo span { color: var(--amber); }
+
+    /* Hamburger — only shown on mobile (see media query below) */
+    .hamburger-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      width: 36px; height: 36px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .hamburger-btn span {
+      display: block;
+      width: 16px; height: 2px;
+      background: var(--text);
+      border-radius: 1px;
+    }
+
+    /* Backdrop behind the sidebar drawer — only active on mobile */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .sidebar-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 18px 10px;
+    }
+    .sidebar-close-btn {
+      display: none;
+      width: 28px; height: 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
     .topbar-tag {
       font-family: var(--mono);
       font-size: 0.65rem;
@@ -273,10 +326,14 @@
     .panel-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
     }
+    .panel-tabs::-webkit-scrollbar { display: none; }
     .panel-tab {
-      flex: 1;
-      padding: 13px;
+      flex: 1 1 0;
+      min-width: fit-content;
+      padding: 13px 10px;
       background: transparent;
       border: none;
       color: var(--muted);
@@ -284,6 +341,7 @@
       font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.04em;
+      white-space: nowrap;
       cursor: pointer;
       transition: color 0.15s;
       border-bottom: 2px solid transparent;
@@ -455,6 +513,103 @@
     .form-msg.success { background: rgba(79,195,247,0.1); color: var(--accent); display: block; }
     .form-msg.error { background: rgba(255,77,77,0.1); color: var(--red); display: block; }
 
+    /* Search */
+    .search-wrap { padding: 12px 14px 6px; }
+    .search-input-row { position: relative; }
+    .search-input-row .form-input { padding-right: 32px; }
+    .search-clear-btn {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      background: transparent; border: none; color: var(--muted);
+      cursor: pointer; font-size: 0.85rem; padding: 6px; display: none;
+    }
+    .search-clear-btn.show { display: block; }
+    .search-clear-btn:hover { color: var(--text); }
+
+    .result-count { padding: 0 14px 8px; font-size: 0.65rem; color: var(--muted); font-family: var(--mono); }
+
+    .queue-add-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-family: var(--mono);
+      padding: 5px 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .queue-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* Add-to-playlist floating menu */
+    .pl-menu {
+      position: fixed;
+      z-index: 200;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      min-width: 190px;
+      max-width: 240px;
+      max-height: 260px;
+      overflow-y: auto;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+      padding: 6px;
+      font-size: 0.76rem;
+      font-family: var(--sans);
+    }
+    .pl-menu-item {
+      padding: 9px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .pl-menu-item span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pl-menu-item:hover { background: var(--panel); }
+    .pl-menu-divider { height: 1px; background: var(--border); margin: 4px 2px; }
+    .pl-menu-new { color: var(--accent); font-weight: 600; }
+    .pl-menu-empty { color: var(--muted); padding: 8px 10px; font-size: 0.7rem; }
+
+    /* Playlists tab */
+    .pl-new-row { display: flex; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    .pl-new-row .form-input { flex: 1; }
+    .pl-new-row button {
+      background: var(--accent); color: #0A0A0F; border: none; border-radius: 4px;
+      padding: 0 14px; font-family: var(--sans); font-weight: 700; font-size: 0.78rem; cursor: pointer;
+    }
+    .pl-new-row button:hover { opacity: 0.9; }
+    .pl-list { flex: 1; overflow-y: auto; }
+    .pl-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; cursor: pointer; transition: background 0.12s;
+    }
+    .pl-row:hover { background: var(--panel2); }
+    .pl-row-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .pl-row-info { flex: 1; min-width: 0; }
+    .pl-row-name {
+      font-size: 0.82rem; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pl-row-count { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .pl-row-del {
+      background: transparent; border: none; color: var(--muted); cursor: pointer;
+      font-size: 0.8rem; padding: 6px; flex-shrink: 0;
+    }
+    .pl-row-del:hover { color: var(--red); }
+    .pl-detail-header {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border);
+    }
+    .pl-back-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--text);
+      border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 0.75rem; flex-shrink: 0;
+    }
+    .pl-back-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .pl-detail-title {
+      font-weight: 700; font-size: 0.85rem; flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
     /* ── NOW PLAYING BAR ── */
     .nowplaying {
       grid-area: nowplaying;
@@ -495,6 +650,14 @@
       font-size: 0.68rem;
       color: var(--accent);
       margin-top: 3px;
+    }
+    .np-dedication {
+      font-size: 0.72rem;
+      color: var(--amber, #FFB300);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Waveform — signature element */
@@ -585,7 +748,7 @@
     @media (max-width: 600px) {
       .app {
         grid-template-columns: 1fr;
-        grid-template-rows: 56px auto auto 120px;
+        grid-template-rows: 56px auto auto auto;
         grid-template-areas:
           "topbar"
           "main"
@@ -594,9 +757,59 @@
         overflow-y: auto;
       }
       html, body { overflow: auto; }
-      .sidebar { display: none; }
-      .nowplaying { flex-wrap: wrap; gap: 12px; padding: 12px 16px; height: auto; min-height: 120px; }
+
+      /* Topbar: show hamburger, trim non-essential labels to fit */
+      .topbar { padding: 0 12px; gap: 10px; }
+      .hamburger-btn { display: flex; }
+      .topbar-tag { display: none; }
+      .on-air-badge { margin-left: 0; }
+      .listener-count { margin-left: auto; }
+      .sync-badge span { display: none; } /* keep the dot, drop the "SYNCING" label */
+      .sync-badge { padding: 5px; margin-left: 6px; }
+
+      /* Sidebar becomes a slide-in drawer */
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: 82vw;
+        max-width: 300px;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-close-btn { display: flex; }
+      .sidebar-backdrop { display: block; }
+      .channel-btn { padding: 13px 18px; font-size: 0.92rem; } /* bigger touch target */
+
+      /* Queue panel gets more room now the sidebar isn't competing for width */
+      .queue-panel { max-height: 340px; border-left: none; border-top: 1px solid var(--border); }
+      .panel-tab { padding: 15px 10px; font-size: 0.72rem; } /* ≥44px touch target */
+
+      /* Prevent iOS auto-zoom on input focus (needs ≥16px) */
+      .form-input, .form-select { font-size: 16px; padding: 11px 12px; }
+      .submit-btn { padding: 13px 16px; font-size: 0.88rem; }
+
+      /* Now playing bar: stack song info above controls, bigger tap targets */
+      .nowplaying {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 16px;
+        height: auto;
+      }
+      .np-song-info { text-align: center; }
+      .np-title, .np-channel, .np-dedication { white-space: normal; }
       .waveform-wrap { display: none; }
+      .np-controls { justify-content: center; }
+      .ctrl-btn { padding: 11px 18px; font-size: 0.78rem; }
+      .volume-wrap { justify-content: center; }
+
+      .channel-header { padding: 16px 16px 12px; }
+      .channel-header-name { font-size: 1.15rem; }
+      .channel-header-desc { display: none; } /* keep the header compact on phones */
+      .freq-tag { margin-left: 8px; }
     }
 
     /* ── TOAST ── */
@@ -631,6 +844,9 @@
 
   <!-- TOP BAR -->
   <header class="topbar">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Open channel menu" aria-expanded="false" aria-controls="sidebar">
+      <span></span><span></span><span></span>
+    </button>
     <div class="logo">WAVE<span>FM</span></div>
     <div class="topbar-tag">FREE RADIO</div>
     <div class="on-air-badge">
@@ -641,9 +857,15 @@
     <div class="sync-badge" id="sync-badge"><div class="sync-dot"></div><span id="sync-label">SYNCING</span></div>
   </header>
 
+  <!-- Backdrop shown behind the sidebar drawer on mobile -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
   <!-- SIDEBAR -->
-  <nav class="sidebar">
-    <div class="sidebar-label">Channels</div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-top-row">
+      <div class="sidebar-label" style="padding:0">Channels</div>
+      <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close channel menu">✕</button>
+    </div>
 
     <button class="channel-btn active" data-channel="0" onclick="switchChannel(0)">
       <span class="ch-icon">🔥</span>
@@ -706,8 +928,10 @@
   <!-- QUEUE / REQUEST PANEL -->
   <aside class="queue-panel">
     <div class="panel-tabs">
-      <button class="panel-tab active" onclick="showTab('queue')">Up Next</button>
-      <button class="panel-tab" onclick="showTab('request')">Request</button>
+      <button class="panel-tab active" data-tab="queue" onclick="showTab('queue', this)">Up Next</button>
+      <button class="panel-tab" data-tab="search" onclick="showTab('search', this)">Search</button>
+      <button class="panel-tab" data-tab="playlists" onclick="showTab('playlists', this)">Playlists</button>
+      <button class="panel-tab" data-tab="request" onclick="showTab('request', this)">Request</button>
     </div>
 
     <!-- Queue Tab -->
@@ -720,6 +944,27 @@
       </div>
     </div>
 
+    <!-- Search Tab -->
+    <div class="tab-content" id="tab-search">
+      <div class="search-wrap">
+        <div class="search-input-row">
+          <input class="form-input" id="search-input" type="text" placeholder="Search song or artist…" oninput="handleSearchInput()" autocomplete="off" />
+          <button class="search-clear-btn" id="search-clear-btn" onclick="clearSearch()" aria-label="Clear search">✕</button>
+        </div>
+      </div>
+      <div class="queue-list" id="search-results">
+        <div class="queue-empty" id="search-empty">
+          <div class="queue-empty-icon">🔎</div>
+          <div>Search across every channel</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playlists Tab -->
+    <div class="tab-content" id="tab-playlists">
+      <div id="playlists-root" style="display:flex;flex-direction:column;flex:1;overflow:hidden;"></div>
+    </div>
+
     <!-- Request Tab -->
     <div class="tab-content" id="tab-request">
       <div class="request-form">
@@ -728,13 +973,17 @@
           <input class="form-input" id="req-name" type="text" placeholder="e.g. Alex" maxlength="32" />
         </div>
         <div>
-          <label class="form-label">YouTube URL or Video ID</label>
-          <input class="form-input" id="req-url" type="text" placeholder="https://youtube.com/watch?v=..." />
-          <div class="form-hint" style="margin-top:6px">Paste any YouTube link or just the video ID.</div>
+          <label class="form-label">Song Title</label>
+          <input class="form-input" id="req-title" type="text" placeholder="e.g. Blinding Lights" maxlength="80" />
         </div>
         <div>
-          <label class="form-label">Song Title</label>
-          <input class="form-input" id="req-title" type="text" placeholder="Artist – Song name" maxlength="80" />
+          <label class="form-label">Artist</label>
+          <input class="form-input" id="req-artist" type="text" placeholder="e.g. The Weeknd" maxlength="80" />
+        </div>
+        <div>
+          <label class="form-label">Dedication <span style="opacity:0.6">(optional)</span></label>
+          <input class="form-input" id="req-dedication" type="text" placeholder="e.g. Happy Birthday Sarah! 🎉" maxlength="120" />
+          <div class="form-hint" style="margin-top:6px">Shown on air if the DJ plays it.</div>
         </div>
         <div>
           <label class="form-label">Add to Channel</label>
@@ -748,7 +997,7 @@
             <option value="5">⚡ Electronic</option>
           </select>
         </div>
-        <button class="submit-btn" onclick="submitRequest()">Add to Queue →</button>
+        <button class="submit-btn" id="req-submit" onclick="submitRequest()">Send Request →</button>
         <div class="form-msg" id="req-msg"></div>
       </div>
     </div>
@@ -766,6 +1015,7 @@
       <div class="np-label">Now Playing</div>
       <div class="np-title" id="np-title">Select a channel to begin</div>
       <div class="np-channel" id="np-channel">—</div>
+      <div class="np-dedication" id="np-dedication" style="display:none"></div>
     </div>
 
     <!-- Signature waveform -->
@@ -798,7 +1048,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CHANNEL DATA — loaded from channels.json ──────────────────────────────────
+// ── CHANNEL DATA — loaded from the backend (falls back to channels.json) ──────
 let CHANNELS = [];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -811,21 +1061,15 @@ let isMuted           = false;
 let waveAnimFrame     = null;
 let wavePhase         = 0;
 
-// Merge user requests from localStorage into channel 6
-function loadUserRequests() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('wavefm_requests') || '[]');
-    CHANNELS[6].videos = saved;
-  } catch(e) {}
+// Persistent per-browser client id, used for the live listener count
+function getClientId() {
+  let id = localStorage.getItem('wavefm_client_id');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)));
+    localStorage.setItem('wavefm_client_id', id);
+  }
+  return id;
 }
-
-function saveUserRequests() {
-  try {
-    localStorage.setItem('wavefm_requests', JSON.stringify(CHANNELS[6].videos));
-  } catch(e) {}
-}
-
-loadUserRequests();
 
 // ── SYNC ENGINE ───────────────────────────────────────────────────────────────
 // Uses a shared epoch (Jan 1 2025 00:00:00 UTC) as the clock origin.
@@ -957,6 +1201,13 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
   // Update UI
   document.getElementById('np-title').textContent   = vid.title;
   document.getElementById('np-channel').textContent = ch.icon + ' ' + ch.name;
+  const dedEl = document.getElementById('np-dedication');
+  if (vid.dedication) {
+    dedEl.textContent = '💌 ' + vid.dedication + (vid.requestedBy ? ' — ' + vid.requestedBy : '');
+    dedEl.style.display = 'block';
+  } else {
+    dedEl.style.display = 'none';
+  }
   updatePlayPauseBtn(true);
   renderQueue();
 
@@ -1046,6 +1297,7 @@ function switchChannel(idx) {
   // Update sidebar
   document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-channel="${idx}"]`).classList.add('active');
+  closeSidebar(); // no-op on desktop, closes the drawer on mobile
 
   // Update header
   document.getElementById('ch-icon').textContent  = ch.icon;
@@ -1108,9 +1360,9 @@ function renderQueue() {
       <img class="queue-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
       <div class="queue-info">
         <div class="queue-title">${escHtml(v.title)}</div>
-        <div class="queue-channel">${ch.name}</div>
+        <div class="queue-channel">${ch.name}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
       </div>
-      ${currentChannelIdx === 6 ? `<button class="queue-remove" onclick="removeRequest(event,${i})" title="Remove">✕</button>` : ''}
+      <button class="queue-add-btn" onclick="event.stopPropagation(); openAddToPlaylistMenu(event, ${currentChannelIdx}, ${i})">+ Playlist</button>
     </div>
   `).join('');
 }
@@ -1120,83 +1372,348 @@ function jumpTo(idx) {
   loadTrack(currentChannelIdx, idx);
 }
 
-function removeRequest(e, idx) {
-  e.stopPropagation();
-  CHANNELS[6].videos.splice(idx, 1);
-  saveUserRequests();
-  if (currentChannelIdx === 6) {
-    if (currentTrackIdx >= CHANNELS[6].videos.length) currentTrackIdx = 0;
-    renderQueue();
-    if (CHANNELS[6].videos.length && currentTrackIdx === idx) loadTrack(6, 0);
-  }
-}
-
 // ── TABS ─────────────────────────────────────────────────────────────────────
-function showTab(name) {
+function showTab(name, btnEl) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+  const btn = btnEl || document.querySelector(`.panel-tab[data-tab="${name}"]`);
+  if (btn) btn.classList.add('active');
+
+  if (name === 'playlists') renderPlaylistsTab();
+  if (name === 'search') {
+    const input = document.getElementById('search-input');
+    if (input) setTimeout(() => input.focus(), 50);
+  }
+}
+
+// ── SEARCH (across every channel) ─────────────────────────────────────────────
+function handleSearchInput() {
+  const raw = document.getElementById('search-input').value;
+  const q = raw.trim().toLowerCase();
+  document.getElementById('search-clear-btn').classList.toggle('show', raw.length > 0);
+  const resultsEl = document.getElementById('search-results');
+
+  if (!q) {
+    resultsEl.innerHTML = `
+      <div class="queue-empty">
+        <div class="queue-empty-icon">🔎</div>
+        <div>Search across every channel</div>
+      </div>`;
+    return;
+  }
+
+  const matches = [];
+  CHANNELS.forEach((ch, ci) => {
+    ch.videos.forEach((v, vi) => {
+      if (v.title.toLowerCase().includes(q)) matches.push({ ch, ci, v, vi });
+    });
+  });
+
+  if (!matches.length) {
+    resultsEl.innerHTML = `
+      <div class="queue-empty">
+        <div class="queue-empty-icon">🔎</div>
+        <div>No matches for "${escHtml(raw.trim())}"</div>
+      </div>`;
+    return;
+  }
+
+  resultsEl.innerHTML = matches.map(m => `
+    <div class="queue-item" onclick="playSearchResult(${m.ci}, ${m.vi})">
+      <img class="queue-thumb" src="https://img.youtube.com/vi/${m.v.id}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
+      <div class="queue-info">
+        <div class="queue-title">${escHtml(m.v.title)}</div>
+        <div class="queue-channel">${m.ch.icon} ${escHtml(m.ch.name)}</div>
+      </div>
+      <button class="queue-add-btn" onclick="event.stopPropagation(); openAddToPlaylistMenu(event, ${m.ci}, ${m.vi})">+ Playlist</button>
+    </div>
+  `).join('');
+}
+
+function clearSearch() {
+  const input = document.getElementById('search-input');
+  input.value = '';
+  handleSearchInput();
+  input.focus();
+}
+
+function playSearchResult(ci, vi) {
+  switchChannel(ci);       // updates header/sidebar/controls for the target channel
+  currentTrackIdx = vi;    // then override to the exact track that was searched for
+  loadTrack(ci, vi);
+  showTab('queue', document.querySelector('.panel-tab[data-tab="queue"]'));
+}
+
+// ── PRIVATE PLAYLISTS (stored locally, per-browser — never sent to the server) ─
+let playlistView = { mode: 'list', id: null };
+
+function getPlaylists() {
+  try {
+    const raw = localStorage.getItem('wavefm_playlists');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+
+function savePlaylists(playlists) {
+  localStorage.setItem('wavefm_playlists', JSON.stringify(playlists));
+}
+
+function createPlaylist(name) {
+  const playlists = getPlaylists();
+  const pl = {
+    id: (crypto.randomUUID ? crypto.randomUUID() : 'pl-' + Date.now() + '-' + Math.random().toString(16).slice(2)),
+    name: (name || '').trim().slice(0, 60) || 'Untitled Playlist',
+    tracks: []
+  };
+  playlists.push(pl);
+  savePlaylists(playlists);
+  return pl;
+}
+
+function deletePlaylist(id) {
+  savePlaylists(getPlaylists().filter(p => p.id !== id));
+}
+
+function buildTrackRef(ci, vi) {
+  const ch = CHANNELS[ci];
+  const v = ch.videos[vi];
+  return {
+    videoId: v.id,
+    title: v.title,
+    dur: v.dur || 240,
+    dedication: v.dedication || '',
+    channelId: ch.id,
+    channelName: ch.name,
+    channelIcon: ch.icon
+  };
+}
+
+function addTrackToPlaylist(playlistId, track) {
+  const playlists = getPlaylists();
+  const pl = playlists.find(p => p.id === playlistId);
+  if (!pl) return false;
+  const dup = pl.tracks.some(t => t.videoId === track.videoId && t.channelId === track.channelId);
+  if (dup) return 'dup';
+  pl.tracks.push(track);
+  savePlaylists(playlists);
+  return true;
+}
+
+function removeTrackFromPlaylist(playlistId, videoId, channelId) {
+  const playlists = getPlaylists();
+  const pl = playlists.find(p => p.id === playlistId);
+  if (!pl) return;
+  pl.tracks = pl.tracks.filter(t => !(t.videoId === videoId && t.channelId === channelId));
+  savePlaylists(playlists);
+}
+
+// ── Floating "add to playlist" menu ───────────────────────────────────────────
+let plMenuEl = null;
+
+function closePlMenu() {
+  if (plMenuEl) { plMenuEl.remove(); plMenuEl = null; }
+  document.removeEventListener('click', closePlMenuOutside, true);
+}
+
+function closePlMenuOutside(e) {
+  if (plMenuEl && !plMenuEl.contains(e.target)) closePlMenu();
+}
+
+function openAddToPlaylistMenu(evt, ci, vi) {
+  evt.stopPropagation();
+  closePlMenu();
+
+  const track = buildTrackRef(ci, vi);
+  const btn = evt.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  const playlists = getPlaylists();
+
+  const menu = document.createElement('div');
+  menu.className = 'pl-menu';
+  menu.innerHTML =
+    (playlists.length
+      ? playlists.map(p => `
+          <div class="pl-menu-item" data-pl="${p.id}">
+            <span>${escHtml(p.name)}</span>
+            <span style="color:var(--muted);font-family:var(--mono)">${p.tracks.length}</span>
+          </div>`).join('') + '<div class="pl-menu-divider"></div>'
+      : '<div class="pl-menu-empty">No playlists yet</div><div class="pl-menu-divider"></div>'
+    ) + '<div class="pl-menu-item pl-menu-new" data-new="1">+ New Playlist</div>';
+
+  document.body.appendChild(menu);
+
+  const menuH = menu.offsetHeight, menuW = menu.offsetWidth;
+  let top = rect.bottom + 6;
+  if (top + menuH > window.innerHeight - 10) top = rect.top - menuH - 6;
+  let left = Math.min(rect.left, window.innerWidth - menuW - 10);
+  menu.style.top  = Math.max(8, top) + 'px';
+  menu.style.left = Math.max(8, left) + 'px';
+
+  menu.addEventListener('click', (e) => {
+    const item = e.target.closest('.pl-menu-item');
+    if (!item) return;
+
+    if (item.dataset.new) {
+      closePlMenu();
+      const name = prompt('Name your new playlist:');
+      if (name === null) return;
+      const pl = createPlaylist(name);
+      addTrackToPlaylist(pl.id, track);
+      showToast(`Created "${pl.name}" and added track ✓`);
+      if (document.getElementById('tab-playlists').classList.contains('active')) renderPlaylistsTab();
+      return;
+    }
+
+    const plId = item.dataset.pl;
+    const res = addTrackToPlaylist(plId, track);
+    closePlMenu();
+    showToast(res === 'dup' ? 'Already in that playlist' : 'Added to playlist ✓');
+    if (playlistView.mode === 'detail' && playlistView.id === plId) renderPlaylistsTab();
+  });
+
+  plMenuEl = menu;
+  setTimeout(() => document.addEventListener('click', closePlMenuOutside, true), 0);
+}
+
+// ── Playlists tab render ──────────────────────────────────────────────────────
+function renderPlaylistsTab() {
+  const root = document.getElementById('playlists-root');
+  const playlists = getPlaylists();
+
+  if (playlistView.mode === 'detail') {
+    const pl = playlists.find(p => p.id === playlistView.id);
+    if (!pl) {
+      playlistView = { mode: 'list', id: null };
+      return renderPlaylistsTab();
+    }
+    root.innerHTML = `
+      <div class="pl-detail-header">
+        <button class="pl-back-btn" onclick="playlistView = {mode:'list', id:null}; renderPlaylistsTab()">← Back</button>
+        <div class="pl-detail-title">${escHtml(pl.name)}</div>
+      </div>
+      <div class="queue-list" id="pl-detail-list">
+        ${pl.tracks.length ? pl.tracks.map((t, i) => `
+          <div class="queue-item" onclick="playPlaylistTrack('${pl.id}', ${i})">
+            <img class="queue-thumb" src="https://img.youtube.com/vi/${t.videoId}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
+            <div class="queue-info">
+              <div class="queue-title">${escHtml(t.title)}</div>
+              <div class="queue-channel">${t.channelIcon || ''} ${escHtml(t.channelName || '')}${t.dedication ? ' · 💌 ' + escHtml(t.dedication) : ''}</div>
+            </div>
+            <button class="queue-add-btn" onclick="event.stopPropagation(); removeTrackFromPlaylist('${pl.id}', '${t.videoId}', ${t.channelId}); renderPlaylistsTab(); showToast('Removed from playlist')">✕</button>
+          </div>
+        `).join('') : `
+          <div class="queue-empty">
+            <div class="queue-empty-icon">🎵</div>
+            <div>No tracks yet — add some from Search or Up Next</div>
+          </div>`}
+      </div>`;
+    return;
+  }
+
+  root.innerHTML = `
+    <div class="pl-new-row">
+      <input class="form-input" id="new-pl-name" type="text" placeholder="New playlist name…" maxlength="60" onkeydown="if(event.key==='Enter') createPlaylistFromInput()" />
+      <button onclick="createPlaylistFromInput()">Create</button>
+    </div>
+    <div class="pl-list">
+      ${playlists.length ? playlists.map(p => `
+        <div class="pl-row" onclick="openPlaylist('${p.id}')">
+          <span class="pl-row-icon">🎶</span>
+          <div class="pl-row-info">
+            <div class="pl-row-name">${escHtml(p.name)}</div>
+            <div class="pl-row-count">${p.tracks.length} track${p.tracks.length === 1 ? '' : 's'}</div>
+          </div>
+          <button class="pl-row-del" onclick="event.stopPropagation(); confirmDeletePlaylist('${p.id}')" title="Delete playlist">🗑</button>
+        </div>
+      `).join('') : `
+        <div class="queue-empty">
+          <div class="queue-empty-icon">🎶</div>
+          <div>No playlists yet</div>
+          <div style="font-size:0.68rem">Create one above, or tap + Playlist on any track</div>
+        </div>`}
+    </div>`;
+}
+
+function createPlaylistFromInput() {
+  const input = document.getElementById('new-pl-name');
+  const name = input.value.trim();
+  if (!name) { showToast('Enter a playlist name'); return; }
+  const pl = createPlaylist(name);
+  input.value = '';
+  showToast(`Created "${pl.name}" ✓`);
+  renderPlaylistsTab();
+}
+
+function openPlaylist(id) {
+  playlistView = { mode: 'detail', id };
+  renderPlaylistsTab();
+}
+
+function confirmDeletePlaylist(id) {
+  const pl = getPlaylists().find(p => p.id === id);
+  if (!pl) return;
+  if (!confirm(`Delete playlist "${pl.name}"? This can't be undone.`)) return;
+  deletePlaylist(id);
+  showToast('Playlist deleted');
+  renderPlaylistsTab();
+}
+
+function playPlaylistTrack(plId, trackIdx) {
+  const pl = getPlaylists().find(p => p.id === plId);
+  if (!pl) return;
+  const track = pl.tracks[trackIdx];
+  if (!track) return;
+
+  const ci = CHANNELS.findIndex(c => c.id === track.channelId);
+  if (ci === -1) { showToast('That channel no longer exists'); return; }
+  const vi = CHANNELS[ci].videos.findIndex(v => v.id === track.videoId);
+  if (vi === -1) { showToast('This track is no longer on that channel'); return; }
+
+  switchChannel(ci);
+  currentTrackIdx = vi;
+  loadTrack(ci, vi);
+  showTab('queue', document.querySelector('.panel-tab[data-tab="queue"]'));
 }
 
 // ── REQUEST FORM ──────────────────────────────────────────────────────────────
-function extractVideoId(input) {
-  input = input.trim();
-  // Already an ID (11 chars, alphanumeric + _ + -)
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-  // youtu.be/ID
-  let m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  // v=ID
-  m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  // embed/ID
-  m = input.match(/embed\/([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  return null;
-}
+async function submitRequest() {
+  const name       = document.getElementById('req-name').value.trim();
+  const title      = document.getElementById('req-title').value.trim();
+  const artist     = document.getElementById('req-artist').value.trim();
+  const dedication = document.getElementById('req-dedication').value.trim();
+  const chIdx      = parseInt(document.getElementById('req-channel').value);
+  const btn        = document.getElementById('req-submit');
 
-function submitRequest() {
-  const name  = document.getElementById('req-name').value.trim();
-  const url   = document.getElementById('req-url').value.trim();
-  const title = document.getElementById('req-title').value.trim();
-  const chIdx = parseInt(document.getElementById('req-channel').value);
-  const msg   = document.getElementById('req-msg');
-
-  msg.className = 'form-msg';
-
-  if (!url) { showMsg('error', 'Please enter a YouTube URL or video ID.'); return; }
-  const vid = extractVideoId(url);
-  if (!vid) { showMsg('error', 'Could not find a valid YouTube video ID.'); return; }
   if (!title) { showMsg('error', 'Please enter a song title.'); return; }
 
-  const entry = {
-    id: vid,
-    title: title,
-    requestedBy: name || 'Anonymous'
-  };
-
-  if (chIdx === 6) {
-    // Listener picks — stored locally
-    const exists = CHANNELS[6].videos.find(v => v.id === vid);
-    if (exists) { showMsg('error', 'This video is already in the queue.'); return; }
-    CHANNELS[6].videos.push(entry);
-    saveUserRequests();
-    showMsg('success', `Added to Listener Picks! Switch to 📻 to hear it.`);
-  } else {
-    // For curated channels, just add locally for this session
-    const ch = CHANNELS[chIdx];
-    const exists = ch.videos.find(v => v.id === vid);
-    if (exists) { showMsg('error', 'Already in that channel\'s queue.'); return; }
-    ch.videos.push(entry);
-    showMsg('success', `Added to ${ch.icon} ${ch.name}!`);
+  if (btn) btn.disabled = true;
+  try {
+    const res = await fetch('/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        songTitle: title,
+        artist: artist,
+        dedication: dedication,
+        requestedBy: name || 'Anonymous',
+        channelIdx: chIdx
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showMsg('error', data.error || 'Could not submit your request.');
+      return;
+    }
+    showMsg('success', 'Sent to the DJ for review — thanks!');
+    document.getElementById('req-title').value      = '';
+    document.getElementById('req-artist').value      = '';
+    document.getElementById('req-dedication').value = '';
+  } catch (e) {
+    showMsg('error', 'Could not reach the request server. Try again in a moment.');
+  } finally {
+    if (btn) btn.disabled = false;
   }
-
-  if (currentChannelIdx === chIdx) renderQueue();
-
-  // Reset
-  document.getElementById('req-url').value   = '';
-  document.getElementById('req-title').value = '';
 }
 
 function showMsg(type, text) {
@@ -1234,15 +1751,34 @@ function animateWave() {
   waveAnimFrame = requestAnimationFrame(animateWave);
 }
 
-// ── FAKE LISTENER COUNT ───────────────────────────────────────────────────────
-function jitterListeners() {
-  const el = document.getElementById('listener-num');
-  let n = parseInt(el.textContent);
-  n += Math.floor(Math.random() * 7) - 3;
-  n = Math.max(80, Math.min(250, n));
-  el.textContent = n;
+// ── LIVE LISTENER COUNT ───────────────────────────────────────────────────────
+// Each open tab "checks in" every 20s; the count is however many check-ins
+// are still fresh (see /functions/api/heartbeat.js and /functions/api/listeners.js).
+async function sendHeartbeat() {
+  try {
+    await fetch('/api/heartbeat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: getClientId() })
+    });
+  } catch (e) { /* backend not deployed yet — ignore */ }
 }
-setInterval(jitterListeners, 4000);
+
+async function refreshListenerCount() {
+  try {
+    const res = await fetch('/api/listeners');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (typeof data.count === 'number') {
+      document.getElementById('listener-num').textContent = data.count;
+    }
+  } catch (e) { /* backend not deployed yet — leave last known value */ }
+}
+
+sendHeartbeat();
+refreshListenerCount();
+setInterval(sendHeartbeat, 20000);
+setInterval(refreshListenerCount, 15000);
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg) {
@@ -1260,15 +1796,12 @@ function escHtml(s) {
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function boot() {
   try {
-    // 1. Load channel data
-    const res = await fetch('channels.json?v=' + Date.now());
-    const data = await res.json();
-    CHANNELS = data.channels;
+    // 1. Load channel data — the backend (Cloudflare Pages Function + KV) is the
+    //    live, shared source of truth. If it hasn't been set up/deployed yet,
+    //    fall back to the static channels.json bundled with the site.
+    CHANNELS = await loadChannels();
 
-    // Merge saved listener requests into Listener Picks channel
-    loadUserRequests();
-
-    // 2. Build sidebar dynamically from channels.json
+    // 2. Build sidebar dynamically from channel data
     buildSidebar();
 
     // 3. Load YouTube API then auto-switch to channel 0
@@ -1277,15 +1810,28 @@ async function boot() {
     // 4. Pre-render queue
     renderQueue();
 
-    // 5. Poll for DJ shoutout every 30s (reads from localStorage for now;
-    //    replace with KV Worker fetch once backend is set up)
+    // 5. Poll for DJ shoutout every 30s
     pollShoutout();
     setInterval(pollShoutout, 30000);
 
   } catch(e) {
-    console.error('Failed to load channels.json', e);
+    console.error('Failed to load channels', e);
     document.getElementById('np-title').textContent = 'Failed to load channels — check channels.json';
   }
+}
+
+async function loadChannels() {
+  try {
+    const res = await fetch('/api/channels');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.channels) return data.channels;
+    }
+  } catch (e) { /* backend not deployed yet — fall through to static file */ }
+
+  const res = await fetch('channels.json?v=' + Date.now());
+  const data = await res.json();
+  return data.channels;
 }
 
 function loadYouTubeAPI() {
@@ -1294,9 +1840,36 @@ function loadYouTubeAPI() {
   document.head.appendChild(tag);
 }
 
+// ── MOBILE SIDEBAR DRAWER ──────────────────────────────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-backdrop').classList.add('open');
+  document.getElementById('hamburger-btn').setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('open');
+  document.getElementById('hamburger-btn').setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.contains('open') ? closeSidebar() : openSidebar();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeSidebar();
+});
+
 function buildSidebar() {
   const nav = document.querySelector('.sidebar');
-  nav.innerHTML = '<div class="sidebar-label">Channels</div>';
+  nav.innerHTML = `
+    <div class="sidebar-top-row">
+      <div class="sidebar-label" style="padding:0">Channels</div>
+      <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close channel menu">✕</button>
+    </div>`;
 
   CHANNELS.forEach((ch, idx) => {
     const isLast = ch.synced === false; // Listener Picks gets a divider before it
@@ -1312,18 +1885,14 @@ function buildSidebar() {
   });
 }
 
-// Shoutout: reads from localStorage key 'wavefm_shoutout'.
-// When Cloudflare KV Worker is set up, replace this fetch with:
-//   const r = await fetch('/api/shoutout'); const d = await r.json();
-function pollShoutout() {
+async function pollShoutout() {
   try {
-    const raw = localStorage.getItem('wavefm_shoutout');
-    if (!raw) { hideShoutout(); return; }
-    const d = JSON.parse(raw);
-    // Expire after 30 minutes
-    if (!d.text || Date.now() - d.ts > 30 * 60 * 1000) { hideShoutout(); return; }
-    showShoutout(d.text);
-  } catch(e) { hideShoutout(); }
+    const res = await fetch('/api/shoutout');
+    if (!res.ok) { hideShoutout(); return; }
+    const data = await res.json();
+    if (!data.shoutout || !data.shoutout.text) { hideShoutout(); return; }
+    showShoutout(data.shoutout.text);
+  } catch (e) { hideShoutout(); }
 }
 
 function showShoutout(text) {
