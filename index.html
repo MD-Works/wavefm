@@ -2232,8 +2232,18 @@ async function boot() {
 
     // 2. Inject live hot rankings into the Hot Right Now channel (index 0)
     if (hotTracks.length) {
+      // Build a lookup from ALL channels (loaded from channels.json) so we
+      // always have titles/durations even if KV catalogue isn't populated yet.
+      const metaLookup = {};
+      for (const ch of CHANNELS) {
+        for (const v of ch.videos ?? []) {
+          metaLookup[v.id] = { title: v.title, dur: v.dur ?? 240 };
+        }
+      }
       CHANNELS[0].videos = hotTracks.map(t => ({
-        id: t.videoId, title: t.title, dur: t.dur ?? 240
+        id: t.videoId,
+        title: metaLookup[t.videoId]?.title ?? t.title ?? t.videoId,
+        dur:   metaLookup[t.videoId]?.dur   ?? t.dur  ?? 240,
       }));
     }
 
