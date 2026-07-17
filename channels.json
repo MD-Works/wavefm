@@ -32,6 +32,76 @@
           "id": "OPf0YbXqDm0",
           "title": "Mark Ronson – Uptown Funk",
           "dur": 270
+        },
+        {
+          "id": "fcnDmrtj6Sk",
+          "title": "Shakira, Burna Boy - Dai Dai",
+          "dur": 240
+        },
+        {
+          "id": "8F2s8ivKXNY",
+          "title": "Oliver Tree - Life Goes On",
+          "dur": 206
+        },
+        {
+          "id": "BZGuQCvUXIA",
+          "title": "Golden - KPop Demon Hunters (Lyrics) HUNTR/X, EJAE, AUDREY NUNA, REI AMI",
+          "dur": 194
+        },
+        {
+          "id": "2rA2K0gwjoo",
+          "title": "LE SSERAFIM  x ILLIT  x KATSEYE  'ICONIC BY MISTAKE' Dance Practice",
+          "dur": 180
+        },
+        {
+          "id": "Ntn1-SocNiY",
+          "title": "Shakira - Waka Waka",
+          "dur": 199
+        },
+        {
+          "id": "82-jTNka3uc",
+          "title": "Ariana Grande - hate that i made you love me",
+          "dur": 300
+        },
+        {
+          "id": "kwwdY1bp-Ck",
+          "title": "Mira el Video oficial de \"Todo Lo Fue\" de Lenin Ramirez",
+          "dur": 189
+        },
+        {
+          "id": "NVLgkXylEuQ",
+          "title": "El Bogueto ❌ Anuel AA ❌ Yung Beef ❌ Fuerza Regida - Cuando No Era Cantante Remix",
+          "dur": 357
+        },
+        {
+          "id": "U6BDbXIah-Y",
+          "title": "CORTIS - 'REDRED'",
+          "dur": 208
+        },
+        {
+          "id": "0UPDBODtxzw",
+          "title": "Tame Impala, JENNIE - Dracula (JENNIE Remix)",
+          "dur": 210
+        },
+        {
+          "id": "KqMOKCRgvD8",
+          "title": "Babydoll - Dominic Fike",
+          "dur": 153
+        },
+        {
+          "id": "aFbueod4reQ",
+          "title": "Bruno Mars - Risk It All",
+          "dur": 223
+        },
+        {
+          "id": "Md7kqHsWWs4",
+          "title": "Laurinha Costa - Six Seven (Clipe Oficial) DJ Cabello & DJ Tchouzen",
+          "dur": 94
+        },
+        {
+          "id": "7F1ET2XHQfk",
+          "title": "KATSEYE (캣츠아이) \"PINKY UP\" Official MV",
+          "dur": 181
         }
       ]
     },
@@ -92,6 +162,11 @@
           "id": "pAgnJDJN4VA",
           "title": "AC/DC - Back In Black",
           "dur": 253
+        },
+        {
+          "id": "9X_ViIPA-Gc",
+          "title": "Meat Loaf - I'd Do Anything For Love (But I Won't Do That)",
+          "dur": 460
         }
       ]
     },
@@ -107,6 +182,31 @@
           "id": "DLOth-BuCNY",
           "title": "Pink Floyd - Dark Side Of The Moon",
           "dur": 446
+        },
+        {
+          "id": "6dOwHzCHfgA",
+          "title": "Cutting Crew - (I Just) Died In Your Arms",
+          "dur": 271
+        },
+        {
+          "id": "wJzNZ1c5C9c",
+          "title": "REO Speedwagon - Keep on Loving You",
+          "dur": 230
+        },
+        {
+          "id": "k2C5TjS2sh4",
+          "title": "Roxette - It Must Have Been Love",
+          "dur": 259
+        },
+        {
+          "id": "xuZA6qiJVfU",
+          "title": "The Cars - Drive",
+          "dur": 240
+        },
+        {
+          "id": "tT4d1LQy4es",
+          "title": "Alannah Myles - Black Velvet",
+          "dur": 290
         }
       ]
     },
@@ -145,6 +245,13 @@
           "title": "The Rolling Stones - Wild Horses",
           "dur": 348,
           "requestedBy": "Anonymous"
+        },
+        {
+          "id": "dnqxbdnzlhw",
+          "title": "Friday On My Mind — The Easybeats",
+          "dur": 173,
+          "dedication": "TGIF!",
+          "requestedBy": "Mike"
         }
       ]
     },
@@ -327,6 +434,11 @@
           "dur": 196
         },
         {
+          "id": "jenWdylTtzs",
+          "title": "The Beatles - I Want To Hold Your Hand",
+          "dur": 156
+        },
+        {
           "id": "BshxCIjNEjY",
           "title": "ABBA - Super Trouper",
           "dur": 250
@@ -350,6 +462,146 @@
           "id": "lvR1YgT7QYs",
           "title": "Roy Orbison - You Got It",
           "dur": 215
+        },
+        {
+          "id": "8LhkyyCvUHk",
+          "title": "Shocking Blue - Venus",
+          "dur": 183
+        },
+        {
+          "id": "KQetemT1sWc",
+          "title": "The Beatles - Here Comes The Sun",
+          "dur": 191
+        },
+        {
+          "id": "zKQfxi8V5FA",
+          "title": "Zager & Evans - In the Year 2525",
+          "dur": 196
+        },
+        {
+          "id": "A_MjCqQoLLA",
+          "title": "The Beatles - Hey Jude",
+          "dur": 489
+        },
+        {
+          "id": "45cYwDMibGo",
+          "title": "The Beatles - Come Together",
+          "dur": 258
+        },
+        {
+          "id": "NCtzkaL2t_Y",
+          "title": "The Beatles - Don't Let Me Down",
+          "dur": 211
+        },
+        {
+          "id": "2Q_ZzBGPdqE",
+          "title": "The Beatles - Help!",
+          "dur": 139
+        },
+        {
+          "id": "Yjyj8qnqkYI",
+          "title": "The Beatles - A Hard Day's Night",
+          "dur": 158
+        },
+        {
+          "id": "wXTJBr9tt8Q",
+          "title": "The Beatles - Yesterday",
+          "dur": 152
+        },
+        {
+          "id": "kle2xHhRHg4",
+          "title": "The Beatles - Eight Days A Week",
+          "dur": 163
+        },
+        {
+          "id": "m2uTFF_3MaA",
+          "title": "The Beatles - Yellow Submarine",
+          "dur": 165
+        },
+        {
+          "id": "S-rB0pHI9fU",
+          "title": "The Beatles - Penny Lane",
+          "dur": 186
+        },
+        {
+          "id": "HuS5NuXRb5Y",
+          "title": "The Beatles - Eleanor Rigby",
+          "dur": 131
+        },
+        {
+          "id": "ODIvONHPqpk",
+          "title": "The Beatles - Free As A Bird",
+          "dur": 299
+        },
+        {
+          "id": "zUQiUFZ5RDw",
+          "title": "Creedence Clearwater Revival - Bad Moon Rising",
+          "dur": 138
+        },
+        {
+          "id": "ZWijx_AgPiA",
+          "title": "Creedence Clearwater Revival - Fortunate Son",
+          "dur": 137
+        },
+        {
+          "id": "kNiUfwHJF6E",
+          "title": "Creedence Clearwater Revival - The Midnight Special",
+          "dur": 252
+        },
+        {
+          "id": "vrMvblpZFq0",
+          "title": "Creedence Clearwater Revival - Down On The Corner",
+          "dur": 157
+        },
+        {
+          "id": "L5V9nK7-OkM",
+          "title": "Creedence Clearwater Revival - Green River",
+          "dur": 156
+        },
+        {
+          "id": "AWAsI3U2EaE",
+          "title": "Golden Brown - The Stranglers",
+          "dur": 212
+        },
+        {
+          "id": "tH2w6Oxx0kQ",
+          "title": "Kansas - Dust in the Wind",
+          "dur": 199
+        },
+        {
+          "id": "8Pa9x9fZBtY",
+          "title": "Dire Straits - Sultans Of Swing",
+          "dur": 646
+        },
+        {
+          "id": "SEuKkcX1uKA",
+          "title": "Bad Company - Feel Like Making Love",
+          "dur": 305
+        },
+        {
+          "id": "04854XqcfCY",
+          "title": "Queen - We Are The Champions",
+          "dur": 184
+        },
+        {
+          "id": "6pHNkOQCIzk",
+          "title": "Nazareth - Love Hurts",
+          "dur": 234
+        },
+        {
+          "id": "JxPj3GAYYZ0",
+          "title": "Eric Clapton - Tears In Heaven",
+          "dur": 274
+        },
+        {
+          "id": "uGDA0Hecw1k",
+          "title": "Mike & The Mechanics - The living Years",
+          "dur": 323
+        },
+        {
+          "id": "5bvw4yDvRX0",
+          "title": "Al Stewart - Year Of The Cat",
+          "dur": 412
         }
       ]
     },
@@ -662,6 +914,21 @@
           "dur": 185,
           "dedication": "test dedication",
           "requestedBy": "morney"
+        },
+        {
+          "id": "1p_BvaHsgGg",
+          "title": "Men Without Hats - The Safety Dance",
+          "dur": 163
+        },
+        {
+          "id": "hiwgOWo7mDc",
+          "title": "NENA - 99 Red Balloons",
+          "dur": 234
+        },
+        {
+          "id": "T4sV3lqzKqQ",
+          "title": "T'Pau - China In Your Hand",
+          "dur": 261
         }
       ]
     },
@@ -722,6 +989,56 @@
           "id": "lA_FEC8mCNk",
           "title": "ELO- Rock & Roll Is King",
           "dur": 190
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "icon": "😅",
+      "name": "TGIF",
+      "freq": "55.5",
+      "desc": "Celebrate Friday Tunes",
+      "synced": true,
+      "videos": [
+        {
+          "id": "KlyXNRrsk4A",
+          "title": "Katy Perry - Last Friday Night (T.G.I.F.)",
+          "dur": 485
+        },
+        {
+          "id": "mGgMZpGYiy8",
+          "title": "The Cure - Friday I'm In Love",
+          "dur": 214
+        },
+        {
+          "id": "aZla1ttZHaw",
+          "title": "Lil Dicky - Freaky Friday feat. Chris Brown",
+          "dur": 320
+        },
+        {
+          "id": "U6n2NcJ7rLc",
+          "title": "Riton x Nightcrawlers - Friday ft. Mufasa & Hypeman (Dopamine Re-edit)",
+          "dur": 176
+        },
+        {
+          "id": "dnqxbdnzlhw",
+          "title": "The Easybeats - Friday On My Mind (French TV, 1967)",
+          "dur": 174
+        },
+        {
+          "id": "kfVsfOSbJY0",
+          "title": "Rebecca Black - Friday",
+          "dur": 227
+        },
+        {
+          "id": "AV4f1zXC93w",
+          "title": "LOVE AND KISSES - THANK GOD IT'S FRIDAY",
+          "dur": 185
+        },
+        {
+          "id": "42DYo1rPQdM",
+          "title": "George Jones ~ \"Finally Friday\"",
+          "dur": 161
         }
       ]
     }
