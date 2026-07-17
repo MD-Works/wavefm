@@ -413,6 +413,8 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
+      z-index: 25; /* above shoutout-bar (z-index:20) so panel-tabs always receive clicks */
     }
     .panel-tabs {
       display: flex;
@@ -1970,8 +1972,10 @@ async function boot() {
     // 4. Pre-render queue
     renderQueue();
 
-    // 5. Shoutout + channel update + listener count are handled by poll5min
-    //    (scheduled above) — no separate interval needed here.
+    // 5. Shoutout + channel update + listener count — run immediately on boot
+    //    so the shoutout bar state is correct from the first render, then
+    //    the setInterval keeps it refreshed every 5 minutes.
+    poll5min();
 
   } catch(e) {
     console.error('Failed to load channels', e);
