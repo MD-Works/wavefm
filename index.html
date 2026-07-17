@@ -1061,130 +1061,49 @@
     }
     .fs-btn:hover { color: var(--text); border-color: var(--muted); }
 
-    /* ── FULLSCREEN OVERLAY ── */
-    .fs-overlay {
+    /* ── FULLSCREEN VIDEO BACKDROP ── */
+    .fs-backdrop {
       position: fixed; inset: 0;
-      z-index: 500;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.25s;
-    }
-    .fs-overlay.open { opacity: 1; pointer-events: auto; }
-    .fs-bg {
-      position: absolute; inset: 0;
-      background: #0a0a0f;
-    }
-    .fs-inner {
-      position: relative; z-index: 1;
-      width: 100%; max-width: 560px;
-      padding: 28px 32px 36px;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 18px;
-    }
-
-    /* Top bar */
-    .fs-topbar {
-      width: 100%;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .fs-station {
-      display: flex; align-items: center; gap: 10px;
-      font-family: var(--mono); font-size: 0.72rem;
-      color: var(--muted); letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .fs-close-btn {
-      background: transparent; border: 1px solid var(--border);
-      border-radius: 5px; color: var(--muted);
-      width: 32px; height: 32px;
-      cursor: pointer; font-size: 0.8rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: color 0.15s;
-    }
-    .fs-close-btn:hover { color: var(--text); }
-
-    /* Artwork */
-    .fs-artwork-wrap { width: 100%; display: flex; justify-content: center; }
-    .fs-artwork {
-      width: min(280px, 72vw);
-      height: min(280px, 72vw);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border-lt);
-      background: var(--panel2);
-      position: relative;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
-    }
-    .fs-artwork-inner {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    /* YouTube thumbnail shown in artwork when playing */
-    .fs-artwork-inner img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-    /* Fallback music note when no thumbnail */
-    .fs-artwork-placeholder {
-      font-size: 4rem; opacity: 0.2;
-    }
-
-    /* Track info */
-    .fs-track-info { width: 100%; text-align: center; }
-    .fs-track-title {
-      font-size: 1.35rem; font-weight: 700;
-      line-height: 1.25; color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .fs-track-channel {
-      font-family: var(--mono); font-size: 0.7rem;
-      color: var(--accent); margin-top: 5px;
-      letter-spacing: 0.1em;
-    }
-    .fs-track-dedication {
-      font-size: 0.75rem; color: var(--amber);
-      margin-top: 4px;
-    }
-
-    /* Waveform */
-    .fs-wave-wrap { width: 100%; }
-    .fs-wave-svg { width: 100%; height: 40px; }
-
-    /* Controls */
-    .fs-controls { display: flex; align-items: center; justify-content: center; }
-    .fs-controls-synced,
-    .fs-controls-ondemand { display: flex; gap: 10px; align-items: center; }
-    .fs-ctrl-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 6px; color: var(--muted);
-      padding: 10px 20px;
-      font-family: var(--mono); font-size: 0.78rem;
+      background: #000;
+      z-index: 600;
+      display: none;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .fs-ctrl-btn:hover { background: var(--panel2); color: var(--text); border-color: var(--muted); }
-    .fs-ctrl-btn.fs-ctrl-primary {
-      background: var(--accent); color: var(--on-accent);
-      border-color: var(--accent); font-weight: 700;
-      padding: 10px 28px;
+    .fs-backdrop.open { display: block; }
+    /* The player wrap is moved into here — make it fill the screen */
+    .fs-backdrop #yt-player-wrap {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      max-width: none !important;
+      height: 100% !important;
+      aspect-ratio: unset !important;
+      border-radius: 0;
+      box-shadow: none;
+      z-index: 1;
     }
-    .fs-ctrl-btn.fs-ctrl-primary:hover { opacity: 0.85; }
+    .fs-backdrop #yt-player-wrap iframe {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    /* Subtle exit hint that fades out */
+    .fs-hint {
+      position: absolute;
+      bottom: 28px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.6);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      padding: 6px 14px;
+      border-radius: 20px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 1;
+      transition: opacity 1s;
+    }
+    .fs-hint.hidden { opacity: 0; }
 
-    /* Bottom row: rating + volume */
-    .fs-bottom-row {
-      width: 100%;
-      display: flex; align-items: center; justify-content: center;
-      gap: 24px;
-    }
-    .fs-rating { display: flex; gap: 8px; }
-    .fs-vol-wrap { display: flex; align-items: center; gap: 8px; }
-    .fs-vol-wrap input[type=range] { width: 110px; }
-
-    @media (max-width: 600px) {
-      .fs-inner { padding: 20px 18px 28px; gap: 14px; }
-      .fs-track-title { font-size: 1.1rem; }
-    }
 
     @media (prefers-reduced-motion: reduce) {
       *, .on-air-dot { animation: none !important; transition: none !important; }
@@ -1645,7 +1564,6 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
   updatePlayPauseBtn(true);
   renderQueue();
   updateRatingUI(vid.id);  // show thumb state for this track
-  syncFsContent();          // keep fullscreen overlay in sync
 
   if (ytReady) {
     createPlayer(vid.id, seekTo || 0);
@@ -2462,7 +2380,7 @@ function updateRatingUI(videoId) {
   const upBtn  = document.getElementById('thumb-up-btn');
   const dnBtn  = document.getElementById('thumb-down-btn');
 
-  if (!videoId) { panel.style.display = 'none'; updateFsRatingUI(null); return; }
+  if (!videoId) { panel.style.display = 'none'; return; }
   panel.style.display = 'flex';
 
   const votes = getSavedVotes();
@@ -2474,7 +2392,6 @@ function updateRatingUI(videoId) {
   dnBtn.disabled  = !!existing;
   upBtn.title  = existing === 'up'   ? 'You liked this' : 'Thumbs up';
   dnBtn.title  = existing === 'down' ? 'You disliked this' : 'Thumbs down';
-  updateFsRatingUI(videoId); // keep overlay in sync
 }
 
 async function castVote(direction) {
@@ -2509,148 +2426,86 @@ function saveLastChannel(idx) {
 }
 
 // ── FULLSCREEN ────────────────────────────────────────────────────────────────
+// We fullscreen the video by physically moving #yt-player-wrap into a fixed
+// black backdrop, then moving it back on exit. This avoids re-creating the
+// player and keeps audio uninterrupted.
+
 let _fsOpen = false;
+let _playerOriginalParent = null;
 
 function toggleFullscreen() {
   _fsOpen ? closeFs() : openFs();
 }
 
 function openFs() {
-  _fsOpen = true;
-  const overlay = document.getElementById('fs-overlay');
-  overlay.classList.add('open');
+  const wrap     = document.getElementById('yt-player-wrap');
+  const backdrop = document.getElementById('fs-backdrop');
+  if (!wrap || !backdrop) return;
 
-  // Sync button icons
+  _fsOpen = true;
+  _playerOriginalParent = wrap.parentElement;
+
+  // Move player into the fullscreen backdrop
+  backdrop.appendChild(wrap);
+  backdrop.classList.add('open');
+
+  // Show exit hint, then fade it after 2.5 s
+  const hint = document.getElementById('fs-hint');
+  hint.classList.remove('hidden');
+  setTimeout(() => hint.classList.add('hidden'), 2500);
+
+  // Update button icons
   document.getElementById('fs-icon-expand').style.display = 'none';
   document.getElementById('fs-icon-shrink').style.display = '';
 
-  // Try native browser fullscreen on the overlay element
-  if (overlay.requestFullscreen) {
-    overlay.requestFullscreen().catch(() => {}); // graceful fallback if blocked
-  } else if (overlay.webkitRequestFullscreen) {
-    overlay.webkitRequestFullscreen();
+  // Try native fullscreen on the backdrop
+  if (backdrop.requestFullscreen) {
+    backdrop.requestFullscreen().catch(() => {});
+  } else if (backdrop.webkitRequestFullscreen) {
+    backdrop.webkitRequestFullscreen();
   }
-
-  // Populate overlay with current track info
-  syncFsContent();
-  document.body.style.overflow = 'hidden';
 }
 
 function closeFs() {
+  const wrap     = document.getElementById('yt-player-wrap');
+  const backdrop = document.getElementById('fs-backdrop');
+  if (!wrap || !backdrop) return;
+
   _fsOpen = false;
-  const overlay = document.getElementById('fs-overlay');
-  overlay.classList.remove('open');
+
+  // Move player back to its original home
+  if (_playerOriginalParent) {
+    _playerOriginalParent.appendChild(wrap);
+  }
+  backdrop.classList.remove('open');
 
   // Restore button icons
   document.getElementById('fs-icon-expand').style.display = '';
   document.getElementById('fs-icon-shrink').style.display = 'none';
 
-  // Exit native fullscreen if active
+  // Exit native fullscreen if it's active
   if (document.fullscreenElement || document.webkitFullscreenElement) {
     (document.exitFullscreen || document.webkitExitFullscreen).call(document).catch(() => {});
   }
-
-  document.body.style.overflow = '';
 }
 
-// Sync the overlay content whenever it opens or the track changes
-function syncFsContent() {
-  if (!_fsOpen) return;
-
-  const ch  = CHANNELS[currentChannelIdx];
-  const vid = ch?.videos?.[currentTrackIdx];
-
-  // Station / channel info
-  document.getElementById('fs-ch-icon').textContent = ch?.icon ?? '';
-  document.getElementById('fs-ch-name').textContent = ch?.name ?? '';
-  document.getElementById('fs-ch-freq').textContent = ch?.freq ? '· ' + ch.freq : '';
-
-  // Track info
-  document.getElementById('fs-track-title').textContent   = vid?.title ?? '—';
-  document.getElementById('fs-track-channel').textContent = ch ? ch.icon + ' ' + ch.name : '';
-
-  const dedEl = document.getElementById('fs-track-dedication');
-  if (vid?.dedication) {
-    dedEl.textContent = '💌 ' + vid.dedication + (vid.requestedBy ? ' — ' + vid.requestedBy : '');
-    dedEl.style.display = 'block';
-  } else {
-    dedEl.style.display = 'none';
-  }
-
-  // Artwork — use YouTube maxres thumbnail
-  const artInner = document.getElementById('fs-artwork-inner');
-  if (vid?.id) {
-    artInner.innerHTML = `<img src="https://img.youtube.com/vi/${vid.id}/hqdefault.jpg"
-      onerror="this.style.display='none'; this.nextElementSibling.style.display=''"
-      alt="${vid.title ?? ''}">
-      <div class="fs-artwork-placeholder" style="display:none;position:absolute">🎵</div>`;
-  } else {
-    artInner.innerHTML = `<div class="fs-artwork-placeholder">🎵</div>`;
-  }
-
-  // Controls — mirror which set is visible
-  const isSynced = ch?.synced ?? true;
-  document.getElementById('fs-controls-synced').style.display  = isSynced ? 'flex' : 'none';
-  document.getElementById('fs-controls-ondemand').style.display = isSynced ? 'none' : 'flex';
-
-  syncFsMuteBtn();
-  syncFsPlayBtn();
-
-  // Rating thumbs
-  updateFsRatingUI(vid?.id ?? null);
-}
-
-function syncFsMuteBtn() {
-  const btn = document.getElementById('fs-mute-btn');
-  if (!btn) return;
-  // Mirror the main mute button text
-  const mainBtn = document.getElementById('mute-btn');
-  if (mainBtn) btn.textContent = mainBtn.textContent;
-}
-
-function syncFsPlayBtn() {
-  const btn = document.getElementById('fs-play-pause-btn');
-  if (!btn) return;
-  const mainBtn = document.getElementById('play-pause-btn');
-  if (mainBtn) btn.textContent = mainBtn.textContent;
-}
-
-// Rating UI inside the fullscreen overlay (mirrors main bar logic)
-function updateFsRatingUI(videoId) {
-  const panel  = document.getElementById('fs-rating');
-  const upBtn  = document.getElementById('fs-thumb-up');
-  const dnBtn  = document.getElementById('fs-thumb-down');
-  if (!panel) return;
-
-  if (!videoId) { panel.style.display = 'none'; return; }
-  panel.style.display = 'flex';
-
-  const votes   = getSavedVotes();
-  const existing = votes[videoId];
-  upBtn.classList.toggle('voted', existing === 'up');
-  dnBtn.classList.toggle('voted', existing === 'down');
-  upBtn.disabled = !!existing;
-  dnBtn.disabled = !!existing;
-  upBtn.title  = existing === 'up'   ? 'You liked this' : 'Thumbs up';
-  dnBtn.title  = existing === 'down' ? 'You disliked this' : 'Thumbs down';
-}
-
-// Sync volume slider in overlay with main slider
-document.getElementById('volume-slider').addEventListener('input', function() {
-  const fsSlider = document.getElementById('fs-volume-slider');
-  if (fsSlider) fsSlider.value = this.value;
+// Tap backdrop (but not the player itself) to exit
+document.addEventListener('DOMContentLoaded', () => {
+  const backdrop = document.getElementById('fs-backdrop');
+  backdrop.addEventListener('click', (e) => {
+    // Only close if clicking the black area, not the video iframe
+    if (e.target === backdrop) closeFs();
+  });
 });
 
-// Keyboard shortcut: F toggles fullscreen
+// Keyboard: Escape or F
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'f' || e.key === 'F') {
-    // Don't trigger inside input fields
-    if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
-    toggleFullscreen();
-  }
+  if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+  if (e.key === 'Escape' && _fsOpen) closeFs();
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
 });
 
-// Sync when browser exits native fullscreen via Esc
+// Sync if browser exits native fullscreen via its own Esc handling
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && _fsOpen) closeFs();
 });
@@ -2839,66 +2694,9 @@ function showTempPlBanner(msg) {
 boot();
 </script>
 
-<!-- ── FULLSCREEN OVERLAY ── -->
-<div class="fs-overlay" id="fs-overlay">
-  <div class="fs-bg" id="fs-bg"></div>
-
-  <div class="fs-inner">
-    <!-- Top bar -->
-    <div class="fs-topbar">
-      <div class="fs-station">
-        <span id="fs-ch-icon"></span>
-        <span id="fs-ch-name"></span>
-        <span id="fs-ch-freq"></span>
-      </div>
-      <button class="fs-close-btn" onclick="toggleFullscreen()" title="Exit fullscreen (Esc / F)">✕</button>
-    </div>
-
-    <!-- Artwork / player -->
-    <div class="fs-artwork-wrap">
-      <div class="fs-artwork" id="fs-artwork">
-        <div class="fs-artwork-inner" id="fs-artwork-inner"></div>
-      </div>
-    </div>
-
-    <!-- Track info -->
-    <div class="fs-track-info">
-      <div class="fs-track-title" id="fs-track-title">—</div>
-      <div class="fs-track-channel" id="fs-track-channel"></div>
-      <div class="fs-track-dedication" id="fs-track-dedication" style="display:none"></div>
-    </div>
-
-    <!-- Waveform -->
-    <div class="fs-wave-wrap">
-      <svg class="fs-wave-svg" viewBox="0 0 360 40" xmlns="http://www.w3.org/2000/svg">
-        <path class="waveform-path" id="fs-waveform-path" d="M0,20 L360,20"/>
-      </svg>
-    </div>
-
-    <!-- Controls -->
-    <div class="fs-controls">
-      <div class="fs-controls-synced" id="fs-controls-synced">
-        <button class="fs-ctrl-btn fs-ctrl-primary" id="fs-mute-btn" onclick="toggleMute(); syncFsMuteBtn()">🔊 MUTE</button>
-      </div>
-      <div class="fs-controls-ondemand" id="fs-controls-ondemand" style="display:none">
-        <button class="fs-ctrl-btn" onclick="prevTrack()" title="Previous">&#9664;&#9664;</button>
-        <button class="fs-ctrl-btn fs-ctrl-primary" id="fs-play-pause-btn" onclick="togglePlayPause(); syncFsPlayBtn()">&#9646;&#9646; PAUSE</button>
-        <button class="fs-ctrl-btn" onclick="nextTrack()" title="Next">&#9654;&#9654;</button>
-      </div>
-    </div>
-
-    <!-- Rating + volume row -->
-    <div class="fs-bottom-row">
-      <div class="fs-rating" id="fs-rating" style="display:none">
-        <button class="thumb-btn" id="fs-thumb-up"   onclick="castVote('up')"   title="Thumbs up">👍</button>
-        <button class="thumb-btn" id="fs-thumb-down" onclick="castVote('down')" title="Thumbs down">👎</button>
-      </div>
-      <div class="fs-vol-wrap">
-        <span class="vol-icon">🔊</span>
-        <input type="range" id="fs-volume-slider" min="0" max="100" value="80" oninput="setVolume(this.value); document.getElementById('volume-slider').value=this.value" />
-      </div>
-    </div>
-  </div>
+<!-- ── FULLSCREEN VIDEO BACKDROP ── -->
+<div class="fs-backdrop" id="fs-backdrop">
+  <div class="fs-hint" id="fs-hint">TAP OR PRESS ESC TO EXIT</div>
 </div>
 </body>
 </html>
