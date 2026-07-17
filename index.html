@@ -4,22 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WAVEFM — Free Radio</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#1a1610" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="WaveFM" />
-  <link rel="apple-touch-icon" href="/icon-180.png" />
-  <link rel="apple-touch-icon" sizes="152x152" href="/icon-152.png" />
-  <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&family=Syne+Mono&display=swap" rel="stylesheet" />
   <script>
@@ -421,39 +405,6 @@
     .player-placeholder-icon { font-size: 3rem; opacity: 0.3; }
     .player-placeholder-text { font-size: 0.85rem; letter-spacing: 0.05em; }
 
-    /* ── FULLSCREEN BUTTON ── */
-    .fullscreen-btn {
-      position: absolute;
-      bottom: 18px; right: 18px;
-      z-index: 10;
-      width: 36px; height: 36px;
-      background: rgba(0,0,0,0.55);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 4px;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s, background 0.15s;
-      backdrop-filter: blur(4px);
-    }
-    .player-wrap:hover .fullscreen-btn,
-    .fullscreen-btn:focus { opacity: 1; }
-    .fullscreen-btn:hover { background: rgba(0,0,0,0.8); border-color: var(--accent); }
-    .player-wrap:fullscreen,
-    .player-wrap:-webkit-full-screen {
-      width: 100vw; height: 100vh; max-width: none; border-radius: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: #000;
-    }
-    .player-wrap:fullscreen #yt-player-wrap,
-    .player-wrap:-webkit-full-screen #yt-player-wrap {
-      width: 100%; height: 100%; max-width: none; border-radius: 0;
-    }
-    .player-wrap:fullscreen .fullscreen-btn,
-    .player-wrap:-webkit-full-screen .fullscreen-btn { display: none; }
-
     /* ── QUEUE / RIGHT PANEL ── */
     .queue-panel {
       grid-area: queue;
@@ -462,8 +413,6 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
-      z-index: 25; /* above shoutout-bar (z-index:20) so panel-tabs always receive clicks */
     }
     .panel-tabs {
       display: flex;
@@ -684,6 +633,127 @@
     }
     .queue-add-btn:hover { color: var(--accent); border-color: var(--accent); }
 
+    /* Share button — sits alongside + Playlist */
+    .queue-share-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-family: var(--mono);
+      padding: 5px 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .queue-share-btn:hover { color: var(--green); border-color: var(--green); }
+
+    /* Share modal */
+    .share-modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s;
+    }
+    .share-modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .share-modal {
+      background: var(--panel);
+      border: 1px solid var(--border-lt);
+      border-radius: 10px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      display: flex; flex-direction: column; gap: 16px;
+      transform: translateY(12px);
+      transition: transform 0.18s;
+    }
+    .share-modal-backdrop.open .share-modal { transform: translateY(0); }
+    .share-modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+    .share-modal-title {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .share-modal-track {
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--text); margin-top: 3px;
+      line-height: 1.3;
+    }
+    .share-modal-close {
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 4px; color: var(--muted);
+      width: 28px; height: 28px; flex-shrink: 0;
+      cursor: pointer; font-size: 0.78rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.12s;
+    }
+    .share-modal-close:hover { color: var(--text); }
+    .share-url-box {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.5;
+      cursor: text;
+      user-select: all;
+    }
+    .share-preview {
+      background: var(--accent-glow);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text);
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+    .share-btn-row {
+      display: flex; gap: 8px;
+    }
+    .share-action-btn {
+      flex: 1;
+      border: none; border-radius: 6px;
+      padding: 11px 14px;
+      font-family: var(--sans); font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.03em;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .share-action-btn:active { transform: scale(0.97); }
+    .share-wa-btn { background: #25D366; color: #fff; }
+    .share-wa-btn:hover { opacity: 0.9; }
+    .share-copy-btn { background: var(--panel2); border: 1px solid var(--border); color: var(--text); }
+    .share-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Temp-playlist toast badge */
+    .temp-pl-banner {
+      display: none;
+      position: fixed;
+      top: 64px; left: 50%; transform: translateX(-50%);
+      background: var(--panel2);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 9px 16px;
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--accent);
+      z-index: 50;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      pointer-events: none;
+    }
+    .temp-pl-banner.show { display: block; }
+
     /* Add-to-playlist floating menu */
     .pl-menu {
       position: fixed;
@@ -712,52 +782,6 @@
     .pl-menu-divider { height: 1px; background: var(--border); margin: 4px 2px; }
     .pl-menu-new { color: var(--accent); font-weight: 600; }
     .pl-menu-empty { color: var(--muted); padding: 8px 10px; font-size: 0.7rem; }
-
-    /* Playlist play controls */
-    .pl-play-all-btn {
-      margin-left: auto;
-      flex-shrink: 0;
-      padding: 5px 12px;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      font-family: var(--mono);
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-    .pl-play-all-btn:hover { opacity: 0.85; }
-    .pl-row-play {
-      flex-shrink: 0;
-      width: 28px; height: 28px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--accent);
-      font-size: 0.7rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, border-color 0.15s;
-      margin-right: 4px;
-    }
-    .pl-row-play:hover { background: var(--accent-glow); border-color: var(--accent); }
-    .pl-now-playing-tag {
-      display: inline-block;
-      font-size: 0.6rem;
-      font-family: var(--mono);
-      color: var(--accent);
-      background: var(--accent-glow);
-      border: 1px solid var(--accent);
-      border-radius: 3px;
-      padding: 1px 5px;
-      margin-left: 6px;
-      letter-spacing: 0.06em;
-      vertical-align: middle;
-      text-transform: uppercase;
-    }
 
     /* Playlists tab */
     .pl-new-row { display: flex; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
@@ -1111,7 +1135,6 @@
           <div class="player-placeholder-text">Tuning in…</div>
         </div>
       </div>
-      <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle fullscreen" aria-label="Toggle fullscreen">⛶</button>
     </div>
   </main>
 
@@ -1237,6 +1260,33 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ── SHARE MODAL ── -->
+<div class="share-modal-backdrop" id="share-modal-backdrop" onclick="closeShareModal(event)">
+  <div class="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-label">
+    <div class="share-modal-header">
+      <div>
+        <div class="share-modal-title" id="share-modal-label">Share</div>
+        <div class="share-modal-track" id="share-modal-track"></div>
+      </div>
+      <button class="share-modal-close" onclick="hideShareModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="share-url-box" id="share-url-box" title="Tap to select all"></div>
+    <div class="share-preview" id="share-preview"></div>
+    <div class="share-btn-row">
+      <button class="share-action-btn share-wa-btn" onclick="openWhatsApp()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.105.546 4.082 1.5 5.797L0 24l6.388-1.673A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-1.944 0-3.77-.523-5.334-1.434l-.383-.226-3.795.994.996-3.706-.248-.4A9.773 9.773 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
+        WhatsApp
+      </button>
+      <button class="share-action-btn share-copy-btn" id="share-copy-btn" onclick="copyShareLink()">
+        Copy Link
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Temp playlist indicator -->
+<div class="temp-pl-banner" id="temp-pl-banner"></div>
+
 <script>
 // ── CHANNEL DATA — loaded from the backend (falls back to channels.json) ──────
 let CHANNELS = [];
@@ -1250,8 +1300,6 @@ let isPlaying         = false;
 let isMuted           = false;
 let waveAnimFrame     = null;
 let wavePhase         = 0;
-// Active playlist playback — null when not in playlist mode
-let activePlaylist    = null; // { plId: string, trackIdx: number }
 
 // Persistent per-browser client id, used for the live listener count
 function getClientId() {
@@ -1315,10 +1363,20 @@ function setSyncBadge(synced) {
 }
 
 // ── YOUTUBE IFrame API ────────────────────────────────────────────────────────
+// Set to true once handleShareParams has already kicked off a channel switch,
+// so onYouTubeIframeAPIReady knows not to overwrite it with channel 0.
+let _shareHandled = false;
+
 window.onYouTubeIframeAPIReady = function() {
   ytReady = true;
-  // Trigger switchChannel so sync runs on first load
-  switchChannel(currentChannelIdx);
+  if (!_shareHandled) {
+    // Normal boot: start at channel 0
+    switchChannel(currentChannelIdx);
+  } else {
+    // A share link triggered switchChannel earlier; now the player is ready,
+    // so just load the track that was already selected.
+    loadTrack(currentChannelIdx, currentTrackIdx, 0);
+  }
 };
 
 let pendingSeek = 0; // seconds to seek to once player is ready
@@ -1409,26 +1467,6 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
 }
 
 function nextTrack() {
-  // If we're in playlist mode, advance through the playlist
-  if (activePlaylist) {
-    const pl = getPlaylists().find(p => p.id === activePlaylist.plId);
-    if (pl && pl.tracks.length) {
-      const next = activePlaylist.trackIdx + 1;
-      if (next < pl.tracks.length) {
-        activePlaylist.trackIdx = next;
-        _loadPlaylistTrack(pl, next);
-        renderPlaylistsTab();
-      } else {
-        // End of playlist — stop and clear playlist mode
-        activePlaylist = null;
-        showToast('Playlist finished');
-        renderPlaylistsTab();
-      }
-      return;
-    } else {
-      activePlaylist = null;
-    }
-  }
   const ch = CHANNELS[currentChannelIdx];
   if (ch.synced) {
     // Re-calculate from clock in case playback drifted
@@ -1501,33 +1539,8 @@ function setVolume(val) {
   if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(parseInt(val));
 }
 
-// ── FULLSCREEN ────────────────────────────────────────────────────────────────
-function toggleFullscreen() {
-  const el = document.querySelector('.player-wrap');
-  const isFs = document.fullscreenElement || document.webkitFullscreenElement;
-  if (isFs) {
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  } else {
-    const req = el.requestFullscreen || el.webkitRequestFullscreen;
-    if (req) req.call(el);
-  }
-}
-// Update button icon to reflect state
-document.addEventListener('fullscreenchange', updateFullscreenBtn);
-document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
-function updateFullscreenBtn() {
-  const btn = document.getElementById('fullscreen-btn');
-  if (!btn) return;
-  const isFs = document.fullscreenElement || document.webkitFullscreenElement;
-  btn.title = isFs ? 'Exit fullscreen' : 'Toggle fullscreen';
-  btn.setAttribute('aria-label', btn.title);
-  btn.textContent = isFs ? '✕' : '⛶';
-}
-
 // ── CHANNEL SWITCH ────────────────────────────────────────────────────────────
 function switchChannel(idx) {
-  // Manual channel switch exits playlist mode
-  activePlaylist = null;
   currentChannelIdx = idx;
   const ch = CHANNELS[idx];
 
@@ -1600,6 +1613,7 @@ function renderQueue() {
         <div class="queue-channel">${ch.name}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
       </div>
       <button class="queue-add-btn" onclick="event.stopPropagation(); openAddToPlaylistMenu(event, ${currentChannelIdx}, ${i})">+ Playlist</button>
+      <button class="queue-share-btn" onclick="event.stopPropagation(); shareTrack(${currentChannelIdx}, ${i})" title="Share this track">↗</button>
     </div>
   `).join('');
 }
@@ -1664,6 +1678,7 @@ function handleSearchInput() {
         <div class="queue-channel">${m.ch.icon} ${escHtml(m.ch.name)}</div>
       </div>
       <button class="queue-add-btn" onclick="event.stopPropagation(); openAddToPlaylistMenu(event, ${m.ci}, ${m.vi})">+ Playlist</button>
+      <button class="queue-share-btn" onclick="event.stopPropagation(); shareTrack(${m.ci}, ${m.vi})" title="Share this track">↗</button>
     </div>
   `).join('');
 }
@@ -1824,26 +1839,24 @@ function renderPlaylistsTab() {
       playlistView = { mode: 'list', id: null };
       return renderPlaylistsTab();
     }
-    const isActivePl = activePlaylist && activePlaylist.plId === pl.id;
     root.innerHTML = `
       <div class="pl-detail-header">
         <button class="pl-back-btn" onclick="playlistView = {mode:'list', id:null}; renderPlaylistsTab()">← Back</button>
         <div class="pl-detail-title">${escHtml(pl.name)}</div>
-        ${pl.tracks.length ? `<button class="pl-play-all-btn" onclick="playPlaylist('${pl.id}')" title="Play all">▶ Play All</button>` : ''}
+        ${pl.tracks.length ? `<button class="queue-share-btn" onclick="sharePlaylist('${pl.id}')" title="Share playlist" style="opacity:1">↗ Share</button>` : ''}
       </div>
       <div class="queue-list" id="pl-detail-list">
-        ${pl.tracks.length ? pl.tracks.map((t, i) => {
-          const isPlaying = isActivePl && activePlaylist.trackIdx === i;
-          return `
-          <div class="queue-item${isPlaying ? ' playing' : ''}" onclick="playPlaylistTrack('${pl.id}', ${i})">
+        ${pl.tracks.length ? pl.tracks.map((t, i) => `
+          <div class="queue-item" onclick="playPlaylistTrack('${pl.id}', ${i})">
             <img class="queue-thumb" src="https://img.youtube.com/vi/${t.videoId}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
             <div class="queue-info">
-              <div class="queue-title">${isPlaying ? '▶ ' : ''}${escHtml(t.title)}</div>
+              <div class="queue-title">${escHtml(t.title)}</div>
               <div class="queue-channel">${t.channelIcon || ''} ${escHtml(t.channelName || '')}${t.dedication ? ' · 💌 ' + escHtml(t.dedication) : ''}</div>
             </div>
+            <button class="queue-share-btn" onclick="event.stopPropagation(); shareTrackById('${t.videoId}', ${JSON.stringify(t.title).replace(/'/g,"\\'")})" title="Share track">↗</button>
             <button class="queue-add-btn" onclick="event.stopPropagation(); removeTrackFromPlaylist('${pl.id}', '${t.videoId}', ${t.channelId}); renderPlaylistsTab(); showToast('Removed from playlist')">✕</button>
-          </div>`;
-        }).join('') : `
+          </div>
+        `).join('') : `
           <div class="queue-empty">
             <div class="queue-empty-icon">🎵</div>
             <div>No tracks yet — add some from Search or Up Next</div>
@@ -1858,19 +1871,16 @@ function renderPlaylistsTab() {
       <button onclick="createPlaylistFromInput()">Create</button>
     </div>
     <div class="pl-list">
-      ${playlists.length ? playlists.map(p => {
-        const isActivePl = activePlaylist && activePlaylist.plId === p.id;
-        return `
+      ${playlists.length ? playlists.map(p => `
         <div class="pl-row" onclick="openPlaylist('${p.id}')">
-          <span class="pl-row-icon">${isActivePl ? '▶' : '🎶'}</span>
+          <span class="pl-row-icon">🎶</span>
           <div class="pl-row-info">
-            <div class="pl-row-name">${escHtml(p.name)}${isActivePl ? ' <span class="pl-now-playing-tag">playing</span>' : ''}</div>
+            <div class="pl-row-name">${escHtml(p.name)}</div>
             <div class="pl-row-count">${p.tracks.length} track${p.tracks.length === 1 ? '' : 's'}</div>
           </div>
-          ${p.tracks.length ? `<button class="pl-row-play" onclick="event.stopPropagation(); playPlaylist('${p.id}')" title="Play playlist">▶</button>` : ''}
           <button class="pl-row-del" onclick="event.stopPropagation(); confirmDeletePlaylist('${p.id}')" title="Delete playlist">🗑</button>
-        </div>`;
-      }).join('') : `
+        </div>
+      `).join('') : `
         <div class="queue-empty">
           <div class="queue-empty-icon">🎶</div>
           <div>No playlists yet</div>
@@ -1903,50 +1913,21 @@ function confirmDeletePlaylist(id) {
   renderPlaylistsTab();
 }
 
-// Play a single playlist track (sets playlist mode so nextTrack continues the list)
 function playPlaylistTrack(plId, trackIdx) {
   const pl = getPlaylists().find(p => p.id === plId);
   if (!pl) return;
-  activePlaylist = { plId, trackIdx };
-  _loadPlaylistTrack(pl, trackIdx);
-  renderPlaylistsTab();
-}
-
-// Play an entire playlist from the first track
-function playPlaylist(plId) {
-  const pl = getPlaylists().find(p => p.id === plId);
-  if (!pl || !pl.tracks.length) { showToast('Playlist is empty'); return; }
-  activePlaylist = { plId, trackIdx: 0 };
-  _loadPlaylistTrack(pl, 0);
-  // Navigate to detail view so user sees what's playing
-  playlistView = { mode: 'detail', id: plId };
-  renderPlaylistsTab();
-  showToast(`Playing "${pl.name}"`);
-}
-
-// Internal: load a specific track from a playlist object
-function _loadPlaylistTrack(pl, trackIdx) {
   const track = pl.tracks[trackIdx];
   if (!track) return;
+
   const ci = CHANNELS.findIndex(c => c.id === track.channelId);
   if (ci === -1) { showToast('That channel no longer exists'); return; }
   const vi = CHANNELS[ci].videos.findIndex(v => v.id === track.videoId);
   if (vi === -1) { showToast('This track is no longer on that channel'); return; }
-  // If we need to switch channels, do full channel UI update first
-  if (ci !== currentChannelIdx) {
-    currentChannelIdx = ci;
-    const ch = CHANNELS[ci];
-    document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
-    const btn = document.querySelector(`[data-channel="${ci}"]`);
-    if (btn) btn.classList.add('active');
-    document.getElementById('ch-icon').textContent = ch.icon;
-    document.getElementById('ch-name').textContent = ch.name;
-    document.getElementById('ch-desc').textContent = ch.desc;
-    document.getElementById('ch-freq').textContent = ch.freq;
-    updateControls(false); // on-demand controls for playlist
-  }
+
+  switchChannel(ci);
   currentTrackIdx = vi;
   loadTrack(ci, vi);
+  showTab('queue', document.querySelector('.panel-tab[data-tab="queue"]'));
 }
 
 // ── REQUEST FORM ──────────────────────────────────────────────────────────────
@@ -2053,30 +2034,11 @@ async function refreshListenerCount() {
 // triggers a comparison (the real version from boot() will be ≥ 0).
 let CHANNELS_VERSION = -1;
 
-// ── POLLING STRATEGY ──────────────────────────────────────────────────────────
-// pollChannels  — every 30s: version-diff check, cheap. Catches admin updates fast.
-// poll5min      — every 5 min: shoutout + listener count, rarely changes.
-// sendHeartbeat — every 60s: KV TTL minimum.
-
-async function pollChannels() {
-  try {
-    const res = await fetch('/api/channels');
-    if (res.ok) {
-      const data = await res.json();
-      if (data.channels && typeof data.version === 'number' && data.version !== CHANNELS_VERSION) {
-        CHANNELS = data.channels;
-        CHANNELS_VERSION = data.version;
-        buildSidebar();
-        renderQueue();
-        if (document.getElementById('tab-playlists').classList.contains('active')) renderPlaylistsTab();
-        showToast('Channels updated ✓');
-      }
-    }
-  } catch (e) { /* backend offline — keep current CHANNELS in memory */ }
-}
-
+// Combined 5-minute poll: shoutout + channel updates + listener count.
+// Heartbeat runs on its own tighter loop (every 60s — KV TTL minimum).
+// This keeps total Worker requests at ~84/hr/tab vs ~540 before.
 async function poll5min() {
-  // Shoutout
+  // 1. Shoutout
   try {
     const res = await fetch('/api/shoutout');
     if (res.ok) {
@@ -2088,7 +2050,22 @@ async function poll5min() {
     }
   } catch (e) { hideShoutout(); }
 
-  // Listener count
+  // 2. Channels — only rebuild if the version changed
+  try {
+    const res = await fetch('/api/channels');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.channels && typeof data.version === 'number' && data.version !== CHANNELS_VERSION) {
+        CHANNELS = data.channels;
+        CHANNELS_VERSION = data.version;
+        buildSidebar();
+        renderQueue();
+        showToast('Channel list updated ✓');
+      }
+    }
+  } catch (e) { /* backend offline — keep current CHANNELS in memory */ }
+
+  // 3. Listener count
   refreshListenerCount();
 }
 
@@ -2096,9 +2073,8 @@ async function poll5min() {
 sendHeartbeat();
 refreshListenerCount();
 pollShoutout();
-setInterval(sendHeartbeat,  60 * 1000);       // every 60s — KV TTL minimum
-setInterval(pollChannels,   2 * 60 * 1000);   // every 2 min — catch admin changes promptly
-setInterval(poll5min,       5 * 60 * 1000);   // every 5 min — shoutout + listener count
+setInterval(sendHeartbeat, 60000);        // every 60s — matches KV TTL minimum
+setInterval(poll5min,     5 * 60 * 1000); // every 5 min
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg) {
@@ -2147,18 +2123,28 @@ async function boot() {
     CHANNELS = channels;
     CHANNELS_VERSION = version; // seed the version tracker so poll5min knows what's current
 
-    // 2. Build sidebar dynamically from channel data
+    // 2. Check for inbound share params (?v= or ?pl=) before building the sidebar
+    //    so handleShareParams can inject a virtual channel if needed.
+    const share = parseShareParams();
+
+    // 3. Build sidebar dynamically from channel data
     buildSidebar();
 
-    // 3. Load YouTube API then auto-switch to channel 0
+    // 4. Load YouTube API — handleShareParams will call switchChannel() which
+    //    triggers the player once onYouTubeIframeAPIReady fires.
     loadYouTubeAPI();
 
-    // 4. Pre-render queue
+    // 5. Handle share or fall through to default channel 0
+    const handled = handleShareParams(share);
+    if (!handled) {
+      // Normal boot: switchChannel is called inside onYouTubeIframeAPIReady
+    }
+
+    // 6. Pre-render queue
     renderQueue();
 
-    // 5. Run both polls immediately on boot so state is fresh from first render.
-    poll5min();
-    pollChannels();
+    // 5. Shoutout + channel update + listener count are handled by poll5min
+    //    (scheduled above) — no separate interval needed here.
 
   } catch(e) {
     console.error('Failed to load channels', e);
@@ -2253,16 +2239,185 @@ function hideShoutout() {
   document.getElementById('shoutout-bar').style.display = 'none';
 }
 
-boot();
+// ── SHARING ───────────────────────────────────────────────────────────────────
+const BASE_URL = 'https://wavefm-569.pages.dev';
 
-// ── SERVICE WORKER (PWA install support) ──────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(err => {
-      console.warn('SW registration failed:', err);
-    });
+let _shareState = { url: '', title: '', message: '' };
+
+// Build a share URL for a single track by video ID
+function buildTrackUrl(videoId) {
+  return `${BASE_URL}/?v=${videoId}`;
+}
+
+// Build a share URL for a temporary playlist (up to ~30 tracks before URL gets long)
+function buildPlaylistUrl(videoIds) {
+  return `${BASE_URL}/?pl=${videoIds.join(',')}`;
+}
+
+// Format the WhatsApp message text
+function buildWaMessage(title, url) {
+  return `🎵 *${title}*\n\nListening on WAVEFM — open the link to tune in:\n${url}`;
+}
+
+// Open the share modal for a track from channel+index
+function shareTrack(ci, vi) {
+  const ch = CHANNELS[ci];
+  const v  = ch.videos[vi];
+  if (!v) return;
+  openShareModal(v.title, buildTrackUrl(v.id));
+}
+
+// Share a track we only know by videoId + title (from a playlist)
+function shareTrackById(videoId, title) {
+  openShareModal(title, buildTrackUrl(videoId));
+}
+
+// Share an entire private playlist by encoding video IDs in the URL
+function sharePlaylist(plId) {
+  const pl = getPlaylists().find(p => p.id === plId);
+  if (!pl || !pl.tracks.length) return;
+  const ids  = pl.tracks.map(t => t.videoId);
+  const url  = buildPlaylistUrl(ids);
+  const title = `${pl.name} (${pl.tracks.length} track${pl.tracks.length === 1 ? '' : 's'})`;
+  openShareModal(title, url, true);
+}
+
+function openShareModal(title, url, isPlaylist) {
+  const message = buildWaMessage(title, url);
+  _shareState = { url, title, message };
+
+  document.getElementById('share-modal-label').textContent = isPlaylist ? 'Share Playlist' : 'Share Track';
+  document.getElementById('share-modal-track').textContent = title;
+  document.getElementById('share-url-box').textContent = url;
+  document.getElementById('share-preview').textContent = message;
+  document.getElementById('share-copy-btn').textContent = 'Copy Link';
+
+  document.getElementById('share-modal-backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function hideShareModal() {
+  document.getElementById('share-modal-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeShareModal(e) {
+  // Only close when clicking the backdrop itself, not the modal card
+  if (e.target === document.getElementById('share-modal-backdrop')) hideShareModal();
+}
+
+function openWhatsApp() {
+  const encoded = encodeURIComponent(_shareState.message);
+  window.open(`https://wa.me/?text=${encoded}`, '_blank', 'noopener');
+}
+
+function copyShareLink() {
+  navigator.clipboard.writeText(_shareState.url).then(() => {
+    const btn = document.getElementById('share-copy-btn');
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = 'Copy Link', 2000);
+  }).catch(() => {
+    // Fallback: select the URL box text
+    const box = document.getElementById('share-url-box');
+    const range = document.createRange();
+    range.selectNodeContents(box);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
   });
 }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') hideShareModal();
+});
+
+// ── INBOUND SHARE URL HANDLING ────────────────────────────────────────────────
+// Reads ?v=VIDEO_ID or ?pl=ID1,ID2,ID3 from the URL on page load.
+// Returns a descriptor of what was requested so boot() can act on it.
+function parseShareParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('v')) {
+    return { type: 'track', videoId: params.get('v').trim() };
+  }
+  if (params.has('pl')) {
+    const ids = params.get('pl').split(',').map(s => s.trim()).filter(s => /^[a-zA-Z0-9_-]{11}$/.test(s));
+    if (ids.length) return { type: 'playlist', ids };
+  }
+  return null;
+}
+
+// Called from boot() after CHANNELS are loaded.
+// Finds the shared track/playlist in the channel data and plays it.
+function handleShareParams(share) {
+  if (!share) return false;
+
+  if (share.type === 'track') {
+    // Find which channel+index has this video ID
+    for (let ci = 0; ci < CHANNELS.length; ci++) {
+      const vi = CHANNELS[ci].videos.findIndex(v => v.id === share.videoId);
+      if (vi !== -1) {
+        switchChannel(ci);
+        currentTrackIdx = vi;
+        loadTrack(ci, vi);
+        showTempPlBanner(`▶ Opened shared track`);
+        _shareHandled = true;
+        return true;
+      }
+    }
+    // Video not in any channel — play it as a standalone temp track via YouTube directly
+    // We know the video ID but not the title; use a placeholder title
+    showTempPlBanner(`▶ Playing shared track`);
+    _shareHandled = true;
+    // Create a virtual "Shared" channel in memory (not persisted) for playback
+    const tempCh = {
+      id: '__shared__', icon: '🔗', name: 'Shared', freq: '', desc: '', synced: false,
+      videos: [{ id: share.videoId, title: 'Shared track', dur: 240 }]
+    };
+    CHANNELS.push(tempCh);
+    buildSidebar();
+    const ci = CHANNELS.length - 1;
+    switchChannel(ci);
+    return true;
+  }
+
+  if (share.type === 'playlist') {
+    // Build tracks from IDs — look each one up in CHANNELS for a title, fall back to ID
+    const tracks = share.ids.map(id => {
+      for (const ch of CHANNELS) {
+        const v = ch.videos.find(vv => vv.id === id);
+        if (v) return { id, title: v.title, dur: v.dur || 240 };
+      }
+      return { id, title: id, dur: 240 }; // title unknown; will show video ID until YT loads
+    });
+
+    if (!tracks.length) return false;
+
+    // Inject as a virtual on-demand channel (in memory only, not persisted)
+    const tempCh = {
+      id: '__shared_pl__', icon: '🔗', name: 'Shared Playlist', freq: '', desc: '',
+      synced: false,
+      videos: tracks.map(t => ({ id: t.id, title: t.title, dur: t.dur }))
+    };
+    CHANNELS.push(tempCh);
+    buildSidebar();
+    const ci = CHANNELS.length - 1;
+    switchChannel(ci);
+    _shareHandled = true;
+    showTempPlBanner(`🔗 Playing shared playlist — ${tracks.length} track${tracks.length === 1 ? '' : 's'}`);
+    return true;
+  }
+
+  return false;
+}
+
+function showTempPlBanner(msg) {
+  const el = document.getElementById('temp-pl-banner');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+boot();
 </script>
 </body>
 </html>
