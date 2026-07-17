@@ -664,6 +664,52 @@
     .pl-menu-new { color: var(--accent); font-weight: 600; }
     .pl-menu-empty { color: var(--muted); padding: 8px 10px; font-size: 0.7rem; }
 
+    /* Playlist play controls */
+    .pl-play-all-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+      padding: 5px 12px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .pl-play-all-btn:hover { opacity: 0.85; }
+    .pl-row-play {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      margin-right: 4px;
+    }
+    .pl-row-play:hover { background: var(--accent-glow); border-color: var(--accent); }
+    .pl-now-playing-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-family: var(--mono);
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      padding: 1px 5px;
+      margin-left: 6px;
+      letter-spacing: 0.06em;
+      vertical-align: middle;
+      text-transform: uppercase;
+    }
+
     /* Playlists tab */
     .pl-new-row { display: flex; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
     .pl-new-row .form-input { flex: 1; }
@@ -1154,6 +1200,8 @@ let isPlaying         = false;
 let isMuted           = false;
 let waveAnimFrame     = null;
 let wavePhase         = 0;
+// Active playlist playback — null when not in playlist mode
+let activePlaylist    = null; // { plId: string, trackIdx: number }
 
 // Persistent per-browser client id, used for the live listener count
 function getClientId() {
@@ -1311,6 +1359,26 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
 }
 
 function nextTrack() {
+  // If we're in playlist mode, advance through the playlist
+  if (activePlaylist) {
+    const pl = getPlaylists().find(p => p.id === activePlaylist.plId);
+    if (pl && pl.tracks.length) {
+      const next = activePlaylist.trackIdx + 1;
+      if (next < pl.tracks.length) {
+        activePlaylist.trackIdx = next;
+        _loadPlaylistTrack(pl, next);
+        renderPlaylistsTab();
+      } else {
+        // End of playlist — stop and clear playlist mode
+        activePlaylist = null;
+        showToast('Playlist finished');
+        renderPlaylistsTab();
+      }
+      return;
+    } else {
+      activePlaylist = null;
+    }
+  }
   const ch = CHANNELS[currentChannelIdx];
   if (ch.synced) {
     // Re-calculate from clock in case playback drifted
@@ -1385,6 +1453,8 @@ function setVolume(val) {
 
 // ── CHANNEL SWITCH ────────────────────────────────────────────────────────────
 function switchChannel(idx) {
+  // Manual channel switch exits playlist mode
+  activePlaylist = null;
   currentChannelIdx = idx;
   const ch = CHANNELS[idx];
 
@@ -1681,22 +1751,26 @@ function renderPlaylistsTab() {
       playlistView = { mode: 'list', id: null };
       return renderPlaylistsTab();
     }
+    const isActivePl = activePlaylist && activePlaylist.plId === pl.id;
     root.innerHTML = `
       <div class="pl-detail-header">
         <button class="pl-back-btn" onclick="playlistView = {mode:'list', id:null}; renderPlaylistsTab()">← Back</button>
         <div class="pl-detail-title">${escHtml(pl.name)}</div>
+        ${pl.tracks.length ? `<button class="pl-play-all-btn" onclick="playPlaylist('${pl.id}')" title="Play all">▶ Play All</button>` : ''}
       </div>
       <div class="queue-list" id="pl-detail-list">
-        ${pl.tracks.length ? pl.tracks.map((t, i) => `
-          <div class="queue-item" onclick="playPlaylistTrack('${pl.id}', ${i})">
+        ${pl.tracks.length ? pl.tracks.map((t, i) => {
+          const isPlaying = isActivePl && activePlaylist.trackIdx === i;
+          return `
+          <div class="queue-item${isPlaying ? ' playing' : ''}" onclick="playPlaylistTrack('${pl.id}', ${i})">
             <img class="queue-thumb" src="https://img.youtube.com/vi/${t.videoId}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'" />
             <div class="queue-info">
-              <div class="queue-title">${escHtml(t.title)}</div>
+              <div class="queue-title">${isPlaying ? '▶ ' : ''}${escHtml(t.title)}</div>
               <div class="queue-channel">${t.channelIcon || ''} ${escHtml(t.channelName || '')}${t.dedication ? ' · 💌 ' + escHtml(t.dedication) : ''}</div>
             </div>
             <button class="queue-add-btn" onclick="event.stopPropagation(); removeTrackFromPlaylist('${pl.id}', '${t.videoId}', ${t.channelId}); renderPlaylistsTab(); showToast('Removed from playlist')">✕</button>
-          </div>
-        `).join('') : `
+          </div>`;
+        }).join('') : `
           <div class="queue-empty">
             <div class="queue-empty-icon">🎵</div>
             <div>No tracks yet — add some from Search or Up Next</div>
@@ -1711,16 +1785,19 @@ function renderPlaylistsTab() {
       <button onclick="createPlaylistFromInput()">Create</button>
     </div>
     <div class="pl-list">
-      ${playlists.length ? playlists.map(p => `
+      ${playlists.length ? playlists.map(p => {
+        const isActivePl = activePlaylist && activePlaylist.plId === p.id;
+        return `
         <div class="pl-row" onclick="openPlaylist('${p.id}')">
-          <span class="pl-row-icon">🎶</span>
+          <span class="pl-row-icon">${isActivePl ? '▶' : '🎶'}</span>
           <div class="pl-row-info">
-            <div class="pl-row-name">${escHtml(p.name)}</div>
+            <div class="pl-row-name">${escHtml(p.name)}${isActivePl ? ' <span class="pl-now-playing-tag">playing</span>' : ''}</div>
             <div class="pl-row-count">${p.tracks.length} track${p.tracks.length === 1 ? '' : 's'}</div>
           </div>
+          ${p.tracks.length ? `<button class="pl-row-play" onclick="event.stopPropagation(); playPlaylist('${p.id}')" title="Play playlist">▶</button>` : ''}
           <button class="pl-row-del" onclick="event.stopPropagation(); confirmDeletePlaylist('${p.id}')" title="Delete playlist">🗑</button>
-        </div>
-      `).join('') : `
+        </div>`;
+      }).join('') : `
         <div class="queue-empty">
           <div class="queue-empty-icon">🎶</div>
           <div>No playlists yet</div>
@@ -1753,21 +1830,50 @@ function confirmDeletePlaylist(id) {
   renderPlaylistsTab();
 }
 
+// Play a single playlist track (sets playlist mode so nextTrack continues the list)
 function playPlaylistTrack(plId, trackIdx) {
   const pl = getPlaylists().find(p => p.id === plId);
   if (!pl) return;
+  activePlaylist = { plId, trackIdx };
+  _loadPlaylistTrack(pl, trackIdx);
+  renderPlaylistsTab();
+}
+
+// Play an entire playlist from the first track
+function playPlaylist(plId) {
+  const pl = getPlaylists().find(p => p.id === plId);
+  if (!pl || !pl.tracks.length) { showToast('Playlist is empty'); return; }
+  activePlaylist = { plId, trackIdx: 0 };
+  _loadPlaylistTrack(pl, 0);
+  // Navigate to detail view so user sees what's playing
+  playlistView = { mode: 'detail', id: plId };
+  renderPlaylistsTab();
+  showToast(`Playing "${pl.name}"`);
+}
+
+// Internal: load a specific track from a playlist object
+function _loadPlaylistTrack(pl, trackIdx) {
   const track = pl.tracks[trackIdx];
   if (!track) return;
-
   const ci = CHANNELS.findIndex(c => c.id === track.channelId);
   if (ci === -1) { showToast('That channel no longer exists'); return; }
   const vi = CHANNELS[ci].videos.findIndex(v => v.id === track.videoId);
   if (vi === -1) { showToast('This track is no longer on that channel'); return; }
-
-  switchChannel(ci);
+  // If we need to switch channels, do full channel UI update first
+  if (ci !== currentChannelIdx) {
+    currentChannelIdx = ci;
+    const ch = CHANNELS[ci];
+    document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`[data-channel="${ci}"]`);
+    if (btn) btn.classList.add('active');
+    document.getElementById('ch-icon').textContent = ch.icon;
+    document.getElementById('ch-name').textContent = ch.name;
+    document.getElementById('ch-desc').textContent = ch.desc;
+    document.getElementById('ch-freq').textContent = ch.freq;
+    updateControls(false); // on-demand controls for playlist
+  }
   currentTrackIdx = vi;
   loadTrack(ci, vi);
-  showTab('queue', document.querySelector('.panel-tab[data-tab="queue"]'));
 }
 
 // ── REQUEST FORM ──────────────────────────────────────────────────────────────
