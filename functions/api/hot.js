@@ -18,7 +18,7 @@
 import { jsonResponse, errorResponse } from './_lib/auth.js';
 
 const HOT_LIMIT = 20;
-const CHANNELS_KEY = 'channels:v1';
+const CHANNELS_KEY = 'channels'; // matches the key used by functions/api/channels.js
 
 export async function onRequestGet({ env }) {
   try {
