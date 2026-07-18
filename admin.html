@@ -348,6 +348,65 @@
       white-space: pre; overflow-x: auto; max-height: 300px; overflow-y: auto;
     }
 
+
+    /* ── INLINE TRACK EDIT ── */
+    .track-edit-row {
+      display: none;
+      background: var(--panel2);
+      border: 1px solid var(--border-lt);
+      border-radius: 6px;
+      padding: 12px;
+      margin: 2px 0 6px;
+      gap: 10px;
+      flex-direction: column;
+    }
+    .track-edit-row.open { display: flex; }
+    .track-edit-fields {
+      display: grid;
+      grid-template-columns: 2fr 1fr 80px;
+      gap: 10px;
+    }
+    .track-edit-fields .field { margin-bottom: 0; }
+    .track-edit-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ── MOVE TO CHANNEL DROPDOWN ── */
+    .move-ch-wrap {
+      display: none;
+      background: var(--panel2);
+      border: 1px solid var(--border-lt);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 2px 0 6px;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .move-ch-wrap.open { display: flex; }
+    .move-ch-wrap label {
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--muted); white-space: nowrap;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .move-ch-wrap select {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 4px; padding: 6px 10px;
+      color: var(--text); font-family: var(--mono); font-size: 0.75rem;
+      outline: none; flex: 1; min-width: 140px; cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .move-ch-wrap select:focus { border-color: var(--accent); }
+
+    /* Warn badge on duplicate */
+    .dup-warn {
+      display: none;
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--amber); background: var(--amber-glow);
+      border: 1px solid var(--amber-glow-strong);
+      border-radius: 4px; padding: 6px 10px;
+      margin-top: 6px;
+    }
+    .dup-warn.show { display: block; }
+
     /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -725,6 +784,7 @@ function renderChannelList() {
           <div class="btn-row" style="margin-top:10px">
             <button class="btn btn-primary btn-sm" onclick="addTrack(${ci})">+ Add Track</button>
           </div>
+          <div class="dup-warn" id="at-dup-${ci}"></div>
           <div class="status-msg" id="at-msg-${ci}" style="margin-top:8px"></div>
         </div>
 
@@ -736,19 +796,63 @@ function renderChannelList() {
 function renderTracks(ci) {
   const ch = CHANNELS[ci];
   if (!ch.videos.length) return '<p style="color:var(--muted);font-size:0.78rem;padding:4px 0 12px">No tracks yet — add one below.</p>';
+
+  // Channel options for move-to dropdown (excluding current channel)
+  const chOptions = CHANNELS.map((c, i) => i === ci ? '' :
+    `<option value="${i}">${escHtml(c.icon)} ${escHtml(c.name)}</option>`
+  ).join('');
+
   return ch.videos.map((v, ti) => `
-    <div class="track-item" id="track-${ci}-${ti}">
-      <div class="track-num">${ti + 1}</div>
-      <img class="track-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
-      <div class="track-info">
-        <div class="track-title">${escHtml(v.title)}</div>
-        <div class="track-id">${v.id}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
+    <div id="track-wrap-${ci}-${ti}">
+      <!-- Main track row -->
+      <div class="track-item" id="track-${ci}-${ti}">
+        <div class="track-num">${ti + 1}</div>
+        <img class="track-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy" />
+        <div class="track-info">
+          <div class="track-title">${escHtml(v.title)}</div>
+          <div class="track-id">${v.id}${v.dedication ? ' · 💌 ' + escHtml(v.dedication) : ''}</div>
+        </div>
+        <div class="track-dur">${formatDur(v.dur)}</div>
+        <div class="track-actions">
+          ${ti > 0 ? `<button class="icon-btn" title="Move up" onclick="moveTrack(${ci},${ti},-1)">↑</button>` : '<span style="width:28px"></span>'}
+          ${ti < ch.videos.length - 1 ? `<button class="icon-btn" title="Move down" onclick="moveTrack(${ci},${ti},1)">↓</button>` : '<span style="width:28px"></span>'}
+          <button class="icon-btn" title="Edit track" onclick="toggleTrackEdit(${ci},${ti})">✎</button>
+          <button class="icon-btn" title="Move to channel" onclick="toggleMoveChannel(${ci},${ti})" ${CHANNELS.length < 2 ? 'disabled style="opacity:0.3"' : ''}>⇄</button>
+          <button class="icon-btn del" title="Remove" onclick="removeTrack(${ci},${ti})">✕</button>
+        </div>
       </div>
-      <div class="track-dur">${formatDur(v.dur)}</div>
-      <div class="track-actions">
-        ${ti > 0 ? `<button class="icon-btn" title="Move up" onclick="moveTrack(${ci},${ti},-1)">↑</button>` : '<span style="width:28px"></span>'}
-        ${ti < ch.videos.length - 1 ? `<button class="icon-btn" title="Move down" onclick="moveTrack(${ci},${ti},1)">↓</button>` : '<span style="width:28px"></span>'}
-        <button class="icon-btn del" title="Remove" onclick="removeTrack(${ci},${ti})">✕</button>
+
+      <!-- Inline edit row (hidden by default) -->
+      <div class="track-edit-row" id="track-edit-${ci}-${ti}">
+        <div class="track-edit-fields">
+          <div class="field">
+            <label>Title</label>
+            <input id="te-title-${ci}-${ti}" value="${escHtml(v.title)}" placeholder="Artist – Song name" />
+          </div>
+          <div class="field">
+            <label>YouTube ID or URL</label>
+            <input id="te-id-${ci}-${ti}" value="${v.id}" placeholder="dQw4w9WgXcQ" />
+          </div>
+          <div class="field">
+            <label>Length (m:ss)</label>
+            <input id="te-dur-${ci}-${ti}" value="${formatDur(v.dur)}" placeholder="4:30" />
+          </div>
+        </div>
+        <div class="track-edit-actions">
+          <button class="btn btn-success btn-sm" onclick="saveTrackEdit(${ci},${ti})">Save</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleTrackEdit(${ci},${ti})">Cancel</button>
+        </div>
+        <div class="dup-warn" id="te-dup-${ci}-${ti}"></div>
+      </div>
+
+      <!-- Move to channel row (hidden by default) -->
+      <div class="move-ch-wrap" id="move-ch-${ci}-${ti}">
+        <label>Move to:</label>
+        <select id="move-ch-sel-${ci}-${ti}">
+          ${chOptions}
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="moveTrackToChannel(${ci},${ti})">Move</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleMoveChannel(${ci},${ti})">Cancel</button>
       </div>
     </div>
   `).join('');
@@ -825,11 +929,12 @@ function parseDuration(input) {
   return secs > 0 ? secs : null;
 }
 
-async function addTrack(ci) {
+async function addTrack(ci, confirmed = false) {
   const titleEl = document.getElementById(`at-title-${ci}`);
   const idEl    = document.getElementById(`at-id-${ci}`);
   const durEl   = document.getElementById(`at-dur-${ci}`);
   const msg     = document.getElementById(`at-msg-${ci}`);
+  const dupWarn = document.getElementById(`at-dup-${ci}`);
 
   const title  = titleEl.value.trim();
   const raw    = idEl.value.trim();
@@ -837,20 +942,40 @@ async function addTrack(ci) {
   const dur    = durRaw ? parseDuration(durRaw) : 240;
   const vidId  = extractVideoId(raw);
 
+  if (dupWarn) dupWarn.classList.remove('show');
+
   if (!title) { showMsg(msg, 'err', 'Title is required.'); return; }
   if (!vidId) { showMsg(msg, 'err', 'Invalid YouTube URL or ID.'); return; }
   if (durRaw && dur === null) { showMsg(msg, 'err', 'Invalid length — use m:ss, e.g. 4:30 (or h:mm:ss for longer tracks).'); return; }
 
-  const exists = CHANNELS[ci].videos.find(v => v.id === vidId);
-  if (exists) { showMsg(msg, 'err', 'This video is already in the channel.'); return; }
+  // Hard block: already in this channel
+  if (CHANNELS[ci].videos.find(v => v.id === vidId)) {
+    showMsg(msg, 'err', 'This video is already in this channel.');
+    return;
+  }
+
+  // Soft warning: exists in another channel (only on first attempt)
+  if (!confirmed) {
+    const otherChannel = CHANNELS.find((ch, i) => i !== ci && ch.videos.find(v => v.id === vidId));
+    if (otherChannel) {
+      if (dupWarn) {
+        dupWarn.textContent = `⚠ This track already exists in "${otherChannel.name}". Add anyway?`;
+        dupWarn.classList.add('show');
+        // Replace the add button temporarily with confirm/cancel
+        dupWarn.innerHTML = `⚠ This track already exists in "${escHtml(otherChannel.name)}". 
+          <button class="btn btn-amber btn-sm" style="margin-left:8px" onclick="addTrack(${ci}, true)">Add Anyway</button>
+          <button class="btn btn-ghost btn-sm" style="margin-left:4px" onclick="document.getElementById('at-dup-${ci}').classList.remove('show')">Cancel</button>`;
+      }
+      return;
+    }
+  }
 
   CHANNELS[ci].videos.push({ id: vidId, title, dur });
   titleEl.value = ''; idEl.value = ''; durEl.value = '';
+  if (dupWarn) dupWarn.classList.remove('show');
   document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
   renderChannelList();
-  setTimeout(() => {
-    document.getElementById('chbody-' + ci).classList.add('open');
-  }, 0);
+  setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
   showMsg(msg, 'ok', `"${title}" added.`);
   await persistChannels();
 }
@@ -872,6 +997,112 @@ async function moveTrack(ci, ti, dir) {
   renderChannelList();
   setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
   await persistChannels();
+}
+
+
+// ── INLINE TRACK EDIT ─────────────────────────────────────────────────────────
+function toggleTrackEdit(ci, ti) {
+  const editRow  = document.getElementById(`track-edit-${ci}-${ti}`);
+  const moveRow  = document.getElementById(`move-ch-${ci}-${ti}`);
+  // Close move row if open
+  if (moveRow) moveRow.classList.remove('open');
+  editRow.classList.toggle('open');
+  if (editRow.classList.contains('open')) {
+    document.getElementById(`te-title-${ci}-${ti}`).focus();
+  }
+}
+
+function toggleMoveChannel(ci, ti) {
+  const moveRow = document.getElementById(`move-ch-${ci}-${ti}`);
+  const editRow = document.getElementById(`track-edit-${ci}-${ti}`);
+  // Close edit row if open
+  if (editRow) editRow.classList.remove('open');
+  moveRow.classList.toggle('open');
+}
+
+async function saveTrackEdit(ci, ti) {
+  const titleEl  = document.getElementById(`te-title-${ci}-${ti}`);
+  const idEl     = document.getElementById(`te-id-${ci}-${ti}`);
+  const durEl    = document.getElementById(`te-dur-${ci}-${ti}`);
+  const dupEl    = document.getElementById(`te-dup-${ci}-${ti}`);
+  const v        = CHANNELS[ci].videos[ti];
+
+  const title  = titleEl.value.trim();
+  const raw    = idEl.value.trim();
+  const durRaw = durEl.value.trim();
+  const vidId  = extractVideoId(raw) || raw;
+  const dur    = durRaw ? parseDuration(durRaw) : v.dur;
+
+  if (dupEl) dupEl.classList.remove('show');
+
+  if (!title) { showInlineErr(dupEl, 'Title is required.'); return; }
+  if (!vidId || vidId.length !== 11) { showInlineErr(dupEl, 'Invalid YouTube ID or URL.'); return; }
+  if (durRaw && dur === null) { showInlineErr(dupEl, 'Invalid length — use m:ss, e.g. 4:30.'); return; }
+
+  // Warn if the new ID already exists somewhere else (different track)
+  for (let i = 0; i < CHANNELS.length; i++) {
+    for (let j = 0; j < CHANNELS[i].videos.length; j++) {
+      if (i === ci && j === ti) continue; // skip self
+      if (CHANNELS[i].videos[j].id === vidId) {
+        const label = `${CHANNELS[i].name}${i !== ci ? '' : ', track ' + (j + 1)}`;
+        if (dupEl) {
+          dupEl.innerHTML = `⚠ This ID already exists in "${escHtml(label)}". 
+            <button class="btn btn-amber btn-sm" style="margin-left:8px" onclick="commitTrackEdit(${ci},${ti},'${vidId}')">Save Anyway</button>
+            <button class="btn btn-ghost btn-sm" style="margin-left:4px" onclick="document.getElementById('te-dup-${ci}-${ti}').classList.remove('show')">Cancel</button>`;
+          dupEl.classList.add('show');
+        }
+        return;
+      }
+    }
+  }
+
+  await commitTrackEdit(ci, ti, vidId);
+}
+
+async function commitTrackEdit(ci, ti, vidId) {
+  const titleEl = document.getElementById(`te-title-${ci}-${ti}`);
+  const durEl   = document.getElementById(`te-dur-${ci}-${ti}`);
+  const v       = CHANNELS[ci].videos[ti];
+
+  v.title = titleEl.value.trim() || v.title;
+  v.id    = vidId;
+  v.dur   = parseDuration(durEl.value.trim()) || v.dur;
+
+  document.getElementById(`tracklist-${ci}`).innerHTML = renderTracks(ci);
+  setTimeout(() => document.getElementById('chbody-' + ci).classList.add('open'), 0);
+  showToastAdmin('Track updated.');
+  await persistChannels();
+}
+
+async function moveTrackToChannel(ci, ti) {
+  const sel     = document.getElementById(`move-ch-sel-${ci}-${ti}`);
+  const target  = parseInt(sel.value, 10);
+  const v       = CHANNELS[ci].videos[ti];
+
+  if (isNaN(target) || target === ci) return;
+
+  // Soft duplicate warning for target channel
+  const existsInTarget = CHANNELS[target].videos.find(t => t.id === v.id);
+  if (existsInTarget) {
+    if (!confirm(`"${v.title}" already exists in "${CHANNELS[target].name}". Move it there anyway?`)) return;
+  }
+
+  // Move: add to target, remove from source
+  CHANNELS[target].videos.push({ ...v });
+  CHANNELS[ci].videos.splice(ti, 1);
+
+  renderChannelList();
+  // Re-open source channel so DJ can see the result
+  setTimeout(() => document.getElementById('chbody-' + ci)?.classList.add('open'), 0);
+  showToastAdmin(`Moved to "${CHANNELS[target].name}".`);
+  await persistChannels();
+}
+
+function showInlineErr(el, msg) {
+  if (!el) return;
+  el.textContent = '✕ ' + msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
 }
 
 // ── REQUESTS ─────────────────────────────────────────────────────────────────
