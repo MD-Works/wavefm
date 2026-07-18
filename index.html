@@ -2178,6 +2178,8 @@ async function poll5min() {
       if (data.channels && typeof data.version === 'number' && data.version !== CHANNELS_VERSION) {
         CHANNELS = data.channels;
         CHANNELS_VERSION = data.version;
+        // Refresh the localStorage cache with the new version
+        try { localStorage.setItem('wfm_ch_cache', JSON.stringify({ ts: Date.now(), channels: data.channels, version: data.version })); } catch (_) {}
         buildSidebar();
         renderQueue();
         showToast('Channel list updated ✓');
@@ -2293,25 +2295,54 @@ async function boot() {
 }
 
 async function loadHotChannel() {
+  const LS_KEY = 'wfm_hot_cache';
+  const TTL_MS = 10 * 60 * 1000; // 10 minutes — matches edge cache s-maxage
+
+  // Serve from localStorage if fresh
+  try {
+    const cached = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+    if (cached && cached.ts && (Date.now() - cached.ts) < TTL_MS) {
+      return cached.tracks ?? [];
+    }
+  } catch (_) {}
+
+  // Fetch fresh from edge (itself cached for 10 min at Cloudflare)
   try {
     const res = await fetch('/api/hot');
     if (!res.ok) return [];
     const data = await res.json();
-    return data.tracks ?? [];
+    const tracks = data.tracks ?? [];
+    // Store with timestamp
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ ts: Date.now(), tracks })); } catch (_) {}
+    return tracks;
   } catch (e) { return []; }
 }
 
 async function loadChannels() {
+  const LS_KEY = 'wfm_ch_cache';
+  const TTL_MS = 2 * 60 * 1000; // 2 minutes — matches edge cache s-maxage
+
+  // Serve from localStorage if fresh (avoids a network round-trip on rapid reloads)
+  try {
+    const cached = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+    if (cached && cached.ts && (Date.now() - cached.ts) < TTL_MS && cached.channels) {
+      return { channels: cached.channels, version: cached.version ?? 0 };
+    }
+  } catch (_) {}
+
+  // Fetch from API (edge-cached at Cloudflare for 2 min)
   try {
     const res = await fetch('/api/channels');
     if (res.ok) {
       const data = await res.json();
-      if (data.channels) return { channels: data.channels, version: data.version ?? 0 };
+      if (data.channels) {
+        try { localStorage.setItem(LS_KEY, JSON.stringify({ ts: Date.now(), channels: data.channels, version: data.version ?? 0 })); } catch (_) {}
+        return { channels: data.channels, version: data.version ?? 0 };
+      }
     }
   } catch (e) { /* backend not deployed yet — fall through to static file */ }
 
-  // Static fallback — version 0 so the first real poll from the backend
-  // will always be treated as an update if the versions differ.
+  // Static fallback — version 0 so the first real poll will be treated as an update
   const res = await fetch('channels.json?v=' + Date.now());
   const data = await res.json();
   return { channels: data.channels, version: 0 };
