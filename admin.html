@@ -167,6 +167,33 @@
       transition: border-color 0.15s;
     }
     .theme-toggle-btn:hover { border-color: var(--accent); }
+    .sync-btn {
+      background: var(--accent);
+      color: var(--on-accent);
+      border: none;
+      border-radius: 5px;
+      padding: 6px 14px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 6px;
+      transition: opacity 0.15s, transform 0.1s;
+      animation: pulse-sync 2s infinite;
+    }
+    .sync-btn:hover { opacity: 0.85; }
+    .sync-btn:active { transform: scale(0.97); }
+    .sync-count {
+      background: rgba(0,0,0,0.25);
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 0.68rem;
+    }
+    @keyframes pulse-sync {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 99,102,241), 0.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(var(--accent-rgb, 99,102,241), 0); }
+    }
     .save-status {
       margin-left: 12px; font-family: var(--mono); font-size: 0.7rem;
       color: var(--muted); min-width: 90px;
@@ -462,6 +489,9 @@
       <button class="nav-btn" onclick="showSection('export')">Backup</button>
     </nav>
     <span class="save-status" id="save-status"></span>
+    <button class="sync-btn" id="sync-btn" onclick="syncNow()" style="display:none" title="Push all pending changes to live">
+      Sync to live <span class="sync-count" id="sync-count"></span>
+    </button>
     <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="cycleTheme()" aria-label="Change colour theme" title="Change colour theme"></button>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
@@ -688,11 +718,35 @@ async function init() {
 // no more manual export/copy-paste, and no more stale overwrites between
 // concurrent admin sessions (the server rejects a save if the version it
 // receives is out of date).
-async function persistChannels() {
+// ── DEFERRED SAVE SYSTEM ─────────────────────────────────────────────────────
+// Changes mutate CHANNELS in memory immediately (instant UI).
+// persistChannels() now just marks unsaved state — no network call.
+// The DJ taps "Sync to live" when ready, firing syncNow() which does one PUT.
+
+let _unsavedCount = 0;
+
+function persistChannels() {
+  // All callers that were await-ing this now get an instant resolved promise.
+  // Mark the session as having unsaved changes and show the sync button.
+  _unsavedCount++;
+  const btn   = document.getElementById('sync-btn');
+  const count = document.getElementById('sync-count');
+  const bar   = document.getElementById('save-status');
+  if (btn)   btn.style.display = '';
+  if (count) count.textContent = _unsavedCount + ' unsaved';
+  if (bar)   { bar.textContent = `${_unsavedCount} unsaved change${_unsavedCount > 1 ? 's' : ''}  ·  tap Sync to live when ready`; bar.className = 'save-status saving'; }
+  return Promise.resolve(true);
+}
+
+async function syncNow() {
+  if (_unsavedCount === 0) return;
   const bar = document.getElementById('save-status');
-  if (bar) { bar.textContent = 'Saving…'; bar.className = 'save-status saving'; }
+  const btn = document.getElementById('sync-btn');
+  if (bar) { bar.textContent = 'Syncing…'; bar.className = 'save-status saving'; }
+  if (btn) btn.style.display = 'none';
+
   try {
-    const res = await fetch('/api/channels', {
+    const res  = await fetch('/api/channels', {
       method: 'PUT',
       headers: adminHeaders(),
       body: JSON.stringify({ channels: CHANNELS, version: CHANNELS_VERSION })
@@ -700,36 +754,48 @@ async function persistChannels() {
     const data = await res.json();
 
     if (res.status === 409) {
-      if (bar) { bar.textContent = 'Sync conflict'; bar.className = 'save-status err'; }
+      if (bar) { bar.textContent = 'Sync conflict — reload to get latest'; bar.className = 'save-status err'; }
+      if (btn) btn.style.display = '';
       const reload = confirm(
-        'Someone else (or another tab) saved changes since you loaded this page, ' +
-        'so this save was NOT applied to avoid overwriting their edits.\n\n' +
-        'Click OK to reload the latest data (your last change here will be lost — reapply it after reloading).'
+        'Another session saved changes since you loaded this page.\n\n' +
+        'Click OK to reload the latest data (your unsaved changes here will be lost — reapply them after reloading).'
       );
       if (reload) await init();
       return false;
     }
     if (handleAuthFailure(res)) return false;
     if (!res.ok) {
-      if (bar) { bar.textContent = 'Save failed'; bar.className = 'save-status err'; }
-      alert(data.error || 'Could not save changes.');
+      if (bar) { bar.textContent = 'Sync failed'; bar.className = 'save-status err'; }
+      if (btn) btn.style.display = '';
+      alert(data.error || 'Could not sync changes.');
       return false;
     }
 
     CHANNELS_VERSION = data.version;
-    CHANNELS_SEEDED = true;
+    CHANNELS_SEEDED  = true;
+    _unsavedCount    = 0;
     if (bar) {
-      bar.textContent = 'Saved ✓';
-      bar.className = 'save-status ok';
-      setTimeout(() => { bar.textContent = ''; bar.className = 'save-status'; }, 2000);
+      bar.textContent = 'Synced ✓';
+      bar.className   = 'save-status ok';
+      setTimeout(() => { bar.textContent = ''; bar.className = 'save-status'; }, 2500);
     }
+    showToastAdmin('Changes synced to live ✓');
     return true;
   } catch (e) {
-    if (bar) { bar.textContent = 'Offline — not saved'; bar.className = 'save-status err'; }
-    alert('Could not reach the backend, so this change was not saved. It will only persist in this browser tab until you retry.');
+    if (bar) { bar.textContent = 'Offline — sync failed'; bar.className = 'save-status err'; }
+    if (btn) btn.style.display = '';
+    alert('Could not reach the backend. Your changes are still here — try syncing again when you have a connection.');
     return false;
   }
 }
+
+// Warn before closing tab with unsynced changes
+window.addEventListener('beforeunload', (e) => {
+  if (_unsavedCount > 0) {
+    e.preventDefault();
+    e.returnValue = 'You have unsynced changes. Leave anyway?';
+  }
+});
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
 function showSection(name) {

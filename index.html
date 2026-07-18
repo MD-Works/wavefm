@@ -237,13 +237,7 @@
       0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(0.7); }
     }
-    .listener-count {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-left: 16px;
-    }
-    .listener-count span { color: var(--text); }
+
     .song-count-badge {
       font-family: var(--mono);
       font-size: 0.65rem;
@@ -987,7 +981,6 @@
       .hamburger-btn { display: flex; }
       .topbar-tag { display: none; }
       .on-air-badge { margin-left: 0; }
-      .listener-count { margin-left: auto; }
       .sync-badge span { display: none; } /* keep the dot, drop the "SYNCING" label */
       .sync-badge { padding: 5px; margin-left: 6px; }
 
@@ -1163,7 +1156,6 @@
       <div class="on-air-dot"></div>
       ON AIR
     </div>
-    <div class="listener-count">&#128100; <span id="listener-num">142</span> tuned in</div>
     <div class="song-count-badge" id="song-count-badge" style="display:none"><span id="song-count-num">0</span> songs &amp; growing</div>
     <div class="sync-badge" id="sync-badge"><div class="sync-dot"></div><span id="sync-label">SYNCING</span></div>
     <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="cycleTheme()" aria-label="Change colour theme" title="Change colour theme"></button>
@@ -2127,36 +2119,7 @@ function animateWave() {
 
 // ── LIVE LISTENER COUNT ───────────────────────────────────────────────────────
 // Each open tab "checks in" every 20s; the count is however many check-ins
-// are still fresh (see /functions/api/heartbeat.js and /functions/api/listeners.js).
-async function sendHeartbeat() {
-  try {
-    await fetch('/api/heartbeat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: getClientId() })
-    });
-  } catch (e) { /* backend not deployed yet — ignore */ }
-}
 
-async function refreshListenerCount() {
-  try {
-    const res = await fetch('/api/listeners');
-    if (!res.ok) return;
-    const data = await res.json();
-    if (typeof data.count === 'number') {
-      document.getElementById('listener-num').textContent = data.count;
-    }
-  } catch (e) { /* backend not deployed yet — leave last known value */ }
-}
-
-// Track the channels version we last loaded so we only rebuild the UI
-// when something actually changed. Starts at -1 so the first poll always
-// triggers a comparison (the real version from boot() will be ≥ 0).
-let CHANNELS_VERSION = -1;
-
-// Combined 5-minute poll: shoutout + channel updates + listener count.
-// Heartbeat runs on its own tighter loop (every 60s — KV TTL minimum).
-// This keeps total Worker requests at ~84/hr/tab vs ~540 before.
 async function poll5min() {
   // 1. Shoutout
   try {
@@ -2188,15 +2151,11 @@ async function poll5min() {
   } catch (e) { /* backend offline — keep current CHANNELS in memory */ }
 
   // 3. Listener count
-  refreshListenerCount();
 }
 
 // Fire immediately then repeat on schedule
-sendHeartbeat();
-refreshListenerCount();
 pollShoutout();
-setInterval(sendHeartbeat, 60000);        // every 60s — matches KV TTL minimum
-setInterval(poll5min,     5 * 60 * 1000); // every 5 min
+setInterval(poll5min, 5 * 60 * 1000); // every 5 min
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg) {
