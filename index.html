@@ -1061,28 +1061,29 @@
     }
     .fs-btn:hover { color: var(--text); border-color: var(--muted); }
 
-    /* ── FULLSCREEN VIDEO BACKDROP ── */
+    /* ── FULLSCREEN VIDEO ── */
+    /* Black backdrop sits behind the player */
     .fs-backdrop {
       position: fixed; inset: 0;
       background: #000;
-      z-index: 600;
+      z-index: 599;
       display: none;
       cursor: pointer;
     }
     .fs-backdrop.open { display: block; }
-    /* The player wrap is moved into here — make it fill the screen */
-    .fs-backdrop #yt-player-wrap {
-      position: absolute;
-      inset: 0;
+    /* Player expands in-place via a class — no DOM move, no iframe reload */
+    #yt-player-wrap.fs-active {
+      position: fixed !important;
+      inset: 0 !important;
       width: 100% !important;
       max-width: none !important;
       height: 100% !important;
       aspect-ratio: unset !important;
-      border-radius: 0;
-      box-shadow: none;
-      z-index: 1;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      z-index: 600 !important;
     }
-    .fs-backdrop #yt-player-wrap iframe {
+    #yt-player-wrap.fs-active iframe {
       width: 100% !important;
       height: 100% !important;
     }
@@ -2436,12 +2437,10 @@ function saveLastChannel(idx) {
 }
 
 // ── FULLSCREEN ────────────────────────────────────────────────────────────────
-// We fullscreen the video by physically moving #yt-player-wrap into a fixed
-// black backdrop, then moving it back on exit. This avoids re-creating the
-// player and keeps audio uninterrupted.
+// CSS-only approach: add .fs-active to #yt-player-wrap to expand it fixed
+// over the viewport. The iframe is never moved in the DOM so it never reloads.
 
 let _fsOpen = false;
-let _playerOriginalParent = null;
 
 function toggleFullscreen() {
   _fsOpen ? closeFs() : openFs();
@@ -2453,26 +2452,23 @@ function openFs() {
   if (!wrap || !backdrop) return;
 
   _fsOpen = true;
-  _playerOriginalParent = wrap.parentElement;
-
-  // Move player into the fullscreen backdrop
-  backdrop.appendChild(wrap);
+  wrap.classList.add('fs-active');
   backdrop.classList.add('open');
 
-  // Show exit hint, then fade it after 2.5 s
+  // Show exit hint, fade after 2.5s
   const hint = document.getElementById('fs-hint');
   hint.classList.remove('hidden');
   setTimeout(() => hint.classList.add('hidden'), 2500);
 
-  // Update button icons
+  // Swap button icons
   document.getElementById('fs-icon-expand').style.display = 'none';
   document.getElementById('fs-icon-shrink').style.display = '';
 
-  // Try native fullscreen on the backdrop
-  if (backdrop.requestFullscreen) {
-    backdrop.requestFullscreen().catch(() => {});
-  } else if (backdrop.webkitRequestFullscreen) {
-    backdrop.webkitRequestFullscreen();
+  // Request native fullscreen on the player element itself
+  if (wrap.requestFullscreen) {
+    wrap.requestFullscreen().catch(() => {});
+  } else if (wrap.webkitRequestFullscreen) {
+    wrap.webkitRequestFullscreen();
   }
 }
 
@@ -2482,40 +2478,31 @@ function closeFs() {
   if (!wrap || !backdrop) return;
 
   _fsOpen = false;
-
-  // Move player back to its original home
-  if (_playerOriginalParent) {
-    _playerOriginalParent.appendChild(wrap);
-  }
+  wrap.classList.remove('fs-active');
   backdrop.classList.remove('open');
 
-  // Restore button icons
+  // Swap button icons back
   document.getElementById('fs-icon-expand').style.display = '';
   document.getElementById('fs-icon-shrink').style.display = 'none';
 
-  // Exit native fullscreen if it's active
+  // Exit native fullscreen if active
   if (document.fullscreenElement || document.webkitFullscreenElement) {
     (document.exitFullscreen || document.webkitExitFullscreen).call(document).catch(() => {});
   }
 }
 
-// Tap backdrop (but not the player itself) to exit
-document.addEventListener('DOMContentLoaded', () => {
-  const backdrop = document.getElementById('fs-backdrop');
-  backdrop.addEventListener('click', (e) => {
-    // Only close if clicking the black area, not the video iframe
-    if (e.target === backdrop) closeFs();
-  });
-});
+// Tap the black backdrop to exit (backdrop is behind the player, click won't
+// reach it through the iframe — but it catches taps on the letterbox areas)
+document.getElementById('fs-backdrop').addEventListener('click', closeFs);
 
-// Keyboard: Escape or F
+// Keyboard: Esc or F
 document.addEventListener('keydown', (e) => {
   if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
   if (e.key === 'Escape' && _fsOpen) closeFs();
   if (e.key === 'f' || e.key === 'F') toggleFullscreen();
 });
 
-// Sync if browser exits native fullscreen via its own Esc handling
+// Sync when browser exits native fullscreen via its own controls
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && _fsOpen) closeFs();
 });
