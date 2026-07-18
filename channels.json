@@ -602,6 +602,61 @@
           "id": "5bvw4yDvRX0",
           "title": "Al Stewart - Year Of The Cat",
           "dur": 412
+        },
+        {
+          "id": "1lWJXDG2i0A",
+          "title": "Tom Petty - Free Fallin'",
+          "dur": 254
+        },
+        {
+          "id": "s5BJXwNeKsQ",
+          "title": "Tom Petty And The Heartbreakers - Learning To Fly",
+          "dur": 241
+        },
+        {
+          "id": "1VQ_3sBZEm0",
+          "title": "Foo Fighters - Learn To Fly",
+          "dur": 276
+        },
+        {
+          "id": "P6zaCV4niKk",
+          "title": "Yusuf / Cat Stevens - Father & Son",
+          "dur": 220
+        },
+        {
+          "id": "P1b8z1h_rIs",
+          "title": "Yusuf / Cat Stevens - Wild World (Live, 1971)",
+          "dur": 226
+        },
+        {
+          "id": "E90_aL870ao",
+          "title": "Sixto Rodriguez - Sugar Man",
+          "dur": 231
+        },
+        {
+          "id": "_W978zoLu1w",
+          "title": "Rodriguez - I Wonder",
+          "dur": 161
+        },
+        {
+          "id": "3DCnlrTy1eg",
+          "title": "Rodriguez - Crucify Your Mind",
+          "dur": 150
+        },
+        {
+          "id": "H14vjkBou_Y",
+          "title": "Inner City Blues",
+          "dur": 206
+        },
+        {
+          "id": "-0kcet4aPpQ",
+          "title": "Pink Floyd - Money",
+          "dur": 283
+        },
+        {
+          "id": "YR5ApYxkU-U",
+          "title": "Pink Floyd - Another Brick In The Wall",
+          "dur": 360
         }
       ]
     },
@@ -929,6 +984,13 @@
           "id": "T4sV3lqzKqQ",
           "title": "T'Pau - China In Your Hand",
           "dur": 261
+        },
+        {
+          "id": "tbNlMtqrYS0",
+          "title": "The Proclaimers - I'm Gonna Be (500 Miles)",
+          "dur": 218,
+          "dedication": "For Hary",
+          "requestedBy": "Smoothy"
         }
       ]
     },
