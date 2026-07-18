@@ -244,6 +244,18 @@
       margin-left: 16px;
     }
     .listener-count span { color: var(--text); }
+    .song-count-badge {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .song-count-badge span { color: var(--accent); font-weight: 700; }
+    @media (max-width: 640px) { .song-count-badge { display: none; } }
     .sync-badge {
       display: flex;
       align-items: center;
@@ -1152,6 +1164,7 @@
       ON AIR
     </div>
     <div class="listener-count">&#128100; <span id="listener-num">142</span> tuned in</div>
+    <div class="song-count-badge" id="song-count-badge" style="display:none"><span id="song-count-num">0</span> songs &amp; growing</div>
     <div class="sync-badge" id="sync-badge"><div class="sync-dot"></div><span id="sync-label">SYNCING</span></div>
     <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="cycleTheme()" aria-label="Change colour theme" title="Change colour theme"></button>
   </header>
@@ -2248,7 +2261,10 @@ async function boot() {
       }));
     }
 
-    // 3. Check for inbound share params (?v= or ?pl=)
+    // 3. Update song count badge
+    updateSongCount();
+
+    // 4. Check for inbound share params (?v= or ?pl=)
     const share = parseShareParams();
 
     // 4. Build sidebar
@@ -2370,6 +2386,24 @@ function showShoutout(text) {
 
 function hideShoutout() {
   document.getElementById('shoutout-bar').style.display = 'none';
+}
+
+
+// ── SONG COUNT ────────────────────────────────────────────────────────────────
+function updateSongCount() {
+  // Count all unique tracks across all non-virtual channels
+  const total = CHANNELS
+    .filter(ch => !ch.id?.toString().startsWith('__'))
+    .reduce((sum, ch) => sum + (ch.videos?.length ?? 0), 0);
+  const badge = document.getElementById('song-count-badge');
+  const num   = document.getElementById('song-count-num');
+  if (!badge || !num) return;
+  if (total > 0) {
+    num.textContent = total.toLocaleString();
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 // ── RATINGS ───────────────────────────────────────────────────────────────────
