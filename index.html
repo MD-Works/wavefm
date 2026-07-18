@@ -2493,7 +2493,10 @@ function closeFs() {
 
 // Tap the black backdrop to exit (backdrop is behind the player, click won't
 // reach it through the iframe — but it catches taps on the letterbox areas)
-document.getElementById('fs-backdrop').addEventListener('click', closeFs);
+document.addEventListener('DOMContentLoaded', () => {
+  const bd = document.getElementById('fs-backdrop');
+  if (bd) bd.addEventListener('click', closeFs);
+});
 
 // Keyboard: Esc or F
 document.addEventListener('keydown', (e) => {
