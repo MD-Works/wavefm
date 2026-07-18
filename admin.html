@@ -407,6 +407,26 @@
     }
     .dup-warn.show { display: block; }
 
+
+    /* ── STATS BAR ── */
+    .admin-stats {
+      display: flex; align-items: center; gap: 18px;
+      padding: 0 28px; height: 38px;
+      background: var(--panel2); border-bottom: 1px solid var(--border);
+      font-family: var(--mono); font-size: 0.67rem; color: var(--muted);
+      letter-spacing: 0.06em; overflow-x: auto; white-space: nowrap;
+    }
+    .admin-stats-item { display: flex; align-items: center; gap: 5px; }
+    .admin-stats-item strong { color: var(--accent); font-weight: 700; }
+    .admin-stats-sep { color: var(--border-lt); }
+
+    /* Per-channel hours in channel card header */
+    .ch-hours {
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--muted); white-space: nowrap;
+    }
+    .ch-hours strong { color: var(--text); }
+
     /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -444,6 +464,15 @@
     <span class="save-status" id="save-status"></span>
     <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="cycleTheme()" aria-label="Change colour theme" title="Change colour theme"></button>
     <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="admin-stats" id="admin-stats">
+    <div class="admin-stats-item">Total songs: <strong id="stat-total-songs">—</strong></div>
+    <div class="admin-stats-sep">·</div>
+    <div class="admin-stats-item">Total runtime: <strong id="stat-total-hours">—</strong></div>
+    <div class="admin-stats-sep">·</div>
+    <div class="admin-stats-item">Channels: <strong id="stat-channels">—</strong></div>
   </div>
 
   <div class="admin-body">
@@ -717,6 +746,7 @@ function renderChannelList() {
   const el = document.getElementById('channel-list');
   if (!CHANNELS.length) { el.innerHTML = '<p style="color:var(--muted);font-size:0.82rem">No channels yet.</p>'; return; }
 
+  updateAdminStats();
   el.innerHTML = CHANNELS.map((ch, ci) => `
     <div class="channel-card" id="chcard-${ci}">
       <div class="channel-card-header" onclick="toggleChannel(${ci})">
@@ -727,6 +757,7 @@ function renderChannelList() {
         </div>
         <span class="ch-badge ${ch.synced ? 'synced' : 'ondemand'}">${ch.synced ? 'SYNCED' : 'ON DEMAND'}</span>
         <div class="ch-track-count">${ch.videos.length} track${ch.videos.length !== 1 ? 's' : ''}</div>
+        <div class="ch-hours">${chHours(ch)}</div>
         <div class="ch-actions" onclick="event.stopPropagation()">
           <button class="btn btn-ghost btn-sm" onclick="openEditChannel(${ci})">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="deleteChannel(${ci})">Delete</button>
@@ -1295,6 +1326,36 @@ function downloadExport() {
   a.remove();
   URL.revokeObjectURL(url);
   showMsg(document.getElementById('export-msg'), 'ok', 'Backup downloaded.');
+}
+
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function totalSecs(channels) {
+  return channels.reduce((sum, ch) => sum + ch.videos.reduce((s, v) => s + (v.dur ?? 240), 0), 0);
+}
+
+function fmtHours(secs) {
+  if (secs < 3600) {
+    const m = Math.floor(secs / 60);
+    return `${m}m`;
+  }
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+function chHours(ch) {
+  const secs = ch.videos.reduce((s, v) => s + (v.dur ?? 240), 0);
+  if (!secs) return '';
+  return `<strong>${fmtHours(secs)}</strong>`;
+}
+
+function updateAdminStats() {
+  const totalSongs = CHANNELS.reduce((s, ch) => s + ch.videos.length, 0);
+  const secs       = totalSecs(CHANNELS);
+  document.getElementById('stat-total-songs').textContent = totalSongs.toLocaleString();
+  document.getElementById('stat-total-hours').textContent = fmtHours(secs);
+  document.getElementById('stat-channels').textContent    = CHANNELS.length;
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
