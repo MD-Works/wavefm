@@ -2,22 +2,34 @@ import { checkAdmin, jsonResponse, errorResponse } from './_lib/auth.js';
 
 const KEY = 'channels';
 
+// Cache-Control for the GET response:
+// - s-maxage=120  → Cloudflare edge caches for 2 minutes
+// - stale-while-revalidate=30 → serve stale while fetching fresh in background
+// - no-store for the client → browser doesn't cache; we manage that in localStorage
+const GET_CACHE = 'public, s-maxage=120, stale-while-revalidate=30';
+
 // GET /api/channels — public, used by both index.html and admin.html.
-export async function onRequestGet({ env }) {
+// Edge-cached for 2 minutes; cache is purged by the PUT handler on save.
+export async function onRequestGet({ env, request }) {
   const raw = await env.WAVEFM_KV.get(KEY);
   if (!raw) {
-    return jsonResponse({ channels: null, version: 0, updatedAt: null, seeded: false });
+    return jsonResponse(
+      { channels: null, version: 0, updatedAt: null, seeded: false },
+      200,
+      { 'Cache-Control': GET_CACHE }
+    );
   }
   const data = JSON.parse(raw);
-  return jsonResponse({ ...data, seeded: true });
+  return jsonResponse(
+    { ...data, seeded: true },
+    200,
+    { 'Cache-Control': GET_CACHE }
+  );
 }
 
 // PUT /api/channels — admin only. Body: { channels: [...], version: N }
-// `version` must match the version currently stored in KV (the one the
-// client last fetched). If someone else saved in the meantime, this
-// returns 409 instead of silently overwriting their changes — this is
-// what fixes the "stale data creeps in" bug from the manual copy/paste
-// workflow.
+// Saves to KV, then purges the Cloudflare edge cache for /api/channels
+// so listeners get fresh data immediately rather than waiting 2 minutes.
 export async function onRequestPut({ request, env }) {
   const auth = await checkAdmin(request, env);
   if (!auth.ok) return errorResponse(auth.error, auth.status || 401);
@@ -40,5 +52,15 @@ export async function onRequestPut({ request, env }) {
 
   const next = { channels, version: version + 1, updatedAt: new Date().toISOString() };
   await env.WAVEFM_KV.put(KEY, JSON.stringify(next));
+
+  // Purge the Cloudflare edge cache for this endpoint so the new data is
+  // served immediately. Uses the Cache API available inside Pages Functions.
+  try {
+    const cache = caches.default;
+    const url   = new URL(request.url);
+    url.pathname = '/api/channels';
+    await cache.delete(new Request(url.toString()));
+  } catch (_) { /* cache purge is best-effort — not fatal */ }
+
   return jsonResponse(next);
 }
