@@ -9,99 +9,9 @@
       "synced": true,
       "videos": [
         {
-          "id": "JGwWNGJdvx8",
-          "title": "Ed Sheeran – Shape of You",
-          "dur": 234
-        },
-        {
-          "id": "ktvTqknDobU",
-          "title": "Imagine Dragons – Radioactive",
-          "dur": 187
-        },
-        {
-          "id": "RgKAFK5djSk",
-          "title": "Wiz Khalifa – See You Again",
-          "dur": 229
-        },
-        {
-          "id": "hT_nvWreIhg",
-          "title": "OneRepublic – Counting Stars",
-          "dur": 257
-        },
-        {
-          "id": "OPf0YbXqDm0",
-          "title": "Mark Ronson – Uptown Funk",
-          "dur": 270
-        },
-        {
-          "id": "fcnDmrtj6Sk",
-          "title": "Shakira, Burna Boy - Dai Dai",
-          "dur": 240
-        },
-        {
-          "id": "8F2s8ivKXNY",
-          "title": "Oliver Tree - Life Goes On",
-          "dur": 206
-        },
-        {
-          "id": "BZGuQCvUXIA",
-          "title": "Golden - KPop Demon Hunters (Lyrics) HUNTR/X, EJAE, AUDREY NUNA, REI AMI",
-          "dur": 194
-        },
-        {
-          "id": "2rA2K0gwjoo",
-          "title": "LE SSERAFIM  x ILLIT  x KATSEYE  'ICONIC BY MISTAKE' Dance Practice",
-          "dur": 180
-        },
-        {
-          "id": "Ntn1-SocNiY",
-          "title": "Shakira - Waka Waka",
-          "dur": 199
-        },
-        {
-          "id": "82-jTNka3uc",
-          "title": "Ariana Grande - hate that i made you love me",
-          "dur": 300
-        },
-        {
-          "id": "kwwdY1bp-Ck",
-          "title": "Mira el Video oficial de \"Todo Lo Fue\" de Lenin Ramirez",
-          "dur": 189
-        },
-        {
-          "id": "NVLgkXylEuQ",
-          "title": "El Bogueto ❌ Anuel AA ❌ Yung Beef ❌ Fuerza Regida - Cuando No Era Cantante Remix",
-          "dur": 357
-        },
-        {
-          "id": "U6BDbXIah-Y",
-          "title": "CORTIS - 'REDRED'",
-          "dur": 208
-        },
-        {
-          "id": "0UPDBODtxzw",
-          "title": "Tame Impala, JENNIE - Dracula (JENNIE Remix)",
-          "dur": 210
-        },
-        {
-          "id": "KqMOKCRgvD8",
-          "title": "Babydoll - Dominic Fike",
-          "dur": 153
-        },
-        {
-          "id": "aFbueod4reQ",
-          "title": "Bruno Mars - Risk It All",
-          "dur": 223
-        },
-        {
-          "id": "Md7kqHsWWs4",
-          "title": "Laurinha Costa - Six Seven (Clipe Oficial) DJ Cabello & DJ Tchouzen",
-          "dur": 94
-        },
-        {
-          "id": "7F1ET2XHQfk",
-          "title": "KATSEYE (캣츠아이) \"PINKY UP\" Official MV",
-          "dur": 181
+          "id": "-tJYN-eG1zk",
+          "title": "Queen - We Will Rock You",
+          "dur": 134
         }
       ]
     },
@@ -129,19 +39,14 @@
           "dur": 368
         },
         {
-          "id": "-tJYN-eG1zk",
-          "title": "Queen - We Will Rock You",
-          "dur": 134
+          "id": "G5yi14m9MBk",
+          "title": "AC/DC - For those about to Rock",
+          "dur": 343
         },
         {
           "id": "9kZCWlnO-bQ",
           "title": "People Are Strange (2012 Botnick Mix) · The Doors",
           "dur": 240
-        },
-        {
-          "id": "G5yi14m9MBk",
-          "title": "AC/DC - For those about to Rock",
-          "dur": 343
         },
         {
           "id": "khjaSIz5tQo",
@@ -167,6 +72,11 @@
           "id": "9X_ViIPA-Gc",
           "title": "Meat Loaf - I'd Do Anything For Love (But I Won't Do That)",
           "dur": 460
+        },
+        {
+          "id": "7icIbZYvEtk",
+          "title": "Freddie Mercury ft. Montserrat Caballe - Barcelona",
+          "dur": 291
         }
       ]
     },
@@ -207,6 +117,46 @@
           "id": "tT4d1LQy4es",
           "title": "Alannah Myles - Black Velvet",
           "dur": 290
+        },
+        {
+          "id": "fUis9yny_lI",
+          "title": "Berlin - Take My Breathe Away",
+          "dur": 253
+        },
+        {
+          "id": "T9Jcs45GhxU",
+          "title": "Chris de Burgh - Lady In Red",
+          "dur": 245
+        },
+        {
+          "id": "lvR1YgT7QYs",
+          "title": "Roy Orbison - You Got It",
+          "dur": 215
+        },
+        {
+          "id": "A_MjCqQoLLA",
+          "title": "The Beatles - Hey Jude",
+          "dur": 489
+        },
+        {
+          "id": "wXTJBr9tt8Q",
+          "title": "The Beatles - Yesterday",
+          "dur": 152
+        },
+        {
+          "id": "tH2w6Oxx0kQ",
+          "title": "Kansas - Dust in the Wind",
+          "dur": 199
+        },
+        {
+          "id": "6pHNkOQCIzk",
+          "title": "Nazareth - Love Hurts",
+          "dur": 234
+        },
+        {
+          "id": "JxPj3GAYYZ0",
+          "title": "Eric Clapton - Tears In Heaven",
+          "dur": 274
         }
       ]
     },
@@ -222,6 +172,151 @@
           "id": "gAjR4_CbPpQ",
           "title": "Daft Punk – Get Lucky",
           "dur": 369
+        },
+        {
+          "id": "gCYcHz2k5x0",
+          "title": "Martin Garrix - Animals",
+          "dur": 191
+        },
+        {
+          "id": "wyx6JDQCslE",
+          "title": "LMFAO - Sexy and I Know It",
+          "dur": 203
+        },
+        {
+          "id": "5dbEhBKGOtY",
+          "title": "David Guetta - Play Hard ft. Ne-Yo, Akon",
+          "dur": 241
+        },
+        {
+          "id": "j3CaHeakZF4",
+          "title": "Deorro x Chris Brown - Five More Hours",
+          "dur": 285
+        },
+        {
+          "id": "3OnnDqH6Wj8",
+          "title": "Flo Rida - Good Feeling",
+          "dur": 270
+        },
+        {
+          "id": "ZaI2IlHwmgQ",
+          "title": "The Black Eyed Peas - Pump It",
+          "dur": 226
+        },
+        {
+          "id": "N9hazmsUxrM",
+          "title": "David Guetta Feat. Akon - Sexy Chick",
+          "dur": 211
+        },
+        {
+          "id": "4m48GqaOz90",
+          "title": "The Black Eyed Peas - Boom Boom Pow",
+          "dur": 209
+        },
+        {
+          "id": "_ovdm2yX4MA",
+          "title": "Avicii - Levels",
+          "dur": 198
+        },
+        {
+          "id": "U2waT9TxPU0",
+          "title": "Flo Rida - Low (feat. T-Pain)",
+          "dur": 230
+        },
+        {
+          "id": "hHUbLv4ThOo",
+          "title": "Pitbull, Ke$ha - Timber (featuring Ke$ha)",
+          "dur": 214
+        },
+        {
+          "id": "9bZkp7q19f0",
+          "title": "PSY - GANGNAM STYLE(강남스타일)",
+          "dur": 252
+        },
+        {
+          "id": "hiP14ED28CA",
+          "title": "Jason Derulo - Wiggle feat. Snoop Dogg",
+          "dur": 223
+        },
+        {
+          "id": "cxhab3IMYm0",
+          "title": "Fedde Le Grand - Put Your Hands Up For Detroit",
+          "dur": 164
+        },
+        {
+          "id": "honzPhGqcE4",
+          "title": "Flo Rida - Let It Roll",
+          "dur": 225
+        },
+        {
+          "id": "uSD4vsh1zDA",
+          "title": "The Black Eyed Peas - I Gotta Feeling",
+          "dur": 291
+        },
+        {
+          "id": "yyDUC1LUXSU",
+          "title": "Robin Thicke - Blurred Lines ft. T.I., Pharrell",
+          "dur": 271
+        },
+        {
+          "id": "Bznxx12Ptl0",
+          "title": "AronChupa, Little Sis Nora - I'm an Albatraoz",
+          "dur": 148
+        },
+        {
+          "id": "HMUDVMiITOU",
+          "title": "DJ Snake, Lil Jon - Turn Down for What",
+          "dur": 216
+        },
+        {
+          "id": "HMqgVXSvwGo",
+          "title": "Pitbull - Fireball",
+          "dur": 241
+        },
+        {
+          "id": "YVw7eJ0vGfM",
+          "title": "David Guetta - Turn Me On ft. Nicki Minaj",
+          "dur": 210
+        },
+        {
+          "id": "Kq4OtRsdXls",
+          "title": "Alex Gaudino feat. Crystal Waters - Destination Calabria",
+          "dur": 183
+        },
+        {
+          "id": "TLGWQfK-6DY",
+          "title": "RUN DMC, Jason Nevins - It's Like That",
+          "dur": 229
+        },
+        {
+          "id": "wCDIYvFmgW8",
+          "title": "Fatboy Slim ft. Bootsy Collins - Weapon Of Choice",
+          "dur": 225
+        },
+        {
+          "id": "jrL_LzX5wv4",
+          "title": "House of Pain - Jump Around",
+          "dur": 215
+        },
+        {
+          "id": "NUVCQXMUVnI",
+          "title": "David Guetta Feat. Kid Cudi - Memories",
+          "dur": 208
+        },
+        {
+          "id": "zaSZE194D4I",
+          "title": "Pitbull - Back in Time",
+          "dur": 212
+        },
+        {
+          "id": "68ugkg9RePc",
+          "title": "Eiffel 65 - Blue (Da Ba Dee) [Gabry Ponte Ice Pop Mix]",
+          "dur": 219
+        },
+        {
+          "id": "rmHDhAohJlQ",
+          "title": "The Prodigy - Breathe",
+          "dur": 241
         }
       ]
     },
@@ -264,11 +359,6 @@
       "synced": true,
       "videos": [
         {
-          "id": "fUis9yny_lI",
-          "title": "Berlin - Take My Breathe Away",
-          "dur": 253
-        },
-        {
           "id": "NMNgbISmF4I",
           "title": "Aerosmith - Crazy",
           "dur": 373
@@ -282,11 +372,6 @@
           "id": "wd1-HM234DE",
           "title": "James Brown-This is a mans world",
           "dur": 171
-        },
-        {
-          "id": "T9Jcs45GhxU",
-          "title": "Chris de Burgh - Lady In Red",
-          "dur": 245
         },
         {
           "id": "FT_Jp5hN16Y",
@@ -314,11 +399,6 @@
           "dur": 208
         },
         {
-          "id": "xFrGuyw1V8s",
-          "title": "ABBA - Dancing Queen",
-          "dur": 232
-        },
-        {
           "id": "tpzV_0l5ILI",
           "title": "Elvis Presley Jailhouse Rock",
           "dur": 182
@@ -329,14 +409,14 @@
           "dur": 283
         },
         {
+          "id": "xFrGuyw1V8s",
+          "title": "ABBA - Dancing Queen",
+          "dur": 232
+        },
+        {
           "id": "S81TU2EQnTk",
           "title": "Baccara - The Devil Sent You To Laredo",
           "dur": 192
-        },
-        {
-          "id": "V4yCCr_CpwE",
-          "title": "Bob Marley - Could You Be Loved",
-          "dur": 230
         },
         {
           "id": "NU3KELkd-zY",
@@ -459,11 +539,6 @@
           "dur": 241
         },
         {
-          "id": "lvR1YgT7QYs",
-          "title": "Roy Orbison - You Got It",
-          "dur": 215
-        },
-        {
           "id": "8LhkyyCvUHk",
           "title": "Shocking Blue - Venus",
           "dur": 183
@@ -477,11 +552,6 @@
           "id": "zKQfxi8V5FA",
           "title": "Zager & Evans - In the Year 2525",
           "dur": 196
-        },
-        {
-          "id": "A_MjCqQoLLA",
-          "title": "The Beatles - Hey Jude",
-          "dur": 489
         },
         {
           "id": "45cYwDMibGo",
@@ -502,11 +572,6 @@
           "id": "Yjyj8qnqkYI",
           "title": "The Beatles - A Hard Day's Night",
           "dur": 158
-        },
-        {
-          "id": "wXTJBr9tt8Q",
-          "title": "The Beatles - Yesterday",
-          "dur": 152
         },
         {
           "id": "kle2xHhRHg4",
@@ -564,11 +629,6 @@
           "dur": 212
         },
         {
-          "id": "tH2w6Oxx0kQ",
-          "title": "Kansas - Dust in the Wind",
-          "dur": 199
-        },
-        {
           "id": "8Pa9x9fZBtY",
           "title": "Dire Straits - Sultans Of Swing",
           "dur": 646
@@ -582,16 +642,6 @@
           "id": "04854XqcfCY",
           "title": "Queen - We Are The Champions",
           "dur": 184
-        },
-        {
-          "id": "6pHNkOQCIzk",
-          "title": "Nazareth - Love Hurts",
-          "dur": 234
-        },
-        {
-          "id": "JxPj3GAYYZ0",
-          "title": "Eric Clapton - Tears In Heaven",
-          "dur": 274
         },
         {
           "id": "uGDA0Hecw1k",
@@ -634,6 +684,11 @@
           "dur": 231
         },
         {
+          "id": "-0kcet4aPpQ",
+          "title": "Pink Floyd - Money",
+          "dur": 283
+        },
+        {
           "id": "_W978zoLu1w",
           "title": "Rodriguez - I Wonder",
           "dur": 161
@@ -649,14 +704,14 @@
           "dur": 206
         },
         {
-          "id": "-0kcet4aPpQ",
-          "title": "Pink Floyd - Money",
-          "dur": 283
-        },
-        {
           "id": "YR5ApYxkU-U",
           "title": "Pink Floyd - Another Brick In The Wall",
           "dur": 360
+        },
+        {
+          "id": "ZntYBFyuZd4",
+          "title": "The Animals - Bring It On Home To Me",
+          "dur": 176
         }
       ]
     },
@@ -991,6 +1046,11 @@
           "dur": 218,
           "dedication": "For Hary",
           "requestedBy": "Smoothy"
+        },
+        {
+          "id": "SsmVgoXDq2w",
+          "title": "The Bangles - Manic Monday",
+          "dur": 191
         }
       ]
     },
@@ -1101,6 +1161,756 @@
           "id": "42DYo1rPQdM",
           "title": "George Jones ~ \"Finally Friday\"",
           "dur": 161
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "icon": "🍀",
+      "name": "Reggae",
+      "freq": "420.5",
+      "desc": "Reggae hits",
+      "synced": true,
+      "videos": [
+        {
+          "id": "V4yCCr_CpwE",
+          "title": "Bob Marley - Could You Be Loved",
+          "dur": 230
+        },
+        {
+          "id": "69RdQFDuYPI",
+          "title": "Bob Marley - Is This Love",
+          "dur": 233
+        },
+        {
+          "id": "IT8XvzIfi4U",
+          "title": "Bob Marley - No Woman, No Cry",
+          "dur": 430
+        },
+        {
+          "id": "HNBCVM4KbUM",
+          "title": "Bob Marley & The Wailers - Three Little Birds",
+          "dur": 192
+        },
+        {
+          "id": "oqVy6eRXc7Q",
+          "title": "Bob Marley & The Wailers - Jamming",
+          "dur": 213
+        },
+        {
+          "id": "uMUQMSXLlHM",
+          "title": "Bob Marley & The Wailers - Buffalo Soldier",
+          "dur": 163
+        },
+        {
+          "id": "zXt56MB-3vc",
+          "title": "UB40 - Red Red Wine",
+          "dur": 203
+        },
+        {
+          "id": "8Ikz-51w3mo",
+          "title": "UB40 - Kingston Town",
+          "dur": 239
+        },
+        {
+          "id": "xviBqhV-Ga0",
+          "title": "UB40 - The Way You do The Things You Do",
+          "dur": 179
+        },
+        {
+          "id": "R82XGJV_nkU",
+          "title": "Laid Back - Sunshine Reggae",
+          "dur": 220
+        },
+        {
+          "id": "uc2UEfWjvo8",
+          "title": "Inner Circle - Sweat (A La La Long)",
+          "dur": 267
+        },
+        {
+          "id": "EsyUa63NM1E",
+          "title": "Musical Youth - Pass The Dutchie",
+          "dur": 202
+        },
+        {
+          "id": "5Hjn02iy8P4",
+          "title": "Yellowman - Still Be A Lady",
+          "dur": 279
+        },
+        {
+          "id": "3EtSPUAFkeg",
+          "title": "Yellowman - Zungguzungguguzungguzeng",
+          "dur": 246
+        },
+        {
+          "id": "CKQlsrvVzj0",
+          "title": "Eddy Grant - I Don't Wanna Dance",
+          "dur": 198
+        },
+        {
+          "id": "vtPk5IUbdH0",
+          "title": "Eddy Grant - Electric Avenue",
+          "dur": 190
+        },
+        {
+          "id": "vMw8QVwIMwk",
+          "title": "EDDIE GRANT Do you feel my love",
+          "dur": 172
+        },
+        {
+          "id": "LaHlIb5Hc8U",
+          "title": "Eddy Grant - Romancing the Stone",
+          "dur": 204
+        },
+        {
+          "id": "zhker3RS-T0",
+          "title": "EDDIE GRANT - LIVING ON THE FRONTLINE",
+          "dur": 176
+        },
+        {
+          "id": "fuGjCjllPkM",
+          "title": "Peter Tosh - Wanted Dread and Alive",
+          "dur": 257
+        },
+        {
+          "id": "IQUd8Kpyvto",
+          "title": "Peter Tosh - Mama Africa",
+          "dur": 482
+        },
+        {
+          "id": "F6aB2xqVuZA",
+          "title": "Peter Tosh - Reggae Mylitis",
+          "dur": 394
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "icon": "🎶",
+      "name": "Hits",
+      "freq": "20.26",
+      "desc": "Contemporary music from around the world",
+      "synced": true,
+      "videos": [
+        {
+          "id": "JGwWNGJdvx8",
+          "title": "Ed Sheeran – Shape of You",
+          "dur": 234
+        },
+        {
+          "id": "ktvTqknDobU",
+          "title": "Imagine Dragons – Radioactive",
+          "dur": 187
+        },
+        {
+          "id": "RgKAFK5djSk",
+          "title": "Wiz Khalifa – See You Again",
+          "dur": 229
+        },
+        {
+          "id": "hT_nvWreIhg",
+          "title": "OneRepublic – Counting Stars",
+          "dur": 257
+        },
+        {
+          "id": "OPf0YbXqDm0",
+          "title": "Mark Ronson – Uptown Funk",
+          "dur": 270
+        },
+        {
+          "id": "fcnDmrtj6Sk",
+          "title": "Shakira, Burna Boy - Dai Dai",
+          "dur": 240
+        },
+        {
+          "id": "8F2s8ivKXNY",
+          "title": "Oliver Tree - Life Goes On",
+          "dur": 206
+        },
+        {
+          "id": "BZGuQCvUXIA",
+          "title": "Golden - KPop Demon Hunters (Lyrics) HUNTR/X, EJAE, AUDREY NUNA, REI AMI",
+          "dur": 194
+        },
+        {
+          "id": "2rA2K0gwjoo",
+          "title": "LE SSERAFIM  x ILLIT  x KATSEYE  'ICONIC BY MISTAKE' Dance Practice",
+          "dur": 180
+        },
+        {
+          "id": "Ntn1-SocNiY",
+          "title": "Shakira - Waka Waka",
+          "dur": 199
+        },
+        {
+          "id": "82-jTNka3uc",
+          "title": "Ariana Grande - hate that i made you love me",
+          "dur": 300
+        },
+        {
+          "id": "kwwdY1bp-Ck",
+          "title": "Mira el Video oficial de \"Todo Lo Fue\" de Lenin Ramirez",
+          "dur": 189
+        },
+        {
+          "id": "NVLgkXylEuQ",
+          "title": "El Bogueto ❌ Anuel AA ❌ Yung Beef ❌ Fuerza Regida - Cuando No Era Cantante Remix",
+          "dur": 357
+        },
+        {
+          "id": "U6BDbXIah-Y",
+          "title": "CORTIS - 'REDRED'",
+          "dur": 208
+        },
+        {
+          "id": "0UPDBODtxzw",
+          "title": "Tame Impala, JENNIE - Dracula (JENNIE Remix)",
+          "dur": 210
+        },
+        {
+          "id": "KqMOKCRgvD8",
+          "title": "Babydoll - Dominic Fike",
+          "dur": 153
+        },
+        {
+          "id": "aFbueod4reQ",
+          "title": "Bruno Mars - Risk It All",
+          "dur": 223
+        },
+        {
+          "id": "7F1ET2XHQfk",
+          "title": "KATSEYE (캣츠아이) \"PINKY UP\" Official MV",
+          "dur": 181
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "icon": "👽",
+      "name": "Trance",
+      "freq": "12.5",
+      "desc": "All trance",
+      "synced": true,
+      "videos": [
+        {
+          "id": "mfJhMfOPWdE",
+          "title": "Armin van Buuren - Blah Blah Blah",
+          "dur": 193
+        },
+        {
+          "id": "IxX_QHay02M",
+          "title": "W&W - OIIA OIIA (Spinning Cat)",
+          "dur": 134
+        },
+        {
+          "id": "DvyCbevQbtI",
+          "title": "Robert Miles - Children",
+          "dur": 243
+        },
+        {
+          "id": "y6120QOlsfU",
+          "title": "Darude - Sandstorm",
+          "dur": 232
+        },
+        {
+          "id": "yo4pmauhugo",
+          "title": "Armin van Buuren vs Vini Vici feat. Hilight Tribe - Great Spirit",
+          "dur": 457
+        },
+        {
+          "id": "LBo8tD8eHU4",
+          "title": "Paul Kalkbrenner feat. Norma Jean Martine – Time To Dance",
+          "dur": 178
+        },
+        {
+          "id": "__TvPr_Wtvc",
+          "title": "Timmy Trumpet - Oracle",
+          "dur": 185
+        },
+        {
+          "id": "ffxhW8z58dU",
+          "title": "SQUID GAME (WHITENO1SE x OMIKI REMIX)",
+          "dur": 265
+        },
+        {
+          "id": "q3AK0AxzBmA",
+          "title": "Ecstasy (Morten Granau Remix)",
+          "dur": 350
+        },
+        {
+          "id": "6onc3rpArns",
+          "title": "W&W - Tung Tung Tung Sahur (Italian Brainrot)",
+          "dur": 126
+        },
+        {
+          "id": "kivuDS-6HbQ",
+          "title": "Armin van Buuren - Turn It Up",
+          "dur": 183
+        },
+        {
+          "id": "FHVD9ft_ANw",
+          "title": "Blastoyz - Mandala",
+          "dur": 357
+        },
+        {
+          "id": "sRvEwXDxz_I",
+          "title": "Paul van Dyk - For An Angel",
+          "dur": 180
+        },
+        {
+          "id": "xw3C03Ba8Dk",
+          "title": "Astrix - Deep Jungle Walk",
+          "dur": 554
+        },
+        {
+          "id": "Aooy7iw-7cY",
+          "title": "Vini Vici & Astrix - Adhana",
+          "dur": 460
+        },
+        {
+          "id": "KO4y3nkJXDA",
+          "title": "Da Hool - meet her at the Loveparade",
+          "dur": 217
+        },
+        {
+          "id": "2EaE0_gQLw0",
+          "title": "Tiësto - Adagio For Strings",
+          "dur": 205
+        },
+        {
+          "id": "MQIVguU3v3k",
+          "title": "PSY-TRANCE ◉ Creeds - Push Up",
+          "dur": 365
+        },
+        {
+          "id": "65EfTFUFDwI",
+          "title": "Faithless - We Come 1",
+          "dur": 241
+        },
+        {
+          "id": "bhSB8EEnCAM",
+          "title": "Faithless - God Is a DJ",
+          "dur": 208
+        },
+        {
+          "id": "YQQokcoOzeY",
+          "title": "DJ Quicksilver - -Bellisima",
+          "dur": 232
+        },
+        {
+          "id": "QPTnMVvfH-w",
+          "title": "AutoErotique - Asphyxiation",
+          "dur": 291
+        },
+        {
+          "id": "3zgJWAy9LDs",
+          "title": "Astrix @ Ozora 2017 - Turn On, Tune In, Drop Out",
+          "dur": 266
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "icon": "🍿",
+      "name": "Soundtracks",
+      "freq": "007",
+      "desc": "Music from Movies",
+      "synced": true,
+      "videos": [
+        {
+          "id": "l6DepmNwbn8",
+          "title": "Blue Swede & Björn Skifs - Hooked On A Feeling - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 173
+        },
+        {
+          "id": "jfgnc6Ey0q0",
+          "title": "Raspberries Go All The Way - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 200
+        },
+        {
+          "id": "vRFo72wuU6w",
+          "title": "Norman Greenbaum - Spirit In The Sky - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 234
+        },
+        {
+          "id": "tQtha5aHUO8",
+          "title": "David Bowie - Moonage Daydream - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 271
+        },
+        {
+          "id": "0MtX1-i6Zu8",
+          "title": "Elvin Bishop - Fooled around and fell in love - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 305
+        },
+        {
+          "id": "STugQ0X1NoI",
+          "title": "10cc - I'm Not In Love - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 225
+        },
+        {
+          "id": "y2bVIBwpCTA",
+          "title": "The Jackson 5 - I Want You Back - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 180
+        },
+        {
+          "id": "4MpPGb_apD8",
+          "title": "Come And Get Your Love - Redbone - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 220
+        },
+        {
+          "id": "_EBvXpjudf8",
+          "title": "The Runaways - Cherry Bomb - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 140
+        },
+        {
+          "id": "YGAeI5KODLA",
+          "title": "RUPERT HOLMES - Escape (The Pina Colada Song) - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 230
+        },
+        {
+          "id": "ov_s6mGXLjQ",
+          "title": "Five Stairsteps - Ooh Child- Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 196
+        },
+        {
+          "id": "IC5PL0XImjw",
+          "title": "Ain't No Mountain High Enough - Marvin Gaye & Tammi Terrell - Guardians of the Galaxy (2014) – Awesome Mix Vol. 1",
+          "dur": 163
+        },
+        {
+          "id": "kBYHwH1Vb-c",
+          "title": "Fleetwood Mac - The Chain - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 294
+        },
+        {
+          "id": "p73AQkeqQf4",
+          "title": "Sam Cooke - Bring It On Home To Me - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 165
+        },
+        {
+          "id": "nrCSqbqDYrk",
+          "title": "George Harrison - My Sweet Lord - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 277
+        },
+        {
+          "id": "ZyBFxjmJPqk",
+          "title": "Sweet - Wig Wam Bam - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 184
+        },
+        {
+          "id": "Oxfzfl5WoxE",
+          "title": "Come A Little Bit Closer - Jay & The Americans - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 175
+        },
+        {
+          "id": "iY_-lpclv8o",
+          "title": "Looking Glass - Brandy (You're a Fine Girl) - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 180
+        },
+        {
+          "id": "ZsDJLaqw5Tc",
+          "title": "Fleetwood Mac - You Make Loving Fun - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 286
+        },
+        {
+          "id": "ZbkypX1OhZ0",
+          "title": "Cheap Trick - Surrender - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 274
+        },
+        {
+          "id": "CsMYmnB7cQM",
+          "title": "The Runaways - Queens Of Noise - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 194
+        },
+        {
+          "id": "QzWjrbBJxUQ",
+          "title": "FLASHLIGHT - PARLIAMENT FUNKADELIC - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 250
+        },
+        {
+          "id": "xTe9V-yUkQc",
+          "title": "Rock n' Roll Love Letter - Bay City Rollers - Guardians of the Galaxy Vol. 2 (2017) – Awesome Mix Vol. 2",
+          "dur": 167
+        },
+        {
+          "id": "1P17ct4e5OE",
+          "title": "Rainbow - Since You've Been Gone - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 214
+        },
+        {
+          "id": "RyprAFkdnpA",
+          "title": "Redbone...Come And Get Your Love.Extended - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 990
+        },
+        {
+          "id": "lPXWt2ESxVY",
+          "title": "The Flaming Lips - Do You Realize??- Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 266
+        },
+        {
+          "id": "LQhX8PbNUWI",
+          "title": "Faith No More - We Care a Lot - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 247
+        },
+        {
+          "id": "nSGmXHxcWt4",
+          "title": "Metallica - Battery - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 331
+        },
+        {
+          "id": "PCsGRCf8T9Y",
+          "title": "Spacehog - In the Meantime - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 273
+        },
+        {
+          "id": "qVcl0Iw3fs8",
+          "title": "Heart - Crazy on you - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 417
+        },
+        {
+          "id": "3JWTaaS7LdU",
+          "title": "Whitney Houston - I Will Always Love You - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 274
+        },
+        {
+          "id": "ZhZxKhAilZk",
+          "title": "Koinu no Carnival – The Peanuts- Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 190
+        },
+        {
+          "id": "XFkzRNyygfk",
+          "title": "Radiohead - Creep - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 236
+        },
+        {
+          "id": "LzsAPhGpMkA",
+          "title": "Bruce Springsteen - Badlands - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 260
+        },
+        {
+          "id": "iWOyfLBYtuU",
+          "title": "Florence + The Machine - Dog Days Are Over - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 219
+        },
+        {
+          "id": "ilAJJ3WHg6g",
+          "title": "Jimi Jamison - I'm Always Here - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 198
+        },
+        {
+          "id": "Nxazmzy0vAo",
+          "title": "The The - This Is the Day - Guardians of the Galaxy Vol. 3 (2023) – Awesome Mix Vol. 3",
+          "dur": 221
+        },
+        {
+          "id": "5GEU7GYaAII",
+          "title": "Goldfinger – Shirley Bassey - Goldfinger (1964)",
+          "dur": 170
+        },
+        {
+          "id": "ZwbEuzJCnqI",
+          "title": "Diamonds Are Forever – Shirley Bassey - Diamonds Are Forever (1971)",
+          "dur": 172
+        },
+        {
+          "id": "05QJlF06F4s",
+          "title": "You Only Live Twice – Nancy Sinatra - You Only Live Twice (1967)",
+          "dur": 169
+        },
+        {
+          "id": "b07Z_qfchFk",
+          "title": "Live and Let Die – Paul McCartney & Wings - Live and Let Die (1973)",
+          "dur": 155
+        },
+        {
+          "id": "isAUOa50wdA",
+          "title": "Carly Simon Nobody Does It Better - The Spy Who Loved Me (1977)",
+          "dur": 153
+        },
+        {
+          "id": "RkZf-Hfqx_A",
+          "title": "For Your Eyes Only – Sheena Easton - For Your Eyes Only (1981)",
+          "dur": 182
+        },
+        {
+          "id": "Fp4CR2HcHLQ",
+          "title": "A View to a Kill – Duran Duran - A View to a Kill (1985)",
+          "dur": 246
+        },
+        {
+          "id": "hR2OwmariWk",
+          "title": "The Living Daylights – a-ha - The Living Daylights (1987)",
+          "dur": 256
+        },
+        {
+          "id": "Yg2dsMW4I7s",
+          "title": "GoldenEye – Tina Turner -  GoldenEye (1995)",
+          "dur": 239
+        },
+        {
+          "id": "QX-fMlt-UyM",
+          "title": "The World Is Not Enough – Garbage - The World Is Not Enough (1999)",
+          "dur": 242
+        },
+        {
+          "id": "ZVFDshqlmOQ",
+          "title": "Die Another Day – Madonna - Die Another Day (2002)",
+          "dur": 271
+        },
+        {
+          "id": "q-gLRp5bSpw",
+          "title": "Skyfall – Adele - Skyfall (2012)",
+          "dur": 287
+        },
+        {
+          "id": "3XdGDdByYRE",
+          "title": "Writing’s on the Wall – Sam Smith - Spectre (2015)",
+          "dur": 240
+        },
+        {
+          "id": "WzHJJHqwmx4",
+          "title": "No Time to Die – Billie Eilish - No Time to Die (2021)",
+          "dur": 243
+        },
+        {
+          "id": "_-ID8NmS1EY",
+          "title": "James Bond Theme – John Barry - Dr. No - used across many Bond films (1962 onward)",
+          "dur": 107
+        },
+        {
+          "id": "WYRf_S9DLfk",
+          "title": "On Her Majesty’s Secret Service (Main Theme) – John Barry - On Her Majesty’s Secret Service (1969)",
+          "dur": 160
+        },
+        {
+          "id": "7g0qfSxFYfM",
+          "title": "Mission: Impossible Theme – Lalo Schifrin",
+          "dur": 219
+        },
+        {
+          "id": "lDYJr87aU3o",
+          "title": "Ocean’s 11 (Main Theme) – David Holmes - Ocean’s Eleven (2001)",
+          "dur": 125
+        },
+        {
+          "id": "aMfVH43AP9Y",
+          "title": "Main Theme (Star Wars) – John Williams - Star Wars: Episode IV – A New Hope (1977)",
+          "dur": 194
+        },
+        {
+          "id": "dHgRnp_9i6c",
+          "title": "Dune Main Theme – Hans Zimmer - Dune (2021)",
+          "dur": 413
+        },
+        {
+          "id": "J7pq88_GEF8",
+          "title": "Arrival of the Birds – Hans Zimmer - Arrival (2016)",
+          "dur": 490
+        },
+        {
+          "id": "RxabLA7UQ9k",
+          "title": "Time – Hans Zimmer - Inception (2010)",
+          "dur": 274
+        },
+        {
+          "id": "8kooIgKESYE",
+          "title": "Cornfield Chase – Hans Zimmer - Interstellar (2014)",
+          "dur": 504
+        },
+        {
+          "id": "MR6FXpaECY8",
+          "title": "Gonna Fly Now (Rocky Theme) – Bill Conti - Rocky (1976)",
+          "dur": 311
+        },
+        {
+          "id": "Gt9x6KhwuoM",
+          "title": "Eye of the Tiger – Survivor - Rocky III (1982)",
+          "dur": 243
+        },
+        {
+          "id": "8a-HfNE3EIo",
+          "title": "Chariots of Fire (Titles) – Vangelis - Chariots of Fire (1981)",
+          "dur": 214
+        },
+        {
+          "id": "DJz16PGPI40",
+          "title": "Invictus (Main Theme) – Clint Eastwood / Kyle Eastwood & Michael Stevens -  Invictus (2009)",
+          "dur": 248
+        },
+        {
+          "id": "mQQKZ5cgybU",
+          "title": "Now We Are Free – Hans Zimmer & Lisa Gerrard - Gladiator (2000)",
+          "dur": 258
+        },
+        {
+          "id": "RDY94U_vYmo",
+          "title": "Duel of the Fates – John Williams - Star Wars: Episode I – The Phantom Menace (1999)",
+          "dur": 255
+        },
+        {
+          "id": "Pis3veqKl8k",
+          "title": "The Ride of the Rohirrim – Howard Shore - The Lord of the Rings: The Return of the King (2003)",
+          "dur": 254
+        },
+        {
+          "id": "ltrMfT4Qz5Y",
+          "title": "Footloose – Kenny Loggins - Footloose (1984)",
+          "dur": 175
+        },
+        {
+          "id": "gI7YHZVc7mM",
+          "title": "Let’s Hear It for the Boy – Deniece Williams - Footloose (1984)",
+          "dur": 249
+        },
+        {
+          "id": "Fn7d_a0pmio",
+          "title": "Holding Out for a Hero – Bonnie Tyler - Holding Out for a Hero – Bonnie Tyler",
+          "dur": 157
+        },
+        {
+          "id": "siwpn14IE7E",
+          "title": "Danger Zone – Kenny Loggins - Top Gun (1986)",
+          "dur": 225
+        },
+        {
+          "id": "Bx51eegLTY8",
+          "title": "Take My Breath Away – Berlin - Top Gun (1986)",
+          "dur": 251
+        },
+        {
+          "id": "rmySknC9fuQ",
+          "title": "Axel F – Harold Faltermeyer - Beverly Hills Cop (1984)",
+          "dur": 184
+        },
+        {
+          "id": "WpmILPAcRQo",
+          "title": "(I’ve Had) The Time of My Life – Bill Medley & Jennifer Warnes - Dirty Dancing (1987)",
+          "dur": 268
+        },
+        {
+          "id": "ZoEwR9_Sy_M",
+          "title": "Unchained Melody – The Righteous Brothers - Ghost (1990)",
+          "dur": 218
+        },
+        {
+          "id": "F2RnxZnubCM",
+          "title": "My Heart Will Go On – Celine Dion - Titanic (1997)",
+          "dur": 283
+        },
+        {
+          "id": "BowJk0InIic",
+          "title": "The Power of Love – Huey Lewis & The News - Back to the Future (1985)",
+          "dur": 250
+        },
+        {
+          "id": "OjCEVCudqN8",
+          "title": "Kiss from a Rose – Seal - Batman Forever (1995)",
+          "dur": 262
+        },
+        {
+          "id": "Jz8TZrGAoiU",
+          "title": "I Don’t Want to Miss a Thing – Aerosmith - Armageddon (1998)",
+          "dur": 299
         }
       ]
     }
