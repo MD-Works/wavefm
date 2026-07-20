@@ -1224,6 +1224,10 @@
 
   <!-- MAIN PLAYER -->
   <main class="main">
+    <!-- DJ Shoutout Banner — lives inside main flow, never overlaps other panels -->
+    <div id="shoutout-bar" style="display:none;align-items:center;padding:0 20px;gap:10px;background:var(--amber-glow);border-bottom:1px solid rgba(232,200,122,0.35);font-size:0.78rem;color:var(--amber);font-family:var(--mono);letter-spacing:0.05em;height:34px;flex-shrink:0;">
+      <span>📣</span><span id="shoutout-text"></span>
+    </div>
     <div class="channel-header">
       <div class="channel-header-icon" id="ch-icon">🔥</div>
       <div class="channel-header-info">
@@ -1322,10 +1326,7 @@
     </div>
   </aside>
 
-  <!-- DJ Shoutout Banner -->
-  <div id="shoutout-bar" style="display:none;grid-area:topbar;align-items:center;padding:0 24px;gap:10px;background:var(--amber-glow);border-bottom:1px solid rgba(232,200,122,0.35);font-size:0.78rem;color:var(--amber);font-family:var(--mono);letter-spacing:0.05em;position:fixed;top:56px;left:0;right:0;z-index:20;height:34px;">
-    <span>📣</span><span id="shoutout-text"></span>
-  </div>
+
 
   <!-- NOW PLAYING BAR -->
   <footer class="nowplaying">
