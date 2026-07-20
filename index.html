@@ -885,12 +885,27 @@
       gap: 0;
       height: 48px;
     }
-    .waveform-svg { width: 180px; height: 48px; }
-    .waveform-path {
-      fill: none;
-      stroke: var(--accent);
-      stroke-width: 1.5;
-      opacity: 0.7;
+    #waveform-canvas { width: 180px; height: 48px; display: block; }
+
+    /* Volume boost button */
+    .boost-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      padding: 4px 9px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .boost-btn:hover { background: var(--panel2); color: var(--text); border-color: var(--muted); }
+    .boost-btn.active {
+      background: var(--accent);
+      color: var(--on-accent);
+      border-color: var(--accent);
+      font-weight: 700;
     }
 
     .np-controls {
@@ -1322,11 +1337,9 @@
       <div class="np-dedication" id="np-dedication" style="display:none"></div>
     </div>
 
-    <!-- Signature waveform -->
+    <!-- Waveform visualiser -->
     <div class="waveform-wrap">
-      <svg class="waveform-svg" viewBox="0 0 180 48" xmlns="http://www.w3.org/2000/svg">
-        <path class="waveform-path" id="waveform-path" d="M0,24 L180,24"/>
-      </svg>
+      <canvas id="waveform-canvas" width="180" height="48"></canvas>
     </div>
 
     <!-- Synced channel controls (mute/unmute only) -->
@@ -1350,6 +1363,7 @@
     <div class="volume-wrap">
       <span class="vol-icon">🔊</span>
       <input type="range" id="volume-slider" min="0" max="100" value="80" oninput="setVolume(this.value)" />
+      <button class="boost-btn" id="boost-btn" onclick="toggleBoost()" title="Volume boost (up to 3×)">⚡ BOOST</button>
     </div>
 
     <!-- Fullscreen toggle -->
@@ -1408,7 +1422,7 @@ let ytReady           = false;
 let isPlaying         = false;
 let isMuted           = false;
 let waveAnimFrame     = null;
-let wavePhase         = 0;
+// wavePhase removed — using canvas bar visualiser
 
 // Persistent per-browser client id, used for the live listener count
 function getClientId() {
@@ -2089,32 +2103,202 @@ function showMsg(type, text) {
   setTimeout(() => el.className = 'form-msg', 4000);
 }
 
-// ── WAVEFORM ANIMATION (signature element) ────────────────────────────────────
+// ── WAVEFORM VISUALISER ───────────────────────────────────────────────────────
+// YouTube iframes are cross-origin so Web Audio API cannot tap them directly.
+// Instead we use a convincing beat-driven bar visualiser: 24 bars that react to
+// a simulated "energy" envelope driven by a pseudo-random beat grid, producing
+// the look of a real spectrum analyser without requiring audio capture.
+
+const WV_BARS     = 24;
+const WV_BEAT_BPM = 128;            // simulated BPM — feels live
+let   wvBars      = new Float32Array(WV_BARS).fill(0);  // current heights 0–1
+let   wvTargets   = new Float32Array(WV_BARS).fill(0);  // target heights
+let   wvLastBeat  = 0;
+let   wvBeatCount = 0;
+let   wvEnergy    = 0;              // global energy level 0–1
+
 function startWaveform() {
   if (waveAnimFrame) cancelAnimationFrame(waveAnimFrame);
+  wvEnergy = 0.4;
   animateWave();
 }
 
 function stopWaveform() {
   if (waveAnimFrame) cancelAnimationFrame(waveAnimFrame);
   waveAnimFrame = null;
-  document.getElementById('waveform-path').setAttribute('d', 'M0,24 L180,24');
+  // Draw flat line on canvas
+  const canvas = document.getElementById('waveform-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Flat line
+  const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#d4a843';
+  ctx.strokeStyle = accentColor;
+  ctx.globalAlpha = 0.45;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, 24);
+  ctx.lineTo(180, 24);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  wvBars.fill(0);
+  wvTargets.fill(0);
 }
 
 function animateWave() {
-  wavePhase += 0.04;
-  const pts = [];
-  const W = 180, H = 48, mid = H / 2;
-  const steps = 60;
-  for (let i = 0; i <= steps; i++) {
-    const x = (i / steps) * W;
-    const t = (i / steps) * Math.PI * 4 + wavePhase;
-    const amp = 10 * Math.sin(wavePhase * 0.5 + i * 0.2) * 0.5 + 10;
-    const y = mid + Math.sin(t) * amp + Math.sin(t * 2.3 + 1) * (amp * 0.3);
-    pts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
+  const canvas = document.getElementById('waveform-canvas');
+  if (!canvas) return;
+  const ctx   = canvas.getContext('2d');
+  const W     = canvas.width;
+  const H     = canvas.height;
+  const now   = performance.now();
+
+  // Beat grid — fire targets on beat subdivisions
+  const beatInterval = 60000 / WV_BEAT_BPM;
+  if (now - wvLastBeat > beatInterval / 2) {
+    wvLastBeat  = now;
+    wvBeatCount++;
+    // On each half-beat, randomise target heights
+    // Strong beats (every 4th) have higher energy
+    const isBig = (wvBeatCount % 4 === 0);
+    const kick  = isBig ? 0.85 : 0.45;
+    wvEnergy    = wvEnergy * 0.7 + kick * 0.3;
+
+    for (let i = 0; i < WV_BARS; i++) {
+      // Low freqs (left) slightly higher, highs taper off — like a real spectrum
+      const freqCurve = 1 - (i / WV_BARS) * 0.45;
+      const rand      = 0.25 + Math.random() * 0.75;
+      wvTargets[i]    = rand * wvEnergy * freqCurve;
+    }
   }
-  document.getElementById('waveform-path').setAttribute('d', pts.join(' '));
+
+  // Smooth bars toward targets — fast attack, slow decay
+  for (let i = 0; i < WV_BARS; i++) {
+    const diff = wvTargets[i] - wvBars[i];
+    wvBars[i] += diff > 0 ? diff * 0.35 : diff * 0.08;
+  }
+
+  // Draw
+  ctx.clearRect(0, 0, W, H);
+
+  const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#d4a843';
+  const barW   = W / WV_BARS;
+  const gap    = 1.5;
+  const mid    = H / 2;
+
+  for (let i = 0; i < WV_BARS; i++) {
+    const barH = Math.max(1.5, wvBars[i] * mid * 0.92);
+    const x    = i * barW + gap / 2;
+    const w    = barW - gap;
+
+    // Gradient: bright at tip, dimmer at base
+    const grad = ctx.createLinearGradient(0, mid - barH, 0, mid + barH);
+    grad.addColorStop(0,   accentColor);
+    grad.addColorStop(0.4, accentColor);
+    grad.addColorStop(1,   accentColor + '44');
+
+    ctx.fillStyle  = grad;
+    ctx.globalAlpha = 0.85;
+    // Upper half
+    ctx.fillRect(x, mid - barH, w, barH);
+    // Lower mirror (slightly dimmer)
+    ctx.globalAlpha = 0.45;
+    ctx.fillRect(x, mid, w, barH);
+  }
+  ctx.globalAlpha = 1;
+
   waveAnimFrame = requestAnimationFrame(animateWave);
+}
+
+// ── VOLUME BOOST ──────────────────────────────────────────────────────────────
+// Uses Web Audio API on a hidden <audio> element that echoes the system output.
+// Because YouTube iframes are cross-origin, we instead boost via the YT player
+// volume API (max 100%) combined with a gain node approach:
+// We create an AudioContext with a gain node; since we can't tap the iframe
+// directly, boost is implemented by pushing YouTube volume to 100 and applying
+// a CSS/visual gain indicator, PLUS attempting MediaSession/output capture
+// where supported. On supported browsers (Chrome), we use getDisplayMedia audio
+// capture; otherwise we clearly indicate the boost level visually and via YT vol.
+
+let boostActive    = false;
+let boostGain      = 2.0;   // 2× boost
+let audioCtx       = null;
+let gainNode       = null;
+let boostSource    = null;
+let preBoostVolume = 80;
+
+async function toggleBoost() {
+  boostActive = !boostActive;
+  const btn = document.getElementById('boost-btn');
+
+  if (boostActive) {
+    // Store current volume
+    preBoostVolume = parseInt(document.getElementById('volume-slider').value);
+
+    // Attempt real Web Audio boost via captureStream (Chrome desktop only)
+    const boosted = await tryAudioBoost();
+
+    if (boosted) {
+      btn.textContent = '⚡ BOOSTED';
+      btn.classList.add('active');
+    } else {
+      // Fallback: max out YouTube volume (it tops at 100 normally, but we show
+      // the boost visually and cap at system max)
+      if (ytPlayer && ytPlayer.setVolume) {
+        ytPlayer.setVolume(100);
+        document.getElementById('volume-slider').value = 100;
+      }
+      btn.textContent = '⚡ MAX VOL';
+      btn.classList.add('active');
+      showToast('Boost: volume maximised. For true 2× boost, use Chrome desktop.');
+    }
+  } else {
+    // Deactivate boost
+    teardownAudioBoost();
+    if (ytPlayer && ytPlayer.setVolume) {
+      ytPlayer.setVolume(preBoostVolume);
+      document.getElementById('volume-slider').value = preBoostVolume;
+    }
+    btn.textContent = '⚡ BOOST';
+    btn.classList.remove('active');
+  }
+}
+
+async function tryAudioBoost() {
+  // Try to capture tab audio via getDisplayMedia (requires user gesture + Chrome)
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) return false;
+    // Prompt user to share tab audio
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: false,
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+    });
+    const audioTracks = stream.getAudioTracks();
+    if (!audioTracks.length) { stream.getTracks().forEach(t => t.stop()); return false; }
+
+    audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode   = audioCtx.createGain();
+    gainNode.gain.value = boostGain;
+    boostSource = audioCtx.createMediaStreamSource(stream);
+    boostSource.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // When stream ends (user stops sharing), auto-deactivate
+    audioTracks[0].addEventListener('ended', () => {
+      if (boostActive) toggleBoost();
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function teardownAudioBoost() {
+  try {
+    if (boostSource) { boostSource.disconnect(); boostSource = null; }
+    if (gainNode)    { gainNode.disconnect();    gainNode    = null; }
+    if (audioCtx)    { audioCtx.close();         audioCtx    = null; }
+  } catch(e) {}
 }
 
 // ── LIVE LISTENER COUNT ───────────────────────────────────────────────────────
