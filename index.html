@@ -3424,7 +3424,8 @@ const FFMPEG_CDN  = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffm
 const FFMPEG_CORE = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js';
 
 // mp4-muxer: pure JS MP4 muxer using WebCodecs — no SharedArrayBuffer needed
-const MP4MUXER_CDN = 'https://cdn.jsdelivr.net/npm/mp4-muxer@4.4.5/build/mp4-muxer.js';
+// Loaded as ESM via dynamic import() — no global needed
+const MP4MUXER_CDN = 'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.mjs';
 
 function checkStep3Unlock() {
   const btn = document.getElementById('step3-btn');
@@ -3457,9 +3458,8 @@ async function doShareMp4() {
   setStepStatus(3, '⏳ Loading mp4-muxer…', '');
 
   try {
-    // Load mp4-muxer on demand (~60KB, tiny compared to ffmpeg)
-    await loadScript(MP4MUXER_CDN, 'Mp4Muxer');
-    const { Muxer, ArrayBufferTarget } = window.Mp4Muxer;
+    // Load mp4-muxer on demand via ESM dynamic import() — no global needed
+    const { Muxer, ArrayBufferTarget } = await import(MP4MUXER_CDN);
 
     fill.style.width = '15%';
     setStepStatus(3, '⚙️ Decoding audio…', '');
