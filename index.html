@@ -3249,10 +3249,40 @@ function hideShareBtn() {
 
 // ── Panel open / close ───────────────────────────────────────────────────────
 function openSharePanel() {
+  resetSharePanel();
   refreshShareCard();
   refreshShareMessage();
   document.getElementById('share-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function resetSharePanel() {
+  // Clear blobs from previous share
+  SHARE.imageBlob = null;
+  SHARE.audioBlob = null;
+
+  // Reset step 1
+  const s1 = document.getElementById('step1-btn');
+  if (s1) { s1.textContent = 'Download'; s1.disabled = false; s1.className = 'step-btn'; }
+  setStepStatus(1, '', '');
+
+  // Reset step 2
+  const s2 = document.getElementById('step2-btn');
+  if (s2) { s2.textContent = 'Record'; s2.disabled = false; s2.className = 'step-btn'; s2.onclick = doShareAudio; }
+  setStepStatus(2, '', '');
+  const p2 = document.getElementById('step2-progress');
+  const f2 = document.getElementById('step2-fill');
+  if (p2) p2.style.display = 'none';
+  if (f2) f2.style.width = '0%';
+
+  // Reset step 3
+  const s3 = document.getElementById('step3-btn');
+  if (s3) { s3.textContent = 'Combine'; s3.disabled = true; s3.className = 'step-btn'; }
+  setStepStatus(3, '', '');
+  const p3 = document.getElementById('step3-progress');
+  const f3 = document.getElementById('step3-fill');
+  if (p3) p3.style.display = 'none';
+  if (f3) f3.style.width = '0%';
 }
 
 function refreshShareMessage() {
