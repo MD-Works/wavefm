@@ -3437,6 +3437,12 @@ async function doShareMp4() {
     return;
   }
 
+  // Check WebCodecs support
+  if (typeof VideoEncoder === 'undefined' || typeof AudioDecoder === 'undefined') {
+    setStepStatus(3, '❌ WebCodecs not supported — requires Chrome 94+ on desktop.', 'err');
+    return;
+  }
+
   const btn  = document.getElementById('step3-btn');
   const prog = document.getElementById('step3-progress');
   const fill = document.getElementById('step3-fill');
@@ -3445,69 +3451,130 @@ async function doShareMp4() {
   btn.textContent = '…';
   prog.style.display = 'block';
   fill.style.width = '5%';
-  setStepStatus(3, '⏳ Loading ffmpeg.wasm (~22MB, once only)…', '');
+  setStepStatus(3, '⏳ Loading mp4-muxer…', '');
 
   try {
-    // Load ffmpeg.wasm 0.11.x on demand — exposes window.FFmpeg = { createFFmpeg, fetchFile }
-    if (!SHARE.ffmpegReady) {
-      await loadScript(FFMPEG_CDN, 'FFmpeg');
+    // Load mp4-muxer on demand (~60KB, tiny compared to ffmpeg)
+    await loadScript(MP4MUXER_CDN, 'Mp4Muxer');
+    const { Muxer, ArrayBufferTarget } = window.Mp4Muxer;
 
-      // 0.11.x API: createFFmpeg() returns the instance directly (no `new`)
-      const { createFFmpeg, fetchFile: ff_fetchFile } = window.FFmpeg;
+    fill.style.width = '15%';
+    setStepStatus(3, '⚙️ Decoding audio…', '');
 
-      const ff = createFFmpeg({
-        corePath: FFMPEG_CORE,
-        log: false,
-        progress: ({ ratio }) => {
-          if (ratio > 0) fill.style.width = Math.max(10, Math.round(ratio * 80)) + '%';
-        },
-      });
-
-      setStepStatus(3, '⏳ Downloading ffmpeg core (~22MB)…', '');
-      await ff.load();
-
-      SHARE.ffmpeg      = ff;
-      SHARE.fetchFile   = ff_fetchFile;
-      SHARE.ffmpegReady = true;
-    }
+    // ── Decode the audio WebM blob into raw PCM samples ──────────────────
+    const audioBuf = await decodeAudioFromBlob(SHARE.audioBlob);
+    const sampleRate      = audioBuf.sampleRate;
+    const numChannels     = audioBuf.numberOfChannels;
+    const durationSeconds = audioBuf.duration;
 
     fill.style.width = '30%';
-    setStepStatus(3, '⚙️ Combining image + audio into MP4…', '');
+    setStepStatus(3, '⚙️ Encoding video frames…', '');
 
-    const ff         = SHARE.ffmpeg;
-    const fetchFile  = SHARE.fetchFile;
+    // ── Set up the card image on an offscreen canvas ──────────────────────
+    const CARD_W = 540;
+    const CARD_H = 540;
+    const imgBitmap = await createImageBitmap(SHARE.imageBlob);
+    const offscreen = new OffscreenCanvas(CARD_W, CARD_H);
+    const ctx2d     = offscreen.getContext('2d');
 
-    // Write blobs into ffmpeg virtual FS
-    ff.FS('writeFile', 'card.png',   await fetchFile(SHARE.imageBlob));
-    ff.FS('writeFile', 'audio.webm', await fetchFile(SHARE.audioBlob));
+    // Draw the card — fill canvas with the image, centred
+    ctx2d.fillStyle = '#1a1205';
+    ctx2d.fillRect(0, 0, CARD_W, CARD_H);
+    const scale = Math.max(CARD_W / imgBitmap.width, CARD_H / imgBitmap.height);
+    const dw = imgBitmap.width  * scale;
+    const dh = imgBitmap.height * scale;
+    ctx2d.drawImage(imgBitmap, (CARD_W - dw) / 2, (CARD_H - dh) / 2, dw, dh);
 
-    fill.style.width = '50%';
+    // ── Set up mp4-muxer ──────────────────────────────────────────────────
+    const target = new ArrayBufferTarget();
+    const muxer  = new Muxer({
+      target,
+      video: { codec: 'avc', width: CARD_W, height: CARD_H, frameRate: 1 },
+      audio: { codec: 'aac', numberOfChannels: numChannels, sampleRate },
+      fastStart: 'in-memory',
+      firstTimestampBehavior: 'offset',
+    });
 
-    // Loop the still image for the duration of the audio clip
-    await ff.run(
-      '-loop',     '1',
-      '-i',        'card.png',
-      '-i',        'audio.webm',
-      '-c:v',      'libx264',
-      '-tune',     'stillimage',
-      '-c:a',      'aac',
-      '-b:a',      '192k',
-      '-pix_fmt',  'yuv420p',
-      '-shortest',
-      '-movflags', '+faststart',
-      'out.mp4'
-    );
+    // ── Video encoder — 1 fps still image ────────────────────────────────
+    const totalFrames = Math.ceil(durationSeconds);
+    let encodedFrames = 0;
+
+    const videoEncoder = new VideoEncoder({
+      output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+      error: e => { throw e; },
+    });
+    videoEncoder.configure({
+      codec:     'avc1.4d002a',
+      width:     CARD_W,
+      height:    CARD_H,
+      bitrate:   800_000,
+      framerate: 1,
+    });
+
+    // Encode one frame per second of audio duration
+    for (let i = 0; i < totalFrames; i++) {
+      const timestamp = i * 1_000_000; // microseconds
+      const frame = new VideoFrame(offscreen, { timestamp, duration: 1_000_000 });
+      videoEncoder.encode(frame, { keyFrame: i === 0 });
+      frame.close();
+      encodedFrames++;
+      fill.style.width = (30 + Math.round((encodedFrames / totalFrames) * 30)) + '%';
+    }
+    await videoEncoder.flush();
+    videoEncoder.close();
+
+    fill.style.width = '65%';
+    setStepStatus(3, '⚙️ Encoding audio…', '');
+
+    // ── Audio encoder — AAC ───────────────────────────────────────────────
+    const audioEncoder = new AudioEncoder({
+      output: (chunk, meta) => muxer.addAudioChunk(chunk, meta),
+      error: e => { throw e; },
+    });
+    audioEncoder.configure({
+      codec:            'mp4a.40.2',   // AAC-LC
+      numberOfChannels: numChannels,
+      sampleRate,
+      bitrate:          128_000,
+    });
+
+    // Feed audio in 128-sample chunks
+    const CHUNK = 1024;
+    const totalSamples = audioBuf.length;
+    const channelData  = [];
+    for (let c = 0; c < numChannels; c++) channelData.push(audioBuf.getChannelData(c));
+
+    for (let offset = 0; offset < totalSamples; offset += CHUNK) {
+      const len  = Math.min(CHUNK, totalSamples - offset);
+      const data = new Float32Array(len * numChannels);
+
+      // Interleave channels
+      for (let i = 0; i < len; i++) {
+        for (let c = 0; c < numChannels; c++) {
+          data[i * numChannels + c] = channelData[c][offset + i];
+        }
+      }
+
+      const audioData = new AudioData({
+        format:          'f32',
+        sampleRate,
+        numberOfFrames:  len,
+        numberOfChannels: numChannels,
+        timestamp:       Math.round((offset / sampleRate) * 1_000_000),
+        data,
+      });
+      audioEncoder.encode(audioData);
+      audioData.close();
+    }
+    await audioEncoder.flush();
+    audioEncoder.close();
 
     fill.style.width = '90%';
+    setStepStatus(3, '⚙️ Finalising MP4…', '');
 
-    const data = ff.FS('readFile', 'out.mp4');
-    const blob = new Blob([data.buffer], { type: 'video/mp4' });
-    triggerDownload(blob, 'WAVEFM-' + sanitiseFilename(shareCurrentVideo.title) + '.mp4');
-
-    // Cleanup virtual FS
-    ff.FS('unlink', 'card.png');
-    ff.FS('unlink', 'audio.webm');
-    ff.FS('unlink', 'out.mp4');
+    muxer.finalize();
+    const mp4Blob = new Blob([target.buffer], { type: 'video/mp4' });
+    triggerDownload(mp4Blob, 'WAVEFM-' + sanitiseFilename(shareCurrentVideo.title) + '.mp4');
 
     fill.style.width = '100%';
     btn.textContent = '✓ Done';
@@ -3520,9 +3587,21 @@ async function doShareMp4() {
     console.error('[Share] MP4 error', err);
     btn.textContent = 'Retry';
     btn.disabled = false;
+    btn.onclick = doShareMp4;
     prog.style.display = 'none';
     fill.style.width = '0%';
     setStepStatus(3, '❌ ' + (err.message || 'Combine failed. Try again.'), 'err');
+  }
+}
+
+// Decode an audio Blob into an AudioBuffer using the Web Audio API
+async function decodeAudioFromBlob(blob) {
+  const arrayBuf = await blob.arrayBuffer();
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  try {
+    return await audioCtx.decodeAudioData(arrayBuf);
+  } finally {
+    audioCtx.close();
   }
 }
 
@@ -3635,7 +3714,7 @@ boot();
           <div class="step-num">3</div>
           <div class="step-info">
             <div class="step-title">Combine into MP4 <span class="step-optional">optional</span></div>
-            <div class="step-desc">Image + audio as one file — needs steps 1 &amp; 2 first</div>
+            <div class="step-desc">Image + audio as one file — Chrome 94+ desktop only</div>
           </div>
           <button class="step-btn" id="step3-btn" onclick="doShareMp4()" disabled>Combine</button>
         </div>
@@ -3647,7 +3726,7 @@ boot();
 
     </div>
 
-    <div class="share-hint">Steps 2 and 3 require Chrome on desktop. Step 1 works everywhere.</div>
+    <div class="share-hint">Steps 2 and 3 require Chrome 94+ on desktop. Step 1 works everywhere. Step 3 uses WebCodecs — no large downloads needed.</div>
   </div>
 </div>
 </body>
