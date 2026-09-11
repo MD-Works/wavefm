@@ -420,6 +420,57 @@
       transition: width 0.1s linear;
     }
 
+    .share-msg-wrap {
+      padding: 14px 16px 0;
+    }
+    .share-msg-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+    .share-msg-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .share-msg-text {
+      flex: 1;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      line-height: 1.5;
+      padding: 8px 10px;
+      resize: none;
+      outline: none;
+      cursor: text;
+    }
+    .share-msg-text:focus { border-color: var(--accent); }
+    .share-msg-copy {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .share-msg-copy:hover { background: var(--accent); border-color: var(--accent); }
+    .share-msg-copied {
+      font-size: 0.7rem;
+      color: #6abf6a;
+      margin-top: 5px;
+      min-height: 16px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .share-msg-copied.show { opacity: 1; }
+
     .share-hint {
       font-size: 0.7rem;
       color: var(--muted);
@@ -3199,8 +3250,37 @@ function hideShareBtn() {
 // ── Panel open / close ───────────────────────────────────────────────────────
 function openSharePanel() {
   refreshShareCard();
+  refreshShareMessage();
   document.getElementById('share-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function refreshShareMessage() {
+  const vid  = shareCurrentVideo;
+  const base = 'https://wavefm-569.pages.dev/';
+  const url  = vid.id ? base + '?v=' + vid.id : base;
+  const note = String.fromCodePoint(0x1F3B5);
+  const msg  = note + ' ' + (vid.title || 'Now playing on WAVEFM') + '\nListening on WAVEFM \u2014 tune in: ' + url;
+  const ta   = document.getElementById('share-msg-text');
+  if (ta) ta.value = msg;
+  const copied = document.getElementById('share-msg-copied');
+  if (copied) copied.classList.remove('show');
+}
+
+async function copyShareMessage() {
+  const ta = document.getElementById('share-msg-text');
+  if (!ta) return;
+  try {
+    await navigator.clipboard.writeText(ta.value);
+  } catch {
+    ta.select();
+    document.execCommand('copy');
+  }
+  const el = document.getElementById('share-msg-copied');
+  if (el) {
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
 }
 
 function closeSharePanel(e) {
@@ -3727,6 +3807,16 @@ boot();
         </div>
       </div>
 
+    </div>
+
+    <!-- Copyable share message -->
+    <div class="share-msg-wrap">
+      <div class="share-msg-label">Share message</div>
+      <div class="share-msg-row">
+        <textarea class="share-msg-text" id="share-msg-text" readonly rows="3"></textarea>
+        <button class="share-msg-copy" id="share-msg-copy" onclick="copyShareMessage()" title="Copy to clipboard">&#x1F4CB;</button>
+      </div>
+      <div class="share-msg-copied" id="share-msg-copied">&#x2705; Copied!</div>
     </div>
 
     <div class="share-hint">Steps 2 and 3 require Chrome 94+ on desktop. Step 1 works everywhere. Step 3 uses WebCodecs — no large downloads needed.</div>
