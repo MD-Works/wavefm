@@ -175,6 +175,259 @@
       border-radius: 1px;
     }
 
+    /* ── SHARE TRIGGER BUTTON ── */
+    .share-trigger-btn {
+      white-space: nowrap;
+    }
+
+    /* ── SHARE OVERLAY + PANEL ── */
+    .share-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .share-overlay.open { display: flex; }
+
+    .share-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 420px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+      padding: 0 0 20px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+
+    .share-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .share-panel-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .share-close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .share-close-btn:hover { background: var(--panel2); color: var(--text); }
+
+    /* ── PREVIEW CARD ── */
+    .share-preview-wrap {
+      padding: 20px 20px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .share-card {
+      width: 260px;
+      height: 260px;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sc-bg {
+      position: absolute;
+      inset: 0;
+      background: #1a1205 center/cover no-repeat;
+      filter: blur(12px) brightness(0.45);
+      transform: scale(1.15);
+    }
+
+    .sc-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(170deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%);
+    }
+
+    .sc-content {
+      position: absolute;
+      inset: 0;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sc-logo {
+      font-size: 0.85rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+    }
+    .sc-logo span { opacity: 0.7; }
+
+    .sc-spacer { flex: 1; }
+
+    .sc-song {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+      margin-bottom: 4px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    }
+    .sc-artist {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 8px;
+    }
+    .sc-channel {
+      font-size: 0.7rem;
+      color: var(--amber);
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+    .sc-footer {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+    }
+
+    /* Thumbnail hero inset */
+    .sc-thumb {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      width: 64px;
+      height: 48px;
+      border-radius: 5px;
+      object-fit: cover;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+
+    /* ── STEPS ── */
+    .share-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 16px;
+    }
+
+    .share-step {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .step-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-info { flex: 1; }
+
+    .step-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-optional {
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+    }
+
+    .step-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .step-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+    .step-btn:hover { opacity: 0.85; }
+    .step-btn:disabled { background: var(--panel); color: var(--muted); border: 1px solid var(--border); cursor: not-allowed; opacity: 1; }
+    .step-btn.done { background: #2a6a2a; }
+    .step-btn.recording { background: #8a2020; }
+
+    .step-status {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 6px;
+      min-height: 0;
+      line-height: 1.4;
+    }
+    .step-status.ok  { color: #6abf6a; }
+    .step-status.err { color: #bf6a6a; }
+
+    .step-progress {
+      height: 3px;
+      background: var(--panel);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .step-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .share-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      padding: 14px 20px 0;
+      line-height: 1.5;
+    }
+
     /* Backdrop behind the sidebar drawer — only active on mobile */
     .sidebar-backdrop {
       display: none;
@@ -1361,6 +1614,11 @@
       <button class="thumb-btn" id="thumb-down-btn" onclick="castVote('down')" title="Thumbs down">👎</button>
     </div>
 
+    <!-- Share button -->
+    <button class="ctrl-btn share-trigger-btn" id="share-btn" onclick="openSharePanel()" title="Share this moment" style="display:none">
+      📤 SHARE
+    </button>
+
     <div class="volume-wrap">
       <span class="vol-icon">🔊</span>
       <input type="range" id="volume-slider" min="0" max="100" value="80" oninput="setVolume(this.value)" />
@@ -1585,6 +1843,7 @@ function loadTrack(channelIdx, trackIdx, seekTo) {
   updatePlayPauseBtn(true);
   renderQueue();
   updateRatingUI(vid.id);  // show thumb state for this track
+  updateShareTrack(vid, ch); // keep share card in sync
 
   if (ytReady) {
     createPlayer(vid.id, seekTo || 0);
@@ -2900,12 +3159,486 @@ function showTempPlBanner(msg) {
   setTimeout(() => el.classList.remove('show'), 5000);
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// SHARE THIS MOMENT — three-step share module
+//
+//  Step 1 — Image card  (html2canvas → PNG download, works everywhere)
+//  Step 2 — Audio clip  (getDisplayMedia audio → WebM download, Chrome desktop)
+//  Step 3 — MP4 combine (ffmpeg.wasm image+audio → MP4 download, Chrome desktop)
+//
+// The Share button appears once a track is playing (showShareBtn / hideShareBtn).
+// Each step is independent — listeners can stop after step 1 if they just want
+// the image card for Instagram/WhatsApp.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── State ────────────────────────────────────────────────────────────────────
+const SHARE = {
+  imageBlob:   null,   // result of step 1
+  audioBlob:   null,   // result of step 2
+  ffmpegReady: false,  // true once ffmpeg.wasm is loaded
+  ffmpeg:      null,   // ffmpeg instance
+  recording:   false,
+  recTimer:    null,
+};
+
+// Current track info — populated when a track loads
+let shareCurrentVideo = { id: '', title: '', artist: '', channel: '', channelIcon: '' };
+
+// ── Visibility ───────────────────────────────────────────────────────────────
+function showShareBtn() {
+  const btn = document.getElementById('share-btn');
+  if (btn) btn.style.display = '';
+}
+function hideShareBtn() {
+  const btn = document.getElementById('share-btn');
+  if (btn) btn.style.display = 'none';
+}
+
+// ── Panel open / close ───────────────────────────────────────────────────────
+function openSharePanel() {
+  refreshShareCard();
+  document.getElementById('share-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSharePanel(e) {
+  if (e && e.target !== document.getElementById('share-overlay')) return;
+  document.getElementById('share-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Card preview refresh ─────────────────────────────────────────────────────
+function refreshShareCard() {
+  const vid = shareCurrentVideo;
+  document.getElementById('sc-song').textContent    = vid.title    || 'Unknown track';
+  document.getElementById('sc-artist').textContent  = vid.artist   || '';
+  document.getElementById('sc-channel').textContent = (vid.channelIcon + ' ' + vid.channel).trim();
+
+  // YouTube thumbnail as blurred background + inset image
+  const thumbUrl = vid.id
+    ? `https://img.youtube.com/vi/${vid.id}/hqdefault.jpg`
+    : '';
+
+  const bg = document.getElementById('sc-bg');
+  if (thumbUrl) {
+    bg.style.backgroundImage = `url('${thumbUrl}')`;
+  } else {
+    bg.style.backgroundImage = '';
+  }
+
+  // Remove old thumb if present
+  const old = document.getElementById('sc-thumb-img');
+  if (old) old.remove();
+
+  if (thumbUrl) {
+    const img = document.createElement('img');
+    img.id = 'sc-thumb-img';
+    img.className = 'sc-thumb';
+    img.crossOrigin = 'anonymous';
+    img.src = thumbUrl;
+    document.getElementById('share-card').appendChild(img);
+  }
+}
+
+// Called from loadTrack() to keep shareCurrentVideo in sync
+function updateShareTrack(vid, ch) {
+  shareCurrentVideo = {
+    id:          vid.id   || '',
+    title:       vid.title || '',
+    artist:      vid.artist || '',
+    channel:     ch.name  || '',
+    channelIcon: ch.icon  || '',
+  };
+  showShareBtn();
+}
+
+// ── STEP 1 — Image card download ─────────────────────────────────────────────
+async function doShareImage() {
+  const btn    = document.getElementById('step1-btn');
+  const status = document.getElementById('step1-status');
+  btn.disabled = true;
+  btn.textContent = '…';
+  setStepStatus(1, '', '');
+
+  try {
+    // Load html2canvas on demand
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
+
+    const card = document.getElementById('share-card');
+
+    // Wait for the thumbnail image to load
+    const thumb = document.getElementById('sc-thumb-img');
+    if (thumb && !thumb.complete) {
+      await new Promise(r => { thumb.onload = r; thumb.onerror = r; });
+    }
+
+    const canvas = await html2canvas(card, {
+      useCORS:       true,
+      allowTaint:    false,
+      backgroundColor: null,
+      scale:         2,         // 2× = sharper on retina
+      logging:       false,
+    });
+
+    canvas.toBlob(blob => {
+      SHARE.imageBlob = blob;
+      triggerDownload(blob, `WAVEFM-${sanitiseFilename(shareCurrentVideo.title)}.png`);
+      btn.textContent = '✓ Done';
+      btn.classList.add('done');
+      btn.disabled = false;
+      setStepStatus(1, '✅ Image downloaded — ready to post anywhere.', 'ok');
+      // Unlock step 3 check
+      checkStep3Unlock();
+    }, 'image/png');
+
+  } catch (err) {
+    console.error('[Share] Image error', err);
+    btn.textContent = 'Retry';
+    btn.disabled = false;
+    setStepStatus(1, '❌ ' + (err.message || 'Failed. Try again.'), 'err');
+  }
+}
+
+// ── STEP 2 — Audio clip ───────────────────────────────────────────────────────
+const CLIP_SECONDS = 15;
+
+async function doShareAudio() {
+  const btn    = document.getElementById('step2-btn');
+  const status = document.getElementById('step2-status');
+  const prog   = document.getElementById('step2-progress');
+  const fill   = document.getElementById('step2-fill');
+
+  if (SHARE.recording) return;
+
+  // Check browser support
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    setStepStatus(2, '❌ Tab audio capture requires Chrome on desktop.', 'err');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '…';
+  setStepStatus(2, '🔐 Browser will ask you to share this tab — pick "WAVEFM" and tick "Share tab audio".', '');
+
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: false,
+      audio: {
+        echoCancellation:      false,
+        noiseSuppression:      false,
+        autoGainControl:       false,
+        suppressLocalAudioPlayback: false,
+      },
+      preferCurrentTab: true,
+    });
+
+    const audioTracks = stream.getAudioTracks();
+    if (!audioTracks.length) {
+      stream.getTracks().forEach(t => t.stop());
+      throw new Error('No audio track — did you tick "Share tab audio"?');
+    }
+
+    // Start recording
+    SHARE.recording = true;
+    btn.textContent = 'Stop';
+    btn.classList.add('recording');
+    btn.disabled = false;
+
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus'
+      : 'audio/webm';
+
+    const recorder = new MediaRecorder(stream, { mimeType });
+    const chunks   = [];
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+    recorder.onstop = () => {
+      SHARE.recording = false;
+      stream.getTracks().forEach(t => t.stop());
+      clearInterval(SHARE.recTimer);
+      fill.style.width = '100%';
+
+      const blob = new Blob(chunks, { type: mimeType });
+      SHARE.audioBlob = blob;
+      triggerDownload(blob, `WAVEFM-Clip-${sanitiseFilename(shareCurrentVideo.title)}.webm`);
+
+      btn.textContent  = '✓ Done';
+      btn.classList.remove('recording');
+      btn.classList.add('done');
+      btn.disabled = false;
+      prog.style.display = 'none';
+      fill.style.width = '0%';
+      setStepStatus(2, `✅ ${CLIP_SECONDS}s audio clip downloaded.`, 'ok');
+      checkStep3Unlock();
+    };
+
+    recorder.start();
+
+    // Progress bar
+    prog.style.display = 'block';
+    let elapsed = 0;
+    SHARE.recTimer = setInterval(() => {
+      elapsed += 0.25;
+      fill.style.width = Math.min((elapsed / CLIP_SECONDS) * 100, 100) + '%';
+      setStepStatus(2, `🔴 Recording… ${Math.ceil(CLIP_SECONDS - elapsed)}s left. Click Stop to end early.`, '');
+      if (elapsed >= CLIP_SECONDS) {
+        clearInterval(SHARE.recTimer);
+        recorder.stop();
+      }
+    }, 250);
+
+    // Manual stop
+    btn.onclick = () => {
+      if (SHARE.recording) recorder.stop();
+    };
+
+    // If user stops sharing via browser pill
+    audioTracks[0].addEventListener('ended', () => {
+      if (SHARE.recording) recorder.stop();
+    });
+
+  } catch (err) {
+    SHARE.recording = false;
+    console.error('[Share] Audio error', err);
+    btn.textContent = 'Record';
+    btn.classList.remove('recording');
+    btn.disabled = false;
+    btn.onclick = doShareAudio;
+    prog.style.display = 'none';
+    fill.style.width = '0%';
+    const msg = err.name === 'NotAllowedError'
+      ? '❌ Permission denied — click Record and allow tab sharing.'
+      : '❌ ' + (err.message || 'Recording failed.');
+    setStepStatus(2, msg, 'err');
+  }
+}
+
+// ── STEP 3 — MP4 combine via ffmpeg.wasm ─────────────────────────────────────
+const FFMPEG_CDN = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js';
+const FFMPEG_CORE = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js';
+
+function checkStep3Unlock() {
+  const btn = document.getElementById('step3-btn');
+  if (SHARE.imageBlob && SHARE.audioBlob) {
+    btn.disabled = false;
+    setStepStatus(3, '✅ Ready — click Combine to create the MP4.', 'ok');
+  }
+}
+
+async function doShareMp4() {
+  if (!SHARE.imageBlob || !SHARE.audioBlob) {
+    setStepStatus(3, '❌ Complete steps 1 and 2 first.', 'err');
+    return;
+  }
+
+  const btn  = document.getElementById('step3-btn');
+  const prog = document.getElementById('step3-progress');
+  const fill = document.getElementById('step3-fill');
+
+  btn.disabled = true;
+  btn.textContent = '…';
+  prog.style.display = 'block';
+  fill.style.width = '5%';
+  setStepStatus(3, '⏳ Loading ffmpeg.wasm (~9MB, once only)…', '');
+
+  try {
+    // Load ffmpeg.wasm on demand — only downloaded when step 3 is used
+    if (!SHARE.ffmpegReady) {
+      await loadScript(FFMPEG_CDN, 'FFmpeg');
+
+      const { FFmpeg: FF } = FFmpeg;  // UMD export
+      const ff = new FF();
+
+      ff.on('progress', ({ progress }) => {
+        fill.style.width = Math.max(5, Math.round(progress * 80)) + '%';
+      });
+
+      await ff.load({
+        coreURL: FFMPEG_CORE,
+      });
+
+      SHARE.ffmpeg      = ff;
+      SHARE.ffmpegReady = true;
+    }
+
+    fill.style.width = '30%';
+    setStepStatus(3, '⚙️ Combining image + audio…', '');
+
+    const ff = SHARE.ffmpeg;
+    const { fetchFile } = FFmpeg;
+
+    // Write files into ffmpeg virtual FS
+    await ff.writeFile('card.png',  await fetchFile(SHARE.imageBlob));
+    await ff.writeFile('audio.webm', await fetchFile(SHARE.audioBlob));
+
+    fill.style.width = '50%';
+
+    // Run: loop the image for the duration of the audio, combine with audio
+    await ff.exec([
+      '-loop',      '1',
+      '-i',         'card.png',
+      '-i',         'audio.webm',
+      '-c:v',       'libx264',
+      '-tune',      'stillimage',
+      '-c:a',       'aac',
+      '-b:a',       '192k',
+      '-pix_fmt',   'yuv420p',
+      '-shortest',
+      '-movflags',  '+faststart',
+      'out.mp4',
+    ]);
+
+    fill.style.width = '90%';
+
+    const data = await ff.readFile('out.mp4');
+    const blob = new Blob([data.buffer], { type: 'video/mp4' });
+    triggerDownload(blob, `WAVEFM-${sanitiseFilename(shareCurrentVideo.title)}.mp4`);
+
+    // Cleanup virtual FS
+    await ff.deleteFile('card.png');
+    await ff.deleteFile('audio.webm');
+    await ff.deleteFile('out.mp4');
+
+    fill.style.width = '100%';
+    btn.textContent = '✓ Done';
+    btn.classList.add('done');
+    btn.disabled = false;
+    prog.style.display = 'none';
+    setStepStatus(3, '✅ MP4 downloaded — ready to post to WhatsApp, Facebook, Instagram.', 'ok');
+
+  } catch (err) {
+    console.error('[Share] MP4 error', err);
+    btn.textContent = 'Retry';
+    btn.disabled = false;
+    prog.style.display = 'none';
+    fill.style.width = '0%';
+    setStepStatus(3, '❌ ' + (err.message || 'Combine failed. Try again.'), 'err');
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function setStepStatus(step, msg, cls) {
+  const el = document.getElementById(`step${step}-status`);
+  if (!el) return;
+  el.textContent = msg;
+  el.className   = 'step-status' + (cls ? ' ' + cls : '');
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a   = Object.assign(document.createElement('a'), {
+    href: url, download: filename, style: 'display:none'
+  });
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 2000);
+}
+
+function sanitiseFilename(str) {
+  return (str || 'track').replace(/[^a-z0-9\-_]/gi, '-').replace(/-+/g, '-').slice(0, 60);
+}
+
+const _loadedScripts = {};
+function loadScript(src, globalCheck) {
+  return new Promise((resolve, reject) => {
+    if (globalCheck && window[globalCheck]) return resolve();
+    if (_loadedScripts[src]) return _loadedScripts[src].then(resolve, reject);
+    const s = document.createElement('script');
+    s.src = src;
+    s.crossOrigin = 'anonymous';
+    _loadedScripts[src] = new Promise((res, rej) => {
+      s.onload  = () => res();
+      s.onerror = () => rej(new Error(`Failed to load ${src}`));
+    });
+    document.head.appendChild(s);
+    _loadedScripts[src].then(resolve, reject);
+  });
+}
+
 boot();
 </script>
 
 <!-- ── FULLSCREEN VIDEO BACKDROP ── -->
 <div class="fs-backdrop" id="fs-backdrop">
   <div class="fs-hint" id="fs-hint">TAP OR PRESS ESC TO EXIT</div>
+</div>
+
+<!-- ── SHARE PANEL ── -->
+<div class="share-overlay" id="share-overlay" onclick="closeSharePanel(event)">
+  <div class="share-panel" id="share-panel">
+    <div class="share-panel-header">
+      <span class="share-panel-title">Share this moment</span>
+      <button class="share-close-btn" onclick="closeSharePanel()">✕</button>
+    </div>
+
+    <!-- Live preview card -->
+    <div class="share-preview-wrap">
+      <div class="share-card" id="share-card">
+        <div class="sc-bg" id="sc-bg"></div>
+        <div class="sc-overlay"></div>
+        <div class="sc-content">
+          <div class="sc-logo">WAVE<span>FM</span></div>
+          <div class="sc-spacer"></div>
+          <div class="sc-song" id="sc-song">—</div>
+          <div class="sc-artist" id="sc-artist">—</div>
+          <div class="sc-channel" id="sc-channel">—</div>
+          <div class="sc-footer">wavefm.fm · Free Radio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step list -->
+    <div class="share-steps">
+
+      <!-- Step 1 — Image -->
+      <div class="share-step" id="step-image">
+        <div class="step-head">
+          <div class="step-num">1</div>
+          <div class="step-info">
+            <div class="step-title">Download image card</div>
+            <div class="step-desc">Branded PNG — works on every platform</div>
+          </div>
+          <button class="step-btn" id="step1-btn" onclick="doShareImage()">Download</button>
+        </div>
+        <div class="step-status" id="step1-status"></div>
+      </div>
+
+      <!-- Step 2 — Audio clip -->
+      <div class="share-step" id="step-audio">
+        <div class="step-head">
+          <div class="step-num">2</div>
+          <div class="step-info">
+            <div class="step-title">Record audio clip <span class="step-optional">optional</span></div>
+            <div class="step-desc">15s clip via tab audio — Chrome desktop only</div>
+          </div>
+          <button class="step-btn" id="step2-btn" onclick="doShareAudio()">Record</button>
+        </div>
+        <div class="step-status" id="step2-status"></div>
+        <div class="step-progress" id="step2-progress" style="display:none">
+          <div class="step-progress-fill" id="step2-fill"></div>
+        </div>
+      </div>
+
+      <!-- Step 3 — MP4 -->
+      <div class="share-step" id="step-mp4">
+        <div class="step-head">
+          <div class="step-num">3</div>
+          <div class="step-info">
+            <div class="step-title">Combine into MP4 <span class="step-optional">optional</span></div>
+            <div class="step-desc">Image + audio as one file — needs steps 1 &amp; 2 first</div>
+          </div>
+          <button class="step-btn" id="step3-btn" onclick="doShareMp4()" disabled>Combine</button>
+        </div>
+        <div class="step-status" id="step3-status"></div>
+        <div class="step-progress" id="step3-progress" style="display:none">
+          <div class="step-progress-fill" id="step3-fill"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="share-hint">Steps 2 and 3 require Chrome on desktop. Step 1 works everywhere.</div>
+  </div>
 </div>
 </body>
 </html>
