@@ -2530,9 +2530,11 @@ async function tryAudioBoost() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) return false;
     // Prompt user to share tab audio
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: false,
+      video: true,   // Chrome requires video:true even for audio-only capture
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
     });
+    // Immediately stop the video track — we only want audio
+    stream.getVideoTracks().forEach(t => t.stop());
     const audioTracks = stream.getAudioTracks();
     if (!audioTracks.length) { stream.getTracks().forEach(t => t.stop()); return false; }
 
@@ -3322,20 +3324,22 @@ async function doShareAudio() {
 
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: false,
+      video: true,   // Chrome requires video:true even for audio-only capture
       audio: {
-        echoCancellation:      false,
-        noiseSuppression:      false,
-        autoGainControl:       false,
+        echoCancellation:           false,
+        noiseSuppression:           false,
+        autoGainControl:            false,
         suppressLocalAudioPlayback: false,
       },
       preferCurrentTab: true,
     });
+    // Immediately stop the video track — we only want audio
+    stream.getVideoTracks().forEach(t => t.stop());
 
     const audioTracks = stream.getAudioTracks();
     if (!audioTracks.length) {
       stream.getTracks().forEach(t => t.stop());
-      throw new Error('No audio track — did you tick "Share tab audio"?');
+      throw new Error('No audio track — make sure you tick "Share tab audio" in the prompt.');
     }
 
     // Start recording
