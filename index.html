@@ -3418,8 +3418,10 @@ async function doShareAudio() {
 }
 
 // ── STEP 3 — MP4 combine via ffmpeg.wasm ─────────────────────────────────────
-const FFMPEG_CDN = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js';
-const FFMPEG_CORE = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js';
+// ffmpeg.wasm 0.11.x — single script, no SharedArrayBuffer required
+// After loading, window.FFmpeg = { createFFmpeg, fetchFile }
+const FFMPEG_CDN  = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+const FFMPEG_CORE = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js';
 
 function checkStep3Unlock() {
   const btn = document.getElementById('step3-btn');
@@ -3443,72 +3445,76 @@ async function doShareMp4() {
   btn.textContent = '…';
   prog.style.display = 'block';
   fill.style.width = '5%';
-  setStepStatus(3, '⏳ Loading ffmpeg.wasm (~9MB, once only)…', '');
+  setStepStatus(3, '⏳ Loading ffmpeg.wasm (~22MB, once only)…', '');
 
   try {
-    // Load ffmpeg.wasm on demand — only downloaded when step 3 is used
+    // Load ffmpeg.wasm 0.11.x on demand — exposes window.FFmpeg = { createFFmpeg, fetchFile }
     if (!SHARE.ffmpegReady) {
       await loadScript(FFMPEG_CDN, 'FFmpeg');
 
-      const { FFmpeg: FF } = FFmpeg;  // UMD export
-      const ff = new FF();
+      // 0.11.x API: createFFmpeg() returns the instance directly (no `new`)
+      const { createFFmpeg, fetchFile: ff_fetchFile } = window.FFmpeg;
 
-      ff.on('progress', ({ progress }) => {
-        fill.style.width = Math.max(5, Math.round(progress * 80)) + '%';
+      const ff = createFFmpeg({
+        corePath: FFMPEG_CORE,
+        log: false,
+        progress: ({ ratio }) => {
+          if (ratio > 0) fill.style.width = Math.max(10, Math.round(ratio * 80)) + '%';
+        },
       });
 
-      await ff.load({
-        coreURL: FFMPEG_CORE,
-      });
+      setStepStatus(3, '⏳ Downloading ffmpeg core (~22MB)…', '');
+      await ff.load();
 
       SHARE.ffmpeg      = ff;
+      SHARE.fetchFile   = ff_fetchFile;
       SHARE.ffmpegReady = true;
     }
 
     fill.style.width = '30%';
-    setStepStatus(3, '⚙️ Combining image + audio…', '');
+    setStepStatus(3, '⚙️ Combining image + audio into MP4…', '');
 
-    const ff = SHARE.ffmpeg;
-    const { fetchFile } = FFmpeg;
+    const ff         = SHARE.ffmpeg;
+    const fetchFile  = SHARE.fetchFile;
 
-    // Write files into ffmpeg virtual FS
-    await ff.writeFile('card.png',  await fetchFile(SHARE.imageBlob));
-    await ff.writeFile('audio.webm', await fetchFile(SHARE.audioBlob));
+    // Write blobs into ffmpeg virtual FS
+    ff.FS('writeFile', 'card.png',   await fetchFile(SHARE.imageBlob));
+    ff.FS('writeFile', 'audio.webm', await fetchFile(SHARE.audioBlob));
 
     fill.style.width = '50%';
 
-    // Run: loop the image for the duration of the audio, combine with audio
-    await ff.exec([
-      '-loop',      '1',
-      '-i',         'card.png',
-      '-i',         'audio.webm',
-      '-c:v',       'libx264',
-      '-tune',      'stillimage',
-      '-c:a',       'aac',
-      '-b:a',       '192k',
-      '-pix_fmt',   'yuv420p',
+    // Loop the still image for the duration of the audio clip
+    await ff.run(
+      '-loop',     '1',
+      '-i',        'card.png',
+      '-i',        'audio.webm',
+      '-c:v',      'libx264',
+      '-tune',     'stillimage',
+      '-c:a',      'aac',
+      '-b:a',      '192k',
+      '-pix_fmt',  'yuv420p',
       '-shortest',
-      '-movflags',  '+faststart',
-      'out.mp4',
-    ]);
+      '-movflags', '+faststart',
+      'out.mp4'
+    );
 
     fill.style.width = '90%';
 
-    const data = await ff.readFile('out.mp4');
+    const data = ff.FS('readFile', 'out.mp4');
     const blob = new Blob([data.buffer], { type: 'video/mp4' });
-    triggerDownload(blob, `WAVEFM-${sanitiseFilename(shareCurrentVideo.title)}.mp4`);
+    triggerDownload(blob, 'WAVEFM-' + sanitiseFilename(shareCurrentVideo.title) + '.mp4');
 
     // Cleanup virtual FS
-    await ff.deleteFile('card.png');
-    await ff.deleteFile('audio.webm');
-    await ff.deleteFile('out.mp4');
+    ff.FS('unlink', 'card.png');
+    ff.FS('unlink', 'audio.webm');
+    ff.FS('unlink', 'out.mp4');
 
     fill.style.width = '100%';
     btn.textContent = '✓ Done';
     btn.classList.add('done');
     btn.disabled = false;
     prog.style.display = 'none';
-    setStepStatus(3, '✅ MP4 downloaded — ready to post to WhatsApp, Facebook, Instagram.', 'ok');
+    setStepStatus(3, '✅ MP4 downloaded — ready for WhatsApp, Facebook, Instagram.', 'ok');
 
   } catch (err) {
     console.error('[Share] MP4 error', err);
